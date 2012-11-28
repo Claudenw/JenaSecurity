@@ -29,33 +29,9 @@ import org.xenei.jena.server.security.MockSecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 
-@RunWith( value = Parameterized.class )
+@RunWith( value = SecurityEvaluatorParameters.class )
 public class MemGraphTest
 {
-	@Parameters
-	public static Collection<Object[]> data()
-	{
-		final boolean[] bSet = { true, false };
-
-		final List<Object[]> retval = new ArrayList<Object[]>();
-		for (final boolean create : bSet)
-		{
-			for (final boolean read : bSet)
-			{
-				for (final boolean update : bSet)
-				{
-					for (final boolean delete : bSet)
-					{
-						retval.add(new Object[] { new MockSecurityEvaluator(
-								true, create, read, update, delete) });
-					}
-				}
-			}
-		}
-		return retval;
-
-	}
-
 	private Graph graph;
 	private final MockSecurityEvaluator securityEvaluator;
 	private Node s;

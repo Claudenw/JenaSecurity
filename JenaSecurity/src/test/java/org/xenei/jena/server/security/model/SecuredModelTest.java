@@ -73,13 +73,12 @@ public class SecuredModelTest
 
 	}
 
-	private final MockSecurityEvaluator securityEvaluator;
-	private Model model;
-	private Model m;
-	private Resource s;
-	private Property p;
-
-	private Resource o;
+	protected final MockSecurityEvaluator securityEvaluator;
+	protected Model model;
+	protected Model m;
+	protected Resource s;
+	protected Property p;
+	protected Resource o;
 
 	public SecuredModelTest( final MockSecurityEvaluator securityEvaluator )
 	{

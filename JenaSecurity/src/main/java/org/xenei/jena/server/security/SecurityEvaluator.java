@@ -352,6 +352,13 @@ public interface SecurityEvaluator
 	 */
 	public boolean evaluateAny( Set<Action> action, Node graphIRI, Triple triple );
 
+	/**
+	 * Determine if the user is allowed to update the "from" triple to the "to" triple.
+	 * @param graphIRI The IRI for the graph
+	 * @param from The triple to be changed
+	 * @param to The value to change it to.
+	 * @return true if the user may make the change, false otherwise.
+	 */
 	public boolean evaluateUpdate( Node graphIRI, Triple from, Triple to );
 
 	/**

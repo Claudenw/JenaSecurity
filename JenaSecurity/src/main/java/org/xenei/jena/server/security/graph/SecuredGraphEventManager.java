@@ -4,10 +4,13 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.GraphEventManager;
 import com.hp.hpl.jena.graph.GraphListener;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.xenei.jena.server.security.CachedSecurityEvaluator;
 import org.xenei.jena.server.security.SecuredItemImpl;
@@ -30,6 +34,10 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 		SecuredGraphListener( final GraphListener wrapped )
 		{
+			if (wrapped == null)
+			{
+				throw new IllegalArgumentException( "Wrapped listener may not be null");
+			}
 			this.wrapped = wrapped;
 			this.runAs = securedGraph.getSecurityEvaluator().getPrincipal();
 		}
@@ -335,10 +343,10 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 	}
 
-	private final GraphEventManager manager;
+	
 	// the security evaluator in use
 	private final SecuredGraph securedGraph;
-	private final Map<GraphListener, SecuredGraphListener> listenerMap = new HashMap<GraphListener, SecuredGraphListener>();
+	private final Map<GraphListener, Stack<SecuredGraphListener>> listenerMap = new HashMap<GraphListener, Stack<SecuredGraphListener>>();
 	private static Set<Action> DELETE;
 
 	private static Set<Action> ADD;
@@ -355,113 +363,263 @@ public class SecuredGraphEventManager implements GraphEventManager
 			final GraphEventManager manager )
 	{
 		this.securedGraph = securedGraph;
-		this.manager = manager;
+		manager.register(this);
 	}
 
 	@Override
 	public boolean listening()
 	{
-		return manager.listening();
+		return ! listenerMap.isEmpty();
 	}
 
+	private synchronized Collection<SecuredGraphListener>  getListenerCollection()
+	{
+		ExtendedIterator<SecuredGraphListener> retval = WrappedIterator.emptyIterator();
+		for (Collection<SecuredGraphListener> coll : listenerMap.values())
+		{
+			retval = retval.andThen( coll.iterator() );
+		}
+		return retval.toList();
+	}
+	
+	
 	@Override
 	public void notifyAddArray( final Graph g, final Triple[] triples )
 	{
-		manager.notifyAddArray(g, triples);
+		boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyAddArray(securedGraph, triples);
+			}
+			else
+			{
+				sgl.notifyAddArray(g, triples);
+			}
+		}
 	}
 
 	@Override
 	public void notifyAddGraph( final Graph g, final Graph added )
 	{
-		manager.notifyAddGraph(g, added);
+		boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyAddGraph(securedGraph, added);
+			}
+			else
+			{
+				sgl.notifyAddGraph(g, added);
+			}
+		}
 	}
 
 	@Override
 	public void notifyAddIterator( final Graph g, final Iterator<Triple> it )
 	{
-		manager.notifyAddIterator(g, it);
+		notifyAddList( g, WrappedIterator.create(it).toList() );
+		boolean wrap = securedGraph.getBaseItem().equals(g);
 	}
 
 	@Override
 	public void notifyAddIterator( final Graph g, final List<Triple> triples )
 	{
-		manager.notifyAddIterator(g, triples);
+		boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyAddList(securedGraph, triples);
+			}
+			else
+			{
+				sgl.notifyAddList(g, triples);
+			}
+		}
 	}
 
 	@Override
 	public void notifyAddList( final Graph g, final List<Triple> triples )
 	{
-		manager.notifyAddList(g, triples);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyAddList(securedGraph, triples);
+			}
+			else
+			{
+				sgl.notifyAddList(g, triples);
+			}
+		}
 	}
 
 	@Override
 	public void notifyAddTriple( final Graph g, final Triple t )
 	{
-		manager.notifyAddTriple(g, t);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyAddTriple(securedGraph, t);
+			}
+			else
+			{
+				sgl.notifyAddTriple(g, t);
+			}
+		}
 	}
 
 	@Override
 	public void notifyDeleteArray( final Graph g, final Triple[] triples )
 	{
-		manager.notifyDeleteArray(g, triples);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyDeleteArray(securedGraph, triples);
+			}
+			else
+			{
+				sgl.notifyDeleteArray(g, triples);
+			}
+		}
 	}
 
 	@Override
 	public void notifyDeleteGraph( final Graph g, final Graph removed )
 	{
-		manager.notifyDeleteGraph(g, removed);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyDeleteGraph(securedGraph, removed);
+			}
+			else
+			{
+				sgl.notifyDeleteGraph(g, removed);
+			}
+		}
 	}
 
 	@Override
 	public void notifyDeleteIterator( final Graph g, final Iterator<Triple> it )
 	{
-		manager.notifyDeleteIterator(g, it);
+		notifyDeleteList( g, WrappedIterator.create(it).toList() );
 	}
 
 	@Override
 	public void notifyDeleteIterator( final Graph g, final List<Triple> triples )
 	{
-		manager.notifyDeleteIterator(g, triples);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyDeleteList(securedGraph, triples);
+			}
+			else
+			{
+				sgl.notifyDeleteList(g, triples);
+			}
+		}
 	}
 
 	@Override
 	public void notifyDeleteList( final Graph g, final List<Triple> L )
 	{
-		manager.notifyDeleteList(g, L);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyDeleteList(securedGraph, L);
+			}
+			else
+			{
+				sgl.notifyDeleteList(g, L);
+			}
+		}
 	}
 
 	@Override
 	public void notifyDeleteTriple( final Graph g, final Triple t )
 	{
-		manager.notifyDeleteTriple(g, t);
+boolean wrap = securedGraph.getBaseItem().equals(g);
+		
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			if (wrap)
+			{
+				sgl.notifyDeleteTriple(securedGraph, t);
+			}
+			else
+			{
+				sgl.notifyDeleteTriple(g, t);
+			}
+		}
 	}
 
 	@Override
 	public void notifyEvent( final Graph source, final Object value )
 	{
-		manager.notifyEvent(source, value);
+		if (source.equals( securedGraph ))
+		{
+			Graph g = (Graph)securedGraph.getBaseItem();
+			g.getEventManager().notifyEvent( g, value );		
+		}
+		for (SecuredGraphListener sgl : getListenerCollection() )
+		{
+			sgl.notifyEvent(source, value);
+		}
 	}
 
 	@Override
-	public GraphEventManager register( final GraphListener listener )
+	public synchronized GraphEventManager register( final GraphListener listener )
 	{
-		SecuredGraphListener sgl = listenerMap.get(listener);
+		Stack<SecuredGraphListener> sgl = listenerMap.get(listener);
 		if (sgl == null)
 		{
-			sgl = new SecuredGraphListener(listener);
+			sgl = new Stack<SecuredGraphListener>();;
 		}
-		return manager.register(sgl);
+		sgl.push( new SecuredGraphListener( listener ));
+		listenerMap.put( listener, sgl );
+		return this;
 	}
 
 	@Override
-	public GraphEventManager unregister( final GraphListener listener )
+	public synchronized GraphEventManager unregister( final GraphListener listener )
 	{
-		SecuredGraphListener sgl = listenerMap.get(listener);
-		if (sgl == null)
+		Stack<SecuredGraphListener> sgl = listenerMap.get(listener);
+		if (sgl != null)
 		{
-			sgl = new SecuredGraphListener(listener);
+			if (sgl.size() == 1)
+			{
+				listenerMap.remove( listener );
+			}
+			else
+			{
+				sgl.pop();
+				listenerMap.put(listener, sgl);
+			}
 		}
-		return manager.unregister(sgl);
+		return this;
 	}
 
 }

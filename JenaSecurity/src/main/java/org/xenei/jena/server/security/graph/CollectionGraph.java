@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.xenei.jena.server.security.graph;
 
 import com.hp.hpl.jena.graph.Node;
@@ -12,9 +29,20 @@ import com.hp.hpl.jena.util.iterator.WrappedIterator;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * A simple graph implementaiton that wraps a colleciton of triples.
+ * 
+ * This is intended to be used in places where a graph is required but 
+ * iteration is the only expected operation.  All graph operations are supported
+ * but many are not efficient and will be slow on large collections.  In these cases
+ * a memory based graph may be more efficient.
+ */
 public class CollectionGraph extends GraphBase
 {
 
+	/**
+	 * Finds matching triples
+	 */
 	private class MatchFilter extends Filter<Triple>
 	{
 		TripleMatch m;
@@ -52,19 +80,32 @@ public class CollectionGraph extends GraphBase
 
 	}
 
+	// the collection
 	Collection<Triple> triples;
 
+	/**
+	 * Construct an empty graph.
+	 */
 	public CollectionGraph()
 	{
 		this(new HashSet<Triple>());
 	}
 
+	/**
+	 * Construct a graph from a collection.
+	 * @param triples The collection of triples.
+	 */
 	public CollectionGraph( final Collection<Triple> triples )
 	{
 		super();
 		this.triples = triples;
 	}
 
+	/**
+	 * Construct a graph from a collection and with a specific reification style.
+	 * @param style The style
+	 * @param triples The collection of triples
+	 */
 	public CollectionGraph( final ReificationStyle style,
 			final Collection<Triple> triples )
 	{
