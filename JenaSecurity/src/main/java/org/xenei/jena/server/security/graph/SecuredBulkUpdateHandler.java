@@ -18,7 +18,14 @@
 package org.xenei.jena.server.security.graph;
 
 import com.hp.hpl.jena.graph.BulkUpdateHandler;
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.SecuredItem;
 
 /**
@@ -29,4 +36,114 @@ import org.xenei.jena.server.security.SecuredItem;
 public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 		SecuredItem
 {
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void add( final Graph g ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void add( final Graph g, final boolean withReifications )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void add( final Iterator<Triple> it ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void add( final List<Triple> triples ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void add( final Triple[] triples ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void delete( final Graph g ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void delete( final Graph g, final boolean withReifications )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void delete( final Iterator<Triple> it )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void delete( final List<Triple> triples )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	@Deprecated
+	public void delete( final Triple[] triples ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void remove( final Node s, final Node p, final Node o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void removeAll() throws AccessDeniedException;
+
 }

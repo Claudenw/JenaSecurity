@@ -19,6 +19,7 @@ package org.xenei.jena.server.security.graph;
 
 import com.hp.hpl.jena.graph.Capabilities;
 
+import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
@@ -56,13 +57,20 @@ public class SecuredCapabilities implements Capabilities
 		this.capabilities = capabilities;
 	}
 
-	@Override
+
+	/**
+	 * @graphSec Update
+	 */
 	public boolean addAllowed()
 	{
 		return securityEvaluator.evaluate(Action.Update, graphIRI)
 				&& capabilities.addAllowed();
 	}
 
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (if everyTriple is true) 
+	 */
 	@Override
 	public boolean addAllowed( final boolean everyTriple )
 	{
@@ -71,7 +79,7 @@ public class SecuredCapabilities implements Capabilities
 		if (retval && everyTriple)
 		{
 			// special security check
-			retval = securityEvaluator.evaluate(Action.Update, graphIRI,
+			retval = securityEvaluator.evaluate(Action.Create, graphIRI,
 					Triple.ANY);
 		}
 		return retval;
@@ -83,17 +91,24 @@ public class SecuredCapabilities implements Capabilities
 		return capabilities.canBeEmpty();
 	}
 
+	/**
+	 * @graphSec Update
+	 */
 	@Override
 	public boolean deleteAllowed()
 	{
-		return securityEvaluator.evaluate(Action.Delete, graphIRI)
+		return securityEvaluator.evaluate(Action.Update, graphIRI)
 				&& capabilities.deleteAllowed();
 	}
 
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete (if everyTriple is true) 
+	 */
 	@Override
 	public boolean deleteAllowed( final boolean everyTriple )
 	{
-		boolean retval = securityEvaluator.evaluate(Action.Delete, graphIRI)
+		boolean retval = securityEvaluator.evaluate(Action.Update, graphIRI)
 				&& capabilities.addAllowed(everyTriple);
 		if (retval && everyTriple)
 		{
@@ -116,10 +131,13 @@ public class SecuredCapabilities implements Capabilities
 		return capabilities.handlesLiteralTyping();
 	}
 
+	/**
+	 * @graphSec Update
+	 */
 	@Override
 	public boolean iteratorRemoveAllowed()
 	{
-		return securityEvaluator.evaluate(Action.Delete, graphIRI)
+		return securityEvaluator.evaluate(Action.Update, graphIRI)
 				&& capabilities.iteratorRemoveAllowed();
 	}
 

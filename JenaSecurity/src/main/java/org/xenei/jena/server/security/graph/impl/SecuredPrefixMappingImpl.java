@@ -80,7 +80,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping lock()
+	public SecuredPrefixMapping lock()
 	{
 		checkUpdate();
 		holder.getBaseItem().lock();
@@ -95,7 +95,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping removeNsPrefix( final String prefix )
+	public SecuredPrefixMapping removeNsPrefix( final String prefix )
 	{
 		checkUpdate();
 		holder.getBaseItem().removeNsPrefix(prefix);
@@ -110,7 +110,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping setNsPrefix( final String prefix, final String uri )
+	public SecuredPrefixMapping setNsPrefix( final String prefix, final String uri )
 	{
 		checkUpdate();
 		holder.getBaseItem().setNsPrefix(prefix, uri);
@@ -118,7 +118,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping setNsPrefixes( final Map<String, String> map )
+	public SecuredPrefixMapping setNsPrefixes( final Map<String, String> map )
 	{
 		checkUpdate();
 		holder.getBaseItem().setNsPrefixes(map);
@@ -126,7 +126,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping setNsPrefixes( final PrefixMapping other )
+	public SecuredPrefixMapping setNsPrefixes( final PrefixMapping other )
 	{
 		checkUpdate();
 		holder.getBaseItem().setNsPrefixes(other);
@@ -141,7 +141,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public PrefixMapping withDefaultMappings( final PrefixMapping map )
+	public SecuredPrefixMapping withDefaultMappings( final PrefixMapping map )
 	{
 		checkUpdate();
 		holder.getBaseItem().withDefaultMappings(map);

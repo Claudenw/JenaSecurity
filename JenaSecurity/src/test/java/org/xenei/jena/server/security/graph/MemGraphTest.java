@@ -32,7 +32,7 @@ import org.xenei.jena.server.security.SecurityEvaluator.Action;
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class MemGraphTest
 {
-	private Graph graph;
+	private SecuredGraph graph;
 	private final MockSecurityEvaluator securityEvaluator;
 	private Node s;
 	private Node p;
@@ -208,11 +208,12 @@ public class MemGraphTest
 	@Test
 	public void testDelete() throws Exception
 	{
+		Set<Action> UD = SecurityEvaluator.Util.asSet( new Action[] { Action.Update, Action.Delete} );
 		try
 		{
 			graph.delete(t);
 
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(UD))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -221,7 +222,7 @@ public class MemGraphTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(UD))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
