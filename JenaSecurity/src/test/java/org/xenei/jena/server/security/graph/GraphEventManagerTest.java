@@ -21,6 +21,7 @@ import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.MockSecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.utils.CollectionGraph;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class GraphEventManagerTest

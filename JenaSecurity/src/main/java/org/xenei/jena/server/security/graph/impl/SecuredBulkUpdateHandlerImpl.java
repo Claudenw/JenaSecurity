@@ -125,7 +125,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Override
 	public void delete( final Graph g )
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(g.find(Triple.ANY));
@@ -138,7 +138,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Deprecated
 	public void delete( final Graph g, final boolean withReifications )
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(g.find(Triple.ANY));
@@ -155,7 +155,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Deprecated
 	public void delete( final Iterator<Triple> it )
 	{
-		checkDelete();
+		checkUpdate();
 		delete(WrappedIterator.create(it).toList());
 	}
 
@@ -163,7 +163,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Deprecated
 	public void delete( final List<Triple> triples )
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(WrappedIterator.create(triples.iterator()));
@@ -175,7 +175,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Deprecated
 	public void delete( final Triple[] triples )
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(WrappedIterator.create(Arrays.asList(triples)
@@ -187,7 +187,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Override
 	public void remove( final Node s, final Node p, final Node o )
 	{
-		checkDelete();
+		checkUpdate();
 		checkDelete(new Triple(s, p, o));
 		holder.getBaseItem().remove(s, p, o);
 	}
@@ -195,7 +195,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	@Override
 	public void removeAll()
 	{
-		checkDelete();
+		checkUpdate();
 
 		if (!canDelete(Triple.ANY))
 		{

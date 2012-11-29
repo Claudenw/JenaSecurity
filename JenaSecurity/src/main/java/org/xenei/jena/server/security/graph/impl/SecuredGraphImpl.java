@@ -32,16 +32,20 @@ import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 
+import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.ItemHolder;
 import org.xenei.jena.server.security.SecuredItem;
 import org.xenei.jena.server.security.SecuredItemImpl;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.graph.SecuredBulkUpdateHandler;
 import org.xenei.jena.server.security.graph.SecuredCapabilities;
 import org.xenei.jena.server.security.graph.SecuredGraph;
 import org.xenei.jena.server.security.graph.SecuredGraphEventManager;
 import org.xenei.jena.server.security.graph.SecuredPrefixMapping;
 import org.xenei.jena.server.security.graph.SecuredReifier;
+import org.xenei.jena.server.security.utils.PermTripleFilter;
 
 /**
  * Implementation of SecuredGraph to be used by a SecuredItemInvoker proxy.
@@ -136,7 +140,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	@Override
 	public void delete( final Triple t ) throws DeleteDeniedException
 	{
-		checkDelete();
+		checkUpdate();
 		checkDelete(t);
 		holder.getBaseItem().delete(t);
 	}
@@ -157,40 +161,48 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 			final Node o )
 	{
 		checkRead();
-		checkRead(new Triple(s, p, o));
-		return holder.getBaseItem().find(s, p, o);
+		ExtendedIterator<Triple> retval = holder.getBaseItem().find(s, p, o);
+		if (!canRead(Triple.ANY))
+		{
+			retval = retval.filterKeep( new PermTripleFilter( Action.Read, this) );
+		}
+		return retval;
 	}
 
 	@Override
 	public ExtendedIterator<Triple> find( final TripleMatch m )
 	{
 		checkRead();
-		checkRead(m.asTriple());
-		return holder.getBaseItem().find(m);
+		ExtendedIterator<Triple> retval = holder.getBaseItem().find(m);
+		if (!canRead(Triple.ANY))
+		{
+			retval = retval.filterKeep( new PermTripleFilter( Action.Read, this) );
+		}
+		return retval;
 	}
 
 	@Override
-	public BulkUpdateHandler getBulkUpdateHandler()
+	public SecuredBulkUpdateHandler getBulkUpdateHandler()
 	{
 		return org.xenei.jena.server.security.graph.impl.Factory.getInstance(
 				this, holder.getBaseItem().getBulkUpdateHandler());
 	}
 
 	@Override
-	public Capabilities getCapabilities()
+	public SecuredCapabilities getCapabilities()
 	{
 		return new SecuredCapabilities(getSecurityEvaluator(), getModelIRI(),
 				holder.getBaseItem().getCapabilities());
 	}
 
 	@Override
-	public GraphEventManager getEventManager()
+	public SecuredGraphEventManager getEventManager()
 	{
 		return eventManager;
 	}
 
 	@Override
-	public PrefixMapping getPrefixMapping()
+	public SecuredPrefixMapping getPrefixMapping()
 	{
 		if (prefixMapping == null)
 		{
@@ -200,7 +212,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	}
 
 	@Override
-	public Reifier getReifier()
+	public SecuredReifier getReifier()
 	{
 		if (reifier == null)
 		{
@@ -269,4 +281,5 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		return holder.getBaseItem().size();
 	}
 
+	
 }

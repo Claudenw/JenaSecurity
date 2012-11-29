@@ -24,6 +24,8 @@ import org.xenei.jena.server.security.CachedSecurityEvaluator;
 import org.xenei.jena.server.security.SecuredItemImpl;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.utils.CollectionGraph;
+import org.xenei.jena.server.security.utils.PermTripleFilter;
 
 public class SecuredGraphEventManager implements GraphEventManager
 {

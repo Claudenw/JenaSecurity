@@ -17,6 +17,7 @@ import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.utils.CollectionGraph;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class BulkUpdateHandlerTest
@@ -24,6 +25,8 @@ public class BulkUpdateHandlerTest
 	private final SecuredBulkUpdateHandler handler;
 	private final SecurityEvaluator securityEvaluator;
 	private Triple[] tripleArray;
+	private Set<Action> deleteAndUpdate;
+	private Set<Action> createAndUpdate;
 
 	public BulkUpdateHandlerTest( final SecurityEvaluator securityEvaluator )
 	{
@@ -48,14 +51,13 @@ public class BulkUpdateHandlerTest
 				new Triple(Node.createURI("http://example.com/3"),
 						Node.createURI("http://example.com/v"),
 						Node.createAnon()) };
-
+		createAndUpdate = SecurityEvaluator.Util.asSet( new Action[] {Action.Create,Action.Update});
+		deleteAndUpdate = SecurityEvaluator.Util.asSet( new Action[] {Action.Delete,Action.Update});
 	}
 
 	@Test
 	public void testAdd()
 	{
-		final Set<Action> createAndUpdate = SecurityEvaluator.Util
-				.asSet(new Action[] { Action.Update, Action.Create });
 		try
 		{
 			handler.add(tripleArray);
@@ -178,7 +180,7 @@ public class BulkUpdateHandlerTest
 		try
 		{
 			handler.delete(tripleArray);
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -187,7 +189,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -197,7 +199,7 @@ public class BulkUpdateHandlerTest
 		try
 		{
 			handler.delete(Arrays.asList(tripleArray));
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -206,7 +208,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -216,7 +218,7 @@ public class BulkUpdateHandlerTest
 		try
 		{
 			handler.delete(Arrays.asList(tripleArray).iterator());
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -225,7 +227,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -235,7 +237,7 @@ public class BulkUpdateHandlerTest
 		try
 		{
 			handler.delete(new CollectionGraph(Arrays.asList(tripleArray)));
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -244,7 +246,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -255,7 +257,7 @@ public class BulkUpdateHandlerTest
 		{
 			handler.delete(new CollectionGraph(Arrays.asList(tripleArray)),
 					true);
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
@@ -263,7 +265,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -278,7 +280,7 @@ public class BulkUpdateHandlerTest
 		{
 			handler.remove(Node.createURI("http://example.com/1"),
 					Node.createURI("http://example.com/v"), Node.createAnon());
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -287,7 +289,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");
@@ -300,7 +302,7 @@ public class BulkUpdateHandlerTest
 		try
 		{
 			handler.removeAll();
-			if (!securityEvaluator.evaluate(Action.Delete,
+			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				
@@ -309,7 +311,7 @@ public class BulkUpdateHandlerTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete,
+			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
 				Assert.fail("Should not have thrown AccessDenied Exception");

@@ -29,8 +29,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.xenei.jena.server.security.ItemHolder;
 import org.xenei.jena.server.security.SecuredItemImpl;
+import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.graph.SecuredGraph;
 import org.xenei.jena.server.security.graph.SecuredReifier;
+import org.xenei.jena.server.security.utils.PermTripleFilter;
 
 /**
  * Implementation of SecuredReifier to be used by a SecuredItemInvoker proxy.
@@ -93,7 +95,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	public ExtendedIterator<Triple> find( final TripleMatch m )
 	{
 		checkRead();
-		return holder.getBaseItem().find(m).filterKeep( new ReadTripleFilter());
+		return holder.getBaseItem().find(m).filterKeep( new PermTripleFilter( Action.Read, this));
 	}
 
 	@Override
@@ -101,22 +103,20 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 			final boolean showHidden )
 	{
 		checkRead();
-		checkRead(m.asTriple());
 		return holder.getBaseItem().findEither(m, showHidden)
-				.filterKeep(new ReadTripleFilter());
+				.filterKeep(new PermTripleFilter( Action.Read, this));
 	}
 
 	@Override
 	public ExtendedIterator<Triple> findExposed( final TripleMatch m )
 	{
 		checkRead();
-		checkRead(m.asTriple());
 		return holder.getBaseItem().findExposed(m)
-				.filterKeep( new ReadTripleFilter() );
+				.filterKeep( new PermTripleFilter( Action.Read, this) );
 	}
 
 	@Override
-	public Graph getParentGraph()
+	public SecuredGraph getParentGraph()
 	{
 		return graph;
 	}
@@ -210,18 +210,6 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		return holder.getBaseItem().size();
-	}
-	
-	private class ReadTripleFilter extends Filter<Triple>
-	{
-
-		@Override
-		public boolean accept( final Triple o )
-		{
-			return canRead(o);
-		}
-		
-		
 	}
 	
 	private class ReadNodeFilter extends Filter<Node>
