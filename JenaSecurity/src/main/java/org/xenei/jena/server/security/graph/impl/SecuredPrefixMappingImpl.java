@@ -97,7 +97,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	@Override
 	public PrefixMapping removeNsPrefix( final String prefix )
 	{
-		checkDelete();
+		checkUpdate();
 		holder.getBaseItem().removeNsPrefix(prefix);
 		return holder.getSecuredItem();
 	}

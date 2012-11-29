@@ -71,7 +71,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -90,7 +90,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -109,7 +109,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -128,7 +128,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -147,7 +147,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -166,7 +166,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -190,7 +190,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -209,7 +209,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -228,7 +228,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -247,7 +247,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -266,7 +266,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -290,7 +290,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -312,7 +312,7 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(Action.Delete,
 					handler.getModelNode()))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}

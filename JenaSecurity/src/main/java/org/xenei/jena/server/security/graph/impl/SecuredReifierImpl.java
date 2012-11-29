@@ -63,17 +63,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	public ExtendedIterator<Node> allNodes()
 	{
 		checkRead();
-		return holder.getBaseItem().allNodes().filterKeep(new Filter<Node>() {
-
-			@Override
-			public boolean accept( final Node o )
-			{
-				return canRead(new Triple(o, RDF.subject.asNode(), Node.ANY))
-						|| canRead(new Triple(o, RDF.predicate.asNode(),
-								Node.ANY))
-						|| canRead(new Triple(o, RDF.object.asNode(), Node.ANY));
-			}
-		});
+		return holder.getBaseItem().allNodes().filterKeep(new ReadNodeFilter());
 	}
 
 	@Override
@@ -81,19 +71,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(t);
-		return holder.getBaseItem().allNodes(t).filterKeep(new Filter<Node>() {
-
-			@Override
-			public boolean accept( final Node o )
-			{
-				return canRead(new Triple(o, RDF.subject.asNode(), t
-						.getSubject()))
-						|| canRead(new Triple(o, RDF.predicate.asNode(), t
-								.getPredicate()))
-						|| canRead(new Triple(o, RDF.object.asNode(), t
-								.getObject()));
-			}
-		});
+		return holder.getBaseItem().allNodes(t).filterKeep(new ReadNodeFilter());
 	}
 
 	// check that all entries for n associated with reified t can be read.
@@ -115,14 +93,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	public ExtendedIterator<Triple> find( final TripleMatch m )
 	{
 		checkRead();
-		return holder.getBaseItem().find(m).filterKeep(new Filter<Triple>() {
-
-			@Override
-			public boolean accept( final Triple o )
-			{
-				return canRead(o);
-			}
-		});
+		return holder.getBaseItem().find(m).filterKeep( new ReadTripleFilter());
 	}
 
 	@Override
@@ -132,14 +103,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		checkRead();
 		checkRead(m.asTriple());
 		return holder.getBaseItem().findEither(m, showHidden)
-				.filterKeep(new Filter<Triple>() {
-
-					@Override
-					public boolean accept( final Triple o )
-					{
-						return canRead(o);
-					}
-				});
+				.filterKeep(new ReadTripleFilter());
 	}
 
 	@Override
@@ -148,14 +112,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		checkRead();
 		checkRead(m.asTriple());
 		return holder.getBaseItem().findExposed(m)
-				.filterKeep(new Filter<Triple>() {
-
-					@Override
-					public boolean accept( final Triple o )
-					{
-						return canRead(o);
-					}
-				});
+				.filterKeep( new ReadTripleFilter() );
 	}
 
 	@Override
@@ -175,7 +132,10 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		final Triple t = holder.getBaseItem().getTriple(n);
-		checkRead(n, t);
+		if (t != null)
+		{
+			checkRead(n, t);
+		}
 		return t;
 	}
 
@@ -214,7 +174,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	@Override
 	public Node reifyAs( final Node n, final Triple t )
 	{
-		checkCreate();
+		checkUpdate();
 		checkRead(t);
 		checkCreate(new Triple(n, RDF.subject.asNode(), t.getSubject()));
 		checkCreate(new Triple(n, RDF.predicate.asNode(), t.getPredicate()));
@@ -225,7 +185,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	@Override
 	public void remove( final Node n, final Triple t )
 	{
-		checkDelete();
+		checkUpdate();
 		checkRead(t);
 		checkDelete(new Triple(n, RDF.subject.asNode(), t.getSubject()));
 		checkDelete(new Triple(n, RDF.predicate.asNode(), t.getPredicate()));
@@ -236,7 +196,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	@Override
 	public void remove( final Triple t )
 	{
-		checkDelete();
+		checkUpdate();
 		checkRead(t);
 		checkDelete(new Triple(Node.ANY, RDF.subject.asNode(), t.getSubject()));
 		checkDelete(new Triple(Node.ANY, RDF.predicate.asNode(),
@@ -250,5 +210,29 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		return holder.getBaseItem().size();
+	}
+	
+	private class ReadTripleFilter extends Filter<Triple>
+	{
+
+		@Override
+		public boolean accept( final Triple o )
+		{
+			return canRead(o);
+		}
+		
+		
+	}
+	
+	private class ReadNodeFilter extends Filter<Node>
+	{
+		@Override
+		public boolean accept( final Node o )
+		{
+			return canRead(new Triple(o, RDF.subject.asNode(), Node.ANY))
+					|| canRead(new Triple(o, RDF.predicate.asNode(),
+							Node.ANY))
+					|| canRead(new Triple(o, RDF.object.asNode(), Node.ANY));
+		}
 	}
 }

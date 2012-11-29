@@ -86,7 +86,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(updateAndCreate))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -110,7 +110,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Delete))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -138,7 +138,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Delete))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -159,7 +159,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Delete))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -179,7 +179,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -199,7 +199,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -223,7 +223,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Delete))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -244,7 +244,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 		try
@@ -259,7 +259,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -279,7 +279,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -301,7 +301,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -321,7 +321,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -341,7 +341,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -361,7 +361,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -381,7 +381,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -413,7 +413,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 		try
@@ -428,7 +428,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -448,7 +448,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -468,7 +468,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -488,7 +488,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -508,7 +508,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -528,7 +528,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -563,7 +563,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -583,7 +583,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -603,7 +603,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -637,7 +637,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -657,7 +657,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -677,7 +677,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -697,7 +697,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -717,7 +717,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -725,21 +725,21 @@ public class MemGraphTest
 	@Test
 	public void testReifierReifyAs()
 	{
+		Set<Action> CRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create,
+					Action.Read, Action.Update });
 		try
 		{
 			graph.getReifier().reifyAs(Node.createURI("foo"), t);
-			if (!securityEvaluator.evaluate(new Action[] { Action.Create,
-					Action.Read }))
+			if (!securityEvaluator.evaluate(CRU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(new Action[] { Action.Create,
-					Action.Read }))
+			if (securityEvaluator.evaluate(CRU))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -747,21 +747,21 @@ public class MemGraphTest
 	@Test
 	public void testReifierRemoveNodeTriple()
 	{
+		Set<Action> DRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete,
+				Action.Read, Action.Update });
 		try
 		{
 			graph.getReifier().remove(Node.createURI("foo"), t);
-			if (!securityEvaluator.evaluate(new Action[] { Action.Delete,
-					Action.Read }))
+			if (!securityEvaluator.evaluate(DRU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(new Action[] { Action.Delete,
-					Action.Read }))
+			if (securityEvaluator.evaluate(DRU))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -769,21 +769,21 @@ public class MemGraphTest
 	@Test
 	public void testReifierRemoveTriple()
 	{
+		Set<Action> DRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete,
+				Action.Read, Action.Update });
 		try
 		{
 			graph.getReifier().remove(t);
-			if (!securityEvaluator.evaluate(new Action[] { Action.Delete,
-					Action.Read }))
+			if (!securityEvaluator.evaluate(DRU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(new Action[] { Action.Delete,
-					Action.Read }))
+			if (securityEvaluator.evaluate(DRU))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -803,7 +803,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -814,16 +814,16 @@ public class MemGraphTest
 		try
 		{
 			graph.getPrefixMapping().removeNsPrefix("foo");
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(Action.Update))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -846,7 +846,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -867,7 +867,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -888,7 +888,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 
@@ -905,7 +905,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -925,7 +925,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -945,7 +945,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -990,7 +990,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
@@ -1011,7 +1011,7 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail("Should not have thrown AccessDenied Exception");
 			}
 		}
 	}
