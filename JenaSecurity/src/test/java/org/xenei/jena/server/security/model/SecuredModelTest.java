@@ -43,38 +43,15 @@ import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.MockPrefixMapping;
 import org.xenei.jena.server.security.MockSecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.graph.SecuredGraph;
 
-@RunWith( value = Parameterized.class )
+@RunWith( value = SecurityEvaluatorParameters.class )
 public class SecuredModelTest
 {
-	@Parameters
-	public static Collection<Object[]> data()
-	{
-		final boolean[] bSet = { true, false };
-
-		final List<Object[]> retval = new ArrayList<Object[]>();
-		for (final boolean create : bSet)
-		{
-			for (final boolean read : bSet)
-			{
-				for (final boolean update : bSet)
-				{
-					for (final boolean delete : bSet)
-					{
-						retval.add(new Object[] { new MockSecurityEvaluator(
-								true, create, read, update, delete) });
-					}
-				}
-			}
-		}
-		return retval;
-
-	}
-
 	protected final MockSecurityEvaluator securityEvaluator;
-	protected Model model;
+	protected SecuredModel model;
 	protected Model m;
 	protected Resource s;
 	protected Property p;
@@ -91,11 +68,33 @@ public class SecuredModelTest
 	}
 
 	@Test
-	public void getAnyReifiedStmt()
+	public void testGetAnyReifiedStmt()
 	{
+		// first with create.
+		Set<Action> UCR = SecurityEvaluator.Util.asSet( new Action[] { Action.Update, Action.Create, Action.Read });
 		try
 		{
 			model.getAnyReifiedStatement(m.listStatements().next());
+			if (!securityEvaluator.evaluate(UCR))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(UCR))
+			{
+				e.printStackTrace();
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+			}
+		}
+
+		Statement st = m.listStatements().next();
+		m.createReifiedStatement(st);
+		// now it is there so try with read
+		try
+		{
+			model.getAnyReifiedStatement(st);
 			if (!securityEvaluator.evaluate(Action.Read))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
@@ -105,7 +104,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -114,6 +113,7 @@ public class SecuredModelTest
 	public void setup()
 	{
 		m = createModel();
+		m.removeAll();
 		model = Factory.getInstance(securityEvaluator,
 				"http://example.com/securedGraph", m);
 		s = ResourceFactory.createResource("http://example.com/graph/s");
@@ -140,7 +140,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -155,7 +155,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -170,7 +170,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -186,7 +186,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -201,7 +201,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -216,7 +216,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -231,7 +231,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -246,7 +246,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -261,7 +261,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -276,7 +276,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -291,7 +291,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -319,7 +319,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -340,7 +340,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -355,7 +355,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -370,7 +370,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -385,7 +385,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -400,7 +400,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -421,7 +421,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -436,7 +436,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -444,34 +444,35 @@ public class SecuredModelTest
 	@Test
 	public void testCreateAlt() throws Exception
 	{
+		Set<Action> CU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create, Action.Update} );
 		try
 		{
 			model.createAlt();
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createAlt("foo");
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -479,34 +480,35 @@ public class SecuredModelTest
 	@Test
 	public void testCreateBag() throws Exception
 	{
+		Set<Action> CU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create, Action.Update} );
 		try
 		{
 			model.createBag();
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createBag("foo");
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -514,37 +516,43 @@ public class SecuredModelTest
 	@Test
 	public void testCreateList() throws Exception
 	{
+		Set<Action> CU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create, Action.Update} );
+		
 		final List<RDFNode> nodeList = new ArrayList<RDFNode>();
 		try
 		{
 			model.createList();
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
+		m.removeAll();
+		
 		try
 		{
 			model.createList(nodeList.iterator());
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
+		m.removeAll();
+
 		try
 		{
 			final RDFNode[] list = new RDFNode[] {
@@ -554,18 +562,20 @@ public class SecuredModelTest
 					ResourceFactory.createResource(), };
 
 			model.createList(list);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
+		m.removeAll();
+
 	}
 
 	@Test
@@ -573,110 +583,111 @@ public class SecuredModelTest
 	{
 		model.createLiteral("foo");
 		model.createLiteral("foo", false);
-
+		Set<Action> CU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create, Action.Update} );
+		
 		try
 		{
 			model.createLiteralStatement(s, p, true);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, 'a');
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, 1.0d);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, 1.0f);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, 1);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, 1L);
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.createLiteralStatement(s, p, new MockPrefixMapping());
-			if (!securityEvaluator.evaluate(Action.Create))
+			if (!securityEvaluator.evaluate(CU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Create))
+			if (securityEvaluator.evaluate(CU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -696,7 +707,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -706,7 +717,6 @@ public class SecuredModelTest
 	{
 		model.equals(m);
 		m.equals(model);
-
 	}
 
 	@Test
@@ -724,7 +734,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -746,7 +756,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -762,7 +772,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -783,7 +793,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -799,7 +809,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -833,7 +843,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -853,7 +863,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -873,7 +883,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -894,7 +904,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -909,7 +919,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -924,7 +934,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -944,7 +954,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -965,7 +975,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1005,7 +1015,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1020,7 +1030,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1053,7 +1063,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1079,7 +1089,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1099,7 +1109,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -1115,7 +1125,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1135,7 +1145,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -1156,7 +1166,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1171,7 +1181,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1186,7 +1196,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1201,7 +1211,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1216,7 +1226,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1236,7 +1246,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1257,7 +1267,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1277,7 +1287,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1311,7 +1321,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1333,7 +1343,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1354,7 +1364,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1375,7 +1385,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1397,7 +1407,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1418,7 +1428,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1439,7 +1449,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(createAndUpdate))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		finally
@@ -1452,115 +1462,117 @@ public class SecuredModelTest
 	@Test
 	public void testRemove() throws Exception
 	{
+		Set<Action> DU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete, Action.Update} );
+		
 		final List<Statement> stmt = m.listStatements().toList();
 		try
 		{
 			model.remove(m.listStatements().toList());
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
 		try
 		{
 			model.remove(m);
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.remove(stmt.get(0));
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
 		try
 		{
 			model.remove(stmt.toArray(new Statement[stmt.size()]));
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
 		try
 		{
 			model.remove(m.listStatements());
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
 		try
 		{
 			model.remove(m, true);
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
 		try
 		{
 			model.remove(s, p, o);
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -1569,35 +1581,36 @@ public class SecuredModelTest
 	@Test
 	public void testRemoveAll() throws Exception
 	{
+		Set<Action> DU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete, Action.Update} );
 
 		try
 		{
 			model.removeAll();
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
 		{
 			model.removeAll(s, p, o);
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1605,21 +1618,23 @@ public class SecuredModelTest
 	@Test
 	public void testRemoveAllReifications()
 	{
+		Set<Action> DU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete, Action.Update} );
+
 		final List<Statement> stmt = m.listStatements().toList();
 
 		try
 		{
 			model.removeAllReifications(stmt.get(0));
-			if (!securityEvaluator.evaluate(Action.Delete))
+			if (!securityEvaluator.evaluate(DU))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(Action.Delete))
+			if (securityEvaluator.evaluate(DU))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1640,7 +1655,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1661,7 +1676,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1680,7 +1695,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1697,7 +1712,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1712,7 +1727,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1732,7 +1747,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1752,7 +1767,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1772,7 +1787,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -1788,7 +1803,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -1808,7 +1823,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Update))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 
@@ -1838,7 +1853,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1853,7 +1868,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1868,7 +1883,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1883,7 +1898,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1898,7 +1913,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		try
@@ -1913,7 +1928,7 @@ public class SecuredModelTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				throw e;
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 

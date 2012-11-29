@@ -95,8 +95,24 @@ public interface SecurityEvaluator
 			URI, Literal, Anonymous, Any
 		}
 
+		/**
+		 * Matches any node in the secrity system.
+		 * Asking (Node, Node.ANY, Node.ANY) is asking if there 
+		 * are any explicit using the Node as a Subject.
+		 */
 		public static final Node ANY = new Node(Type.Any, "any");
+		/**
+		 * Ignore the nodes in this position in the triple.
+		 * Asking (Node, Node.IGNORE, Node.IGNORE) is asking if there 
+		 * are any implicit restrictions on using the Node as a Subject.
+		 */
 		public static final Node IGNORE = new Node(Type.Any, "ignore");
+		
+		/**
+		 * This is an anonymous node that will be created in the future.
+		 * FUTURE is used to check that an anonymous node may be created in
+		 * as specific position in a triple.
+		 */
 		public static final Node FUTURE = new Node(Type.Anonymous, "");
 
 		private final Type type;
@@ -145,6 +161,12 @@ public interface SecurityEvaluator
 						.toHashCode();
 			}
 			return hashCode;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return String.format( "[%s:%s]", getType(), getValue() );
 		}
 	}
 

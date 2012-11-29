@@ -333,7 +333,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		if (!canReadProperty(p))
 		{
-			throw new AccessDeniedException(getModelNode(), Action.Read);
+			throw new AccessDeniedException(getModelNode(), convert( new Triple(holder.getBaseItem().asNode(), p, Node.ANY)).toString(), Action.Read);
 		}
 	}
 

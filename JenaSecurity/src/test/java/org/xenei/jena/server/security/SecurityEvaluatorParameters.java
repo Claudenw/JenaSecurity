@@ -1,4 +1,4 @@
-package org.xenei.jena.server.security.graph;
+package org.xenei.jena.server.security;
 
 import  org.junit.runners.model.Statement;
 
@@ -15,7 +15,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
-import org.xenei.jena.server.security.MockSecurityEvaluator;
 
 public class SecurityEvaluatorParameters extends Suite {
 	

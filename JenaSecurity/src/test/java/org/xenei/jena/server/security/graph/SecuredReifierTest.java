@@ -20,6 +20,7 @@ import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.SecuredItem;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -63,7 +64,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -86,7 +87,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -109,7 +110,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -132,7 +133,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -155,7 +156,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -192,7 +193,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(CRU,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -215,7 +216,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		
@@ -233,7 +234,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -256,7 +257,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		
@@ -274,7 +275,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -297,7 +298,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(RUD,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 		
@@ -315,7 +316,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(RUD,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -337,7 +338,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
@@ -359,7 +360,7 @@ public class SecuredReifierTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
-				Assert.fail("Should not have thrown AccessDenied Exception");
+				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
 			}
 		}
 	}
