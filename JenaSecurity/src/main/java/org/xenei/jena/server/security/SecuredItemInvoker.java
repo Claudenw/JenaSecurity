@@ -19,6 +19,7 @@ package org.xenei.jena.server.security;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
 /**
@@ -33,8 +34,6 @@ public class SecuredItemInvoker implements InvocationHandler
 	private static Method TO_STRING;
 	// the hashCode() method.
 	private static Method HASH_CODE;
-	// The class that implements the security wrapper around the base class.
-	private final Class<?> securedClass;
 	// the instance of SecuredItem that this proxy is using. Must be
 	// package-private for ItemHolder use.
 	/* package-private */final SecuredItem securedItem;
@@ -70,7 +69,6 @@ public class SecuredItemInvoker implements InvocationHandler
 	public SecuredItemInvoker( final Class<?> securedClass,
 			final SecuredItem securedItem )
 	{
-		this.securedClass = securedClass;
 		this.securedItem = securedItem;
 	}
 
@@ -102,47 +100,42 @@ public class SecuredItemInvoker implements InvocationHandler
 			return securedItem.toString();
 		}
 
-		if (SecuredItem.class.equals(method.getDeclaringClass()))
-		{
-			return method.invoke(securedItem, args);
-		}
-
 		try
 		{
-			// if the method is on the secured class then call to the
-			// securedItem.
-			securedClass
-					.getMethod(method.getName(), method.getParameterTypes());
-			try
+			final Method m = securedItem.getClass().getMethod(method.getName(),
+					method.getParameterTypes());
+			if (!Modifier.isAbstract(m.getModifiers()))
 			{
-				SecuredItemImpl.incrementUse();
 				try
 				{
-					return method.invoke(securedItem, args);
-				}
-				finally
-				{
-					SecuredItemImpl.decrementUse();
-				}
+					SecuredItemImpl.incrementUse();
+					try
+					{
+						return method.invoke(securedItem, args);
+					}
+					finally
+					{
+						SecuredItemImpl.decrementUse();
+					}
 
-			}
-			catch (final java.lang.reflect.InvocationTargetException e)
-			{
-				if (e.getTargetException() instanceof RuntimeException)
-				{
-					throw e.getTargetException();
 				}
-				throw e;
+				catch (final java.lang.reflect.InvocationTargetException e2)
+				{
+					if (e2.getTargetException() instanceof RuntimeException)
+					{
+						throw e2.getTargetException();
+					}
+					throw e2;
+				}
 			}
 		}
-		catch (final NoSuchMethodException e)
+		catch (final NoSuchMethodException e2)
 		{
 			// acceptable
 		}
 
 		// if we get here then the method is not being proxied so call the
-		// original method
-		// on the base item.
+		// original method on the base item.
 		return method.invoke(securedItem.getBaseItem(), args);
 
 	}

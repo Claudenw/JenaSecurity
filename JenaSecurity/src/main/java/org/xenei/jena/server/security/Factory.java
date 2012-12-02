@@ -44,7 +44,7 @@ public class Factory
 			final SecurityEvaluator securityEvaluator, final String modelURI,
 			final Model model )
 	{
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
+		return org.xenei.jena.server.security.model.impl.SecuredModelImpl.getInstance(
 				securityEvaluator, modelURI, model);
 	}
 }

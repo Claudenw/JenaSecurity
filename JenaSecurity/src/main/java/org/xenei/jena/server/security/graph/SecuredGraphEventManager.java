@@ -5,10 +5,10 @@ import com.hp.hpl.jena.graph.GraphEventManager;
 import com.hp.hpl.jena.graph.GraphListener;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.NiceIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,8 @@ public class SecuredGraphEventManager implements GraphEventManager
 		{
 			if (wrapped == null)
 			{
-				throw new IllegalArgumentException( "Wrapped listener may not be null");
+				throw new IllegalArgumentException(
+						"Wrapped listener may not be null");
 			}
 			this.wrapped = wrapped;
 			this.runAs = securedGraph.getSecurityEvaluator().getPrincipal();
@@ -345,7 +346,6 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 	}
 
-	
 	// the security evaluator in use
 	private final SecuredGraph securedGraph;
 	private final Map<GraphListener, Stack<SecuredGraphListener>> listenerMap = new HashMap<GraphListener, Stack<SecuredGraphListener>>();
@@ -368,29 +368,29 @@ public class SecuredGraphEventManager implements GraphEventManager
 		manager.register(this);
 	}
 
-	@Override
-	public boolean listening()
+	private synchronized Collection<SecuredGraphListener> getListenerCollection()
 	{
-		return ! listenerMap.isEmpty();
-	}
-
-	private synchronized Collection<SecuredGraphListener>  getListenerCollection()
-	{
-		ExtendedIterator<SecuredGraphListener> retval = WrappedIterator.emptyIterator();
-		for (Collection<SecuredGraphListener> coll : listenerMap.values())
+		ExtendedIterator<SecuredGraphListener> retval = NiceIterator
+				.emptyIterator();
+		for (final Collection<SecuredGraphListener> coll : listenerMap.values())
 		{
-			retval = retval.andThen( coll.iterator() );
+			retval = retval.andThen(coll.iterator());
 		}
 		return retval.toList();
 	}
-	
-	
+
+	@Override
+	public boolean listening()
+	{
+		return !listenerMap.isEmpty();
+	}
+
 	@Override
 	public void notifyAddArray( final Graph g, final Triple[] triples )
 	{
-		boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -406,9 +406,9 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddGraph( final Graph g, final Graph added )
 	{
-		boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -424,16 +424,16 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddIterator( final Graph g, final Iterator<Triple> it )
 	{
-		notifyAddList( g, WrappedIterator.create(it).toList() );
-		boolean wrap = securedGraph.getBaseItem().equals(g);
+		notifyAddList(g, WrappedIterator.create(it).toList());
+		securedGraph.getBaseItem().equals(g);
 	}
 
 	@Override
 	public void notifyAddIterator( final Graph g, final List<Triple> triples )
 	{
-		boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -449,9 +449,9 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddList( final Graph g, final List<Triple> triples )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -467,9 +467,9 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyAddTriple( final Graph g, final Triple t )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -485,9 +485,9 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyDeleteArray( final Graph g, final Triple[] triples )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -503,9 +503,9 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyDeleteGraph( final Graph g, final Graph removed )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -521,15 +521,15 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyDeleteIterator( final Graph g, final Iterator<Triple> it )
 	{
-		notifyDeleteList( g, WrappedIterator.create(it).toList() );
+		notifyDeleteList(g, WrappedIterator.create(it).toList());
 	}
 
 	@Override
 	public void notifyDeleteIterator( final Graph g, final List<Triple> triples )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -545,9 +545,9 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyDeleteList( final Graph g, final List<Triple> L )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -563,9 +563,9 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyDeleteTriple( final Graph g, final Triple t )
 	{
-boolean wrap = securedGraph.getBaseItem().equals(g);
-		
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		final boolean wrap = securedGraph.getBaseItem().equals(g);
+
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
@@ -581,12 +581,12 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 	@Override
 	public void notifyEvent( final Graph source, final Object value )
 	{
-		if (source.equals( securedGraph ))
+		if (source.equals(securedGraph))
 		{
-			Graph g = (Graph)securedGraph.getBaseItem();
-			g.getEventManager().notifyEvent( g, value );		
+			final Graph g = (Graph) securedGraph.getBaseItem();
+			g.getEventManager().notifyEvent(g, value);
 		}
-		for (SecuredGraphListener sgl : getListenerCollection() )
+		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			sgl.notifyEvent(source, value);
 		}
@@ -598,22 +598,24 @@ boolean wrap = securedGraph.getBaseItem().equals(g);
 		Stack<SecuredGraphListener> sgl = listenerMap.get(listener);
 		if (sgl == null)
 		{
-			sgl = new Stack<SecuredGraphListener>();;
+			sgl = new Stack<SecuredGraphListener>();
+			;
 		}
-		sgl.push( new SecuredGraphListener( listener ));
-		listenerMap.put( listener, sgl );
+		sgl.push(new SecuredGraphListener(listener));
+		listenerMap.put(listener, sgl);
 		return this;
 	}
 
 	@Override
-	public synchronized GraphEventManager unregister( final GraphListener listener )
+	public synchronized GraphEventManager unregister(
+			final GraphListener listener )
 	{
-		Stack<SecuredGraphListener> sgl = listenerMap.get(listener);
+		final Stack<SecuredGraphListener> sgl = listenerMap.get(listener);
 		if (sgl != null)
 		{
 			if (sgl.size() == 1)
 			{
-				listenerMap.remove( listener );
+				listenerMap.remove(listener);
 			}
 			else
 			{

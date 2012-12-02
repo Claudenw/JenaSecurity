@@ -17,28 +17,22 @@
  */
 package org.xenei.jena.server.security.graph.impl;
 
-import com.hp.hpl.jena.graph.BulkUpdateHandler;
-import com.hp.hpl.jena.graph.Capabilities;
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.GraphEventManager;
 import com.hp.hpl.jena.graph.GraphStatisticsHandler;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.TransactionHandler;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
 import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
 
-import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.ItemHolder;
 import org.xenei.jena.server.security.SecuredItem;
 import org.xenei.jena.server.security.SecuredItemImpl;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.graph.SecuredBulkUpdateHandler;
 import org.xenei.jena.server.security.graph.SecuredCapabilities;
 import org.xenei.jena.server.security.graph.SecuredGraph;
@@ -164,7 +158,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		ExtendedIterator<Triple> retval = holder.getBaseItem().find(s, p, o);
 		if (!canRead(Triple.ANY))
 		{
-			retval = retval.filterKeep( new PermTripleFilter( Action.Read, this) );
+			retval = retval.filterKeep(new PermTripleFilter(Action.Read, this));
 		}
 		return retval;
 	}
@@ -176,7 +170,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		ExtendedIterator<Triple> retval = holder.getBaseItem().find(m);
 		if (!canRead(Triple.ANY))
 		{
-			retval = retval.filterKeep( new PermTripleFilter( Action.Read, this) );
+			retval = retval.filterKeep(new PermTripleFilter(Action.Read, this));
 		}
 		return retval;
 	}
@@ -281,5 +275,4 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		return holder.getBaseItem().size();
 	}
 
-	
 }

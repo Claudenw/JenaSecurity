@@ -19,6 +19,8 @@ package org.xenei.jena.server.security.model;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
+import org.xenei.jena.server.security.AccessDeniedException;
+
 /**
  * The interface for secured Property instances.
  * 
@@ -26,4 +28,12 @@ import com.hp.hpl.jena.rdf.model.Property;
  */
 public interface SecuredProperty extends SecuredResource, Property
 {
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public int getOrdinal() throws AccessDeniedException;
+
 }

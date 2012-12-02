@@ -17,8 +17,11 @@
  */
 package org.xenei.jena.server.security.model;
 
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
+import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.SecuredItem;
 
 /**
@@ -28,4 +31,31 @@ import org.xenei.jena.server.security.SecuredItem;
  */
 public interface SecuredRDFNode extends RDFNode, SecuredItem
 {
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Node asNode() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public <T extends RDFNode> boolean canAs( final Class<T> view )
+			throws AccessDeniedException;
+
+	
+	@Override
+	public SecuredModel getModel();
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public RDFNode inModel( final Model m ) throws AccessDeniedException;
+
 }

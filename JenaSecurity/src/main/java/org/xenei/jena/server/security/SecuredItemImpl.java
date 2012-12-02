@@ -24,6 +24,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import java.lang.reflect.Proxy;
 
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
@@ -192,6 +193,18 @@ public abstract class SecuredItemImpl implements SecuredItem
 	protected SecuredItemImpl( final SecuredItem securedItem,
 			final ItemHolder<?, ?> holder )
 	{
+		if (securedItem == null)
+		{
+			throw new IllegalArgumentException( "Secured item may not be null");
+		}
+		if (securedItem.getSecurityEvaluator() == null)
+		{
+			throw new IllegalArgumentException( "Security evaluator in secured item may not be null");
+		}
+		if (holder == null)
+		{
+			throw new IllegalArgumentException( "ItemHolder may not be null");
+		}
 		this.securityEvaluator = securedItem.getSecurityEvaluator();
 		this.modelNode = new SecurityEvaluator.Node(
 				SecurityEvaluator.Node.Type.URI, securedItem.getModelIRI());
@@ -201,6 +214,18 @@ public abstract class SecuredItemImpl implements SecuredItem
 	protected SecuredItemImpl( final SecurityEvaluator securityEvaluator,
 			final String modelURI, final ItemHolder<?, ?> holder )
 	{
+		if (securityEvaluator == null)
+		{
+			throw new IllegalArgumentException( "Security evaluator may not be null");
+		}
+		if (StringUtils.isEmpty( modelURI ))
+		{
+			throw new IllegalArgumentException( "ModelURI may not be empty or null");
+		}
+		if (holder == null)
+		{
+			throw new IllegalArgumentException( "ItemHolder may not be null");
+		}
 		this.securityEvaluator = securityEvaluator;
 		this.modelNode = new SecurityEvaluator.Node(
 				SecurityEvaluator.Node.Type.URI, modelURI);
@@ -210,24 +235,16 @@ public abstract class SecuredItemImpl implements SecuredItem
 	private Boolean cacheGet( final CacheKey key )
 	{
 		final LRUMap cache = SecuredItemImpl.CACHE.get();
-		if (cache == null)
-		{
-			System.out.println("Cache is not present"); // FIXME delete this
-			return null;
-		}
-		return (Boolean) cache.get(key);
+		return (cache == null)?null:(Boolean) cache.get(key);
 	}
 
 	void cachePut( final CacheKey key, final boolean value )
 	{
 		final LRUMap cache = SecuredItemImpl.CACHE.get();
-		if (cache == null)
-		{
-			System.out.println("Cache is not present");
-		}
-		else
+		if (cache != null)
 		{
 			cache.put(key, value);
+			SecuredItemImpl.CACHE.set( cache );
 		}
 	}
 
@@ -431,7 +448,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (!canCreate(t))
 		{
-			throw new AccessDeniedException(modelNode, t.toString(), Action.Create);
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Create);
 		}
 	}
 
@@ -520,7 +538,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (!canDelete(t))
 		{
-			throw new AccessDeniedException(modelNode, t.toString(), Action.Delete);
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Delete);
 		}
 	}
 
@@ -596,7 +615,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (!canRead(t))
 		{
-			throw new AccessDeniedException(modelNode, t.toString(), Action.Read);
+			throw new AccessDeniedException(modelNode, t.toString(),
+					Action.Read);
 		}
 	}
 
@@ -665,7 +685,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (!canUpdate(from, to))
 		{
-			throw new AccessDeniedException(modelNode, String.format( "%s to %s",from,to), Action.Update);
+			throw new AccessDeniedException(modelNode, String.format(
+					"%s to %s", from, to), Action.Update);
 		}
 	}
 

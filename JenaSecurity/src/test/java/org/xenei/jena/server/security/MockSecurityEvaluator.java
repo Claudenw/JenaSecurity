@@ -26,20 +26,23 @@ import java.util.Set;
 public class MockSecurityEvaluator implements SecurityEvaluator
 {
 
-	private boolean loggedIn;
-	private boolean create;
-	private boolean read;
-	private boolean update;
-	private boolean delete;
+	private final boolean loggedIn;
+	private final boolean create;
+	private final boolean read;
+	private final boolean update;
+	private final boolean delete;
+	private final boolean forceTripleChecks;
 
 	public MockSecurityEvaluator( final boolean loggedIn, final boolean create,
-			final boolean read, final boolean update, final boolean delete )
+			final boolean read, final boolean update, final boolean delete, 
+			final boolean forceTripleChecks )
 	{
 		this.loggedIn = loggedIn;
 		this.create = create;
 		this.read = read;
 		this.update = update;
 		this.delete = delete;
+		this.forceTripleChecks = forceTripleChecks;
 	}
 
 	public boolean evaluate( final Action action )
@@ -58,11 +61,6 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 				throw new IllegalArgumentException();
 		}
 	}
-	
-	public String toString()
-	{
-		return String.format( "C:%s R:%s U:%s D:%s", create, read, update, delete );
-	}
 
 	@Override
 	public boolean evaluate( final Action action, final Node uri )
@@ -74,6 +72,15 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	public boolean evaluate( final Action action, final Node graphIRI,
 			final Triple triple )
 	{
+		if (forceTripleChecks)
+		{
+			if (triple.getSubject().equals( Node.ANY ) ||
+					triple.getPredicate().equals(Node.ANY) ||
+					triple.getObject().equals(Node.ANY))
+			{
+				return false;
+			}
+		}
 		return evaluate(action);
 	}
 
@@ -202,6 +209,13 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	public boolean isLoggedIn()
 	{
 		return loggedIn;
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("C:%s R:%s U:%s D:%s force:%s", create, read, update,
+				delete, forceTripleChecks);
 	}
 
 }

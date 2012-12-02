@@ -1,8 +1,11 @@
 package org.xenei.jena.server.security.graph;
 
 import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import junit.framework.Assert;
@@ -13,25 +16,66 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.SecurityEvaluator;
-import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class SecuredPrefixMappingTest
 {
 	private final SecurityEvaluator securityEvaluator;
-	private final SecuredPrefixMapping securedMapping;
+	protected SecuredPrefixMapping securedMapping;
 
-	public SecuredPrefixMappingTest( final SecurityEvaluator securityEvaluator )
+	
+	public static void runTests(SecurityEvaluator securityEvaluator, PrefixMapping prefixMapping) throws Exception
+	{
+		final PrefixMapping pm = prefixMapping;
+			Assert.assertNotNull( "PrefixMapping may not be null", pm );
+			Assert.assertTrue( "PrefixMapping should be secured", pm instanceof SecuredPrefixMapping );
+			SecuredPrefixMappingTest pmTest = new SecuredPrefixMappingTest( securityEvaluator ){
+				public void setup()
+				{
+					this.securedMapping = (SecuredPrefixMapping)pm;
+				}
+			};
+			Method lockTest = null;
+			for (Method m : pmTest.getClass().getMethods())
+			{
+				if (m.isAnnotationPresent(Test.class))
+				{
+					// lock test must come last
+					if (!m.getName().equals( "lockTest"))
+					{
+						lockTest = m;
+					}
+					else
+					{
+						pmTest.setup();
+						m.invoke( pmTest );
+					}
+					
+				}
+			}
+			pmTest.setup();
+			lockTest.invoke( pmTest );
+		
+	}
+	
+	public SecuredPrefixMappingTest( final SecurityEvaluator securityEvaluator)
 	{
 		this.securityEvaluator = securityEvaluator;
+	}
+	
+	@Before
+	public void setup()
+	{
 		final Graph g = GraphFactory.createDefaultGraph();
 
 		final SecuredGraph sg = Factory.getInstance(securityEvaluator,
 				"http://example.com/testGraph", g);
-		this.securedMapping = (SecuredPrefixMapping) sg.getPrefixMapping();
+		this.securedMapping = sg.getPrefixMapping();
 	}
 
+	
 	@Test
 	public void testExpandPrefix()
 	{
@@ -49,7 +93,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -71,7 +117,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -94,7 +142,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -118,7 +168,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -140,7 +192,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -163,7 +217,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -185,7 +241,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -209,7 +267,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -232,7 +292,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -251,7 +313,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -269,7 +333,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -291,7 +357,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Read,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -314,7 +382,9 @@ public class SecuredPrefixMappingTest
 			if (securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}

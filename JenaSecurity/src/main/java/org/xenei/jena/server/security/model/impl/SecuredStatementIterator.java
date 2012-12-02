@@ -29,53 +29,30 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.xenei.jena.server.security.SecuredItem;
-import org.xenei.jena.server.security.SecuredItemImpl;
-import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
-import org.xenei.jena.server.security.SecurityEvaluator.Node;
+import org.xenei.jena.server.security.model.SecuredModel;
 import org.xenei.jena.server.security.model.SecuredStatement;
+import org.xenei.jena.server.security.utils.PermStatementFilter;
 
 /**
  * A secured StatementIterator implementation
  */
 public class SecuredStatementIterator implements StmtIterator
 {
-	private class PermStatementFilter extends Filter<Statement>
-	{
-		SecurityEvaluator evaluator;
-		Node modelNode;
-		Set<Action> actions;
-
-		public PermStatementFilter( final Action[] actions,
-				final SecuredItem sg, final SecurityEvaluator evaluator )
-		{
-			this.modelNode = sg.getModelNode();
-			this.actions = SecurityEvaluator.Util.asSet(actions);
-			this.evaluator = evaluator;
-		}
-
-		@Override
-		public boolean accept( final Statement t )
-		{
-			return evaluator.evaluateAny(actions, modelNode,
-					SecuredItemImpl.convert(t.asTriple()));
-		}
-
-	}
 
 	private class PermStatementMap implements Map1<Statement, Statement>
 	{
-		private final SecuredItem securedItem;
+		private final SecuredModel securedModel;
 
-		public PermStatementMap( final SecuredItem securedItem )
+		public PermStatementMap( final SecuredModel securedModel )
 		{
-			this.securedItem = securedItem;
+			this.securedModel = securedModel;
 		}
 
 		@Override
 		public SecuredStatement map1( final Statement o )
 		{
-			return Factory.getInstance(securedItem, o);
+			return SecuredStatementImpl.getInstance(securedModel, o);
 		}
 	}
 
@@ -84,18 +61,17 @@ public class SecuredStatementIterator implements StmtIterator
 	/**
 	 * Constructor.
 	 * 
-	 * @param securedItem
+	 * @param securedModel
 	 *            The item providing the security context.
 	 * @param wrapped
 	 *            The iterator to wrap.
 	 */
-	public SecuredStatementIterator( final SecuredItem securedItem,
+	public SecuredStatementIterator( final SecuredModel securedModel,
 			final ExtendedIterator<Statement> wrapped )
 	{
 		final PermStatementFilter filter = new PermStatementFilter(
-				new Action[] { Action.Read }, securedItem,
-				securedItem.getSecurityEvaluator());
-		final PermStatementMap map1 = new PermStatementMap(securedItem);
+				new Action[] { Action.Read }, securedModel);
+		final PermStatementMap map1 = new PermStatementMap(securedModel);
 		iter = wrapped.filterKeep(filter).mapWith(map1);
 	}
 

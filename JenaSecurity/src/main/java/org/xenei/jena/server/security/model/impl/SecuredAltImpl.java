@@ -20,18 +20,23 @@ package org.xenei.jena.server.security.model.impl;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
-import com.hp.hpl.jena.rdf.model.Bag;
-import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceF;
-import com.hp.hpl.jena.rdf.model.Seq;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.xenei.jena.server.security.ItemHolder;
+import org.xenei.jena.server.security.SecuredItem;
+import org.xenei.jena.server.security.SecuredItemInvoker;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.model.SecuredAlt;
+import org.xenei.jena.server.security.model.SecuredBag;
+import org.xenei.jena.server.security.model.SecuredLiteral;
+import org.xenei.jena.server.security.model.SecuredModel;
+import org.xenei.jena.server.security.model.SecuredRDFNode;
+import org.xenei.jena.server.security.model.SecuredResource;
+import org.xenei.jena.server.security.model.SecuredSeq;
 
 /**
  * Implementation of SecuredAlt to be used by a SecuredItemInvoker proxy.
@@ -51,48 +56,39 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	 * @param holder
 	 *            The item holder that will hold this SecuredAlt.
 	 */
-	public SecuredAltImpl( final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<? extends Alt, ? extends SecuredAlt> holder )
+	protected SecuredAltImpl( final SecuredModel securedModel,
+			final ItemHolder<? extends Alt, ? extends SecuredAlt> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
 	}
 
 	@Override
-	public RDFNode getDefault()
+	public SecuredRDFNode getDefault()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
 		final RDFNode node = holder.getBaseItem().getDefault();
-		if (node.isLiteral())
-		{
-			return org.xenei.jena.server.security.model.impl.Factory
-					.getInstance(this, node.asLiteral());
-		}
-		else
-		{
-			return org.xenei.jena.server.security.model.impl.Factory
-					.getInstance(this, node.asResource());
-		}
+		return SecuredRDFNodeImpl
+					.getInstance(getModel(), node.asLiteral());
 	}
 
 	@Override
-	public Alt getDefaultAlt()
+	public SecuredAlt getDefaultAlt()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultAlt());
+		return getInstance(
+				getModel(), holder.getBaseItem().getDefaultAlt());
 	}
 
 	@Override
-	public Bag getDefaultBag()
+	public SecuredBag getDefaultBag()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultBag());
+		return SecuredBagImpl.getInstance(
+				getModel(), holder.getBaseItem().getDefaultBag());
 	}
 
 	@Override
@@ -152,12 +148,12 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Literal getDefaultLiteral()
+	public SecuredLiteral getDefaultLiteral()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultLiteral());
+		return SecuredLiteralImpl.getInstance(
+				getModel(), holder.getBaseItem().getDefaultLiteral());
 	}
 
 	@Override
@@ -169,31 +165,31 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Resource getDefaultResource()
+	public SecuredResource getDefaultResource()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultResource());
+		return SecuredResourceImpl.getInstance(
+				getModel(), holder.getBaseItem().getDefaultResource());
 	}
 
 	@Override
 	@Deprecated
-	public Resource getDefaultResource( final ResourceF f )
+	public SecuredResource getDefaultResource( final ResourceF f )
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultResource(f));
+		return SecuredResourceImpl.getInstance(
+				getModel(), holder.getBaseItem().getDefaultResource(f));
 	}
 
 	@Override
-	public Seq getDefaultSeq()
+	public SecuredSeq getDefaultSeq()
 	{
 		checkRead();
 		checkRead(getDefaultTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getDefaultSeq());
+		return SecuredSeqImpl.getInstance(
+				getModel(), holder.getBaseItem().getDefaultSeq());
 
 	}
 
@@ -235,7 +231,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final boolean o )
+	public SecuredAlt setDefault( final boolean o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -246,7 +242,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final char o )
+	public SecuredAlt setDefault( final char o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -257,7 +253,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final double o )
+	public SecuredAlt setDefault( final double o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -268,7 +264,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final float o )
+	public SecuredAlt setDefault( final float o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -279,7 +275,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final long o )
+	public SecuredAlt setDefault( final long o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -290,7 +286,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final Object o )
+	public SecuredAlt setDefault( final Object o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -301,7 +297,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final RDFNode o )
+	public SecuredAlt setDefault( final RDFNode o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -313,7 +309,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final String o )
+	public SecuredAlt setDefault( final String o )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -324,7 +320,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	}
 
 	@Override
-	public Alt setDefault( final String o, final String l )
+	public SecuredAlt setDefault( final String o, final String l )
 	{
 		checkUpdate();
 		final Triple defaultTriple = getDefaultTriple();
@@ -333,6 +329,43 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 		checkUpdate(defaultTriple, newTriple);
 		holder.getBaseItem().setDefault(o, l);
 		return holder.getSecuredItem();
+	}
+
+	/**
+	 * Get an instance of SecuredAlt.
+	 * 
+	 * @param securedItem
+	 *            the item providing the security context.
+	 * @param alt
+	 *            The Alt to be secured.
+	 * @return The secured Alt instance.
+	 */
+	static SecuredAlt getInstance( final SecuredModel securedModel, final Alt alt )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException( "Secured model may not be null");
+		}
+		if (alt == null)
+		{
+			throw new IllegalArgumentException( "Alt may not be null");
+		}
+		final ItemHolder<Alt, SecuredAlt> holder = new ItemHolder<Alt, SecuredAlt>(
+				alt);
+		final SecuredAltImpl checker = new SecuredAltImpl(
+				securedModel,
+				holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (alt instanceof SecuredAlt)
+		{
+			if (checker.isEquivalent((SecuredAlt) alt))
+			{
+				return (SecuredAlt) alt;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(alt.getClass(),
+				checker));
 	}
 
 }

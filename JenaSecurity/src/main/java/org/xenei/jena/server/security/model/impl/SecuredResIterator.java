@@ -1,5 +1,6 @@
 package org.xenei.jena.server.security.model.impl;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.xenei.jena.server.security.SecuredItem;
+import org.xenei.jena.server.security.model.SecuredModel;
 import org.xenei.jena.server.security.model.SecuredResource;
 
 public class SecuredResIterator implements ResIterator
@@ -18,27 +20,28 @@ public class SecuredResIterator implements ResIterator
 
 	private class PermResourceMap implements Map1<Resource, Resource>
 	{
-		private final SecuredItem securedItem;
+		private final SecuredModel securedModel;
 
-		public PermResourceMap( final SecuredItem securedItem )
+		public PermResourceMap( final SecuredModel securedModel )
 		{
-			this.securedItem = securedItem;
+			this.securedModel = securedModel;
 		}
 
 		@Override
 		public SecuredResource map1( final Resource o )
 		{
-			return Factory.getInstance(securedItem, o);
+			return SecuredResourceImpl.getInstance(securedModel, o);
 		}
 	}
 
 	private final ExtendedIterator<Resource> iter;
 
-	public SecuredResIterator( final SecuredItem securedItem,
+
+	public SecuredResIterator( final SecuredModel securedModel,
 			final ExtendedIterator<Resource> wrapped )
 	{
 
-		final PermResourceMap map1 = new PermResourceMap(securedItem);
+		final PermResourceMap map1 = new PermResourceMap(securedModel);
 		iter = wrapped.mapWith(map1);
 	}
 

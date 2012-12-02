@@ -32,9 +32,10 @@ import java.util.HashSet;
 /**
  * A simple graph implementaiton that wraps a colleciton of triples.
  * 
- * This is intended to be used in places where a graph is required but 
- * iteration is the only expected operation.  All graph operations are supported
- * but many are not efficient and will be slow on large collections.  In these cases
+ * This is intended to be used in places where a graph is required but
+ * iteration is the only expected operation. All graph operations are supported
+ * but many are not efficient and will be slow on large collections. In these
+ * cases
  * a memory based graph may be more efficient.
  */
 public class CollectionGraph extends GraphBase
@@ -93,7 +94,9 @@ public class CollectionGraph extends GraphBase
 
 	/**
 	 * Construct a graph from a collection.
-	 * @param triples The collection of triples.
+	 * 
+	 * @param triples
+	 *            The collection of triples.
 	 */
 	public CollectionGraph( final Collection<Triple> triples )
 	{
@@ -102,9 +105,13 @@ public class CollectionGraph extends GraphBase
 	}
 
 	/**
-	 * Construct a graph from a collection and with a specific reification style.
-	 * @param style The style
-	 * @param triples The collection of triples
+	 * Construct a graph from a collection and with a specific reification
+	 * style.
+	 * 
+	 * @param style
+	 *            The style
+	 * @param triples
+	 *            The collection of triples
 	 */
 	public CollectionGraph( final ReificationStyle style,
 			final Collection<Triple> triples )

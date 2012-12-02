@@ -18,14 +18,21 @@
 package org.xenei.jena.server.security.model.impl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFVisitor;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.ResourceRequiredException;
 
 import org.xenei.jena.server.security.ItemHolder;
+import org.xenei.jena.server.security.SecuredItem;
+import org.xenei.jena.server.security.SecuredItemInvoker;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.model.SecuredLiteral;
+import org.xenei.jena.server.security.model.SecuredModel;
+import org.xenei.jena.server.security.model.SecuredResource;
 
 /**
  * Implementation of SecuredLiteral to be used by a SecuredItemInvoker proxy.
@@ -34,7 +41,7 @@ public class SecuredLiteralImpl extends SecuredRDFNodeImpl implements
 		SecuredLiteral
 {
 	// the item holder that contains this SecuredLiteral
-	ItemHolder<? extends Literal, ? extends SecuredLiteral> holder;
+	private ItemHolder<? extends Literal, ? extends SecuredLiteral> holder;
 
 	/**
 	 * Constructor
@@ -46,26 +53,31 @@ public class SecuredLiteralImpl extends SecuredRDFNodeImpl implements
 	 * @param holder
 	 *            The item holder that will contain this SecuredLiteral.
 	 */
-	public SecuredLiteralImpl( final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<? extends Literal, ? extends SecuredLiteral> holder )
+	
+	private SecuredLiteralImpl( SecuredModel securedModel,
+			final ItemHolder<? extends Literal, ? extends SecuredLiteral> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
 	}
 
 	@Override
-	public Literal asLiteral()
+	public SecuredLiteral asLiteral()
 	{
 		return holder.getSecuredItem();
 	}
 
 	@Override
-	public Resource asResource()
+	public SecuredResource asResource()
 	{
-		checkRead();
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().asResource());
+		if (canRead())
+		{
+			throw new ResourceRequiredException( asNode() );
+		}
+		else
+		{
+			throw new ResourceRequiredException( Node.createLiteral( "Can not read") );
+		}
 	}
 
 	@Override
@@ -184,17 +196,12 @@ public class SecuredLiteralImpl extends SecuredRDFNodeImpl implements
 		return holder.getBaseItem().getValue();
 	}
 
-	/**
-	 * Literals are not in any particular model, and so inModel can return this.
-	 * 
-	 * @param m
-	 *            a model to move the literal into
-	 * @return this
-	 */
 	@Override
 	public Literal inModel( final Model m )
 	{
-		return holder.getSecuredItem();
+		checkRead();
+		return m.createTypedLiteral(holder.getBaseItem()
+				.getLexicalForm(), holder.getBaseItem().getDatatype());
 	}
 
 	@Override
@@ -222,8 +229,52 @@ public class SecuredLiteralImpl extends SecuredRDFNodeImpl implements
 	@Override
 	public Object visitWith( final RDFVisitor rv )
 	{
+		return rv.visitLiteral(this);
+	}
+
+	/**
+	 * Get an instance of SecuredLiteral
+	 * 
+	 * @param securedModel
+	 *            the item providing the security context.
+	 * @param literal
+	 *            the literal to secure
+	 * @return SecuredLiteral
+	 */
+	public static SecuredLiteral getInstance( final SecuredModel securedModel,
+			final Literal literal )
+	{
+		if (securedModel == null)
 		{
-			return rv.visitLiteral(this);
+			throw new IllegalArgumentException( "Secured model may not be null");
 		}
+		if (literal == null)
+		{
+			throw new IllegalArgumentException( "literal may not be null");
+		}
+		
+		// check that literal has a model.
+		Literal goodLiteral = literal;
+		if (goodLiteral.getModel() == null)
+		{
+			goodLiteral = securedModel.createTypedLiteral( literal.getLexicalForm(), literal.getDatatype() );
+		}
+
+		
+		final ItemHolder<Literal, SecuredLiteral> holder = new ItemHolder<Literal, SecuredLiteral>(
+				goodLiteral);
+		final SecuredLiteralImpl checker = new SecuredLiteralImpl(
+				securedModel, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (goodLiteral instanceof SecuredLiteral)
+		{
+			if (checker.isEquivalent((SecuredLiteral) goodLiteral))
+			{
+				return (SecuredLiteral) goodLiteral;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(literal.getClass(),
+				checker));
 	}
 }

@@ -110,7 +110,8 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public SecuredPrefixMapping setNsPrefix( final String prefix, final String uri )
+	public SecuredPrefixMapping setNsPrefix( final String prefix,
+			final String uri )
 	{
 		checkUpdate();
 		holder.getBaseItem().setNsPrefix(prefix, uri);

@@ -17,7 +17,15 @@
  */
 package org.xenei.jena.server.security.model;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+
+import org.xenei.jena.server.security.AccessDeniedException;
+import org.xenei.jena.server.security.model.impl.SecuredStatementIterator;
 
 /**
  * The interface for secured Resource instances.
@@ -26,4 +34,305 @@ import com.hp.hpl.jena.rdf.model.Resource;
  */
 public interface SecuredResource extends Resource, SecuredRDFNode
 {
+
+	@Override
+	public SecuredResource abort();
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredResource addLiteral( final Property p, final boolean o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property p, final char o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, value, d )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property value, final double d )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, value, d )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property value, final float d )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property p, final Literal o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property p, final long o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addLiteral( final Property p, final Object o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addProperty( final Property p, final RDFNode o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addProperty( final Property p, final String o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, literal(lexicalForm,datatype) )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addProperty( final Property p, final String lexicalForm,
+			final RDFDatatype datatype ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Create (this, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Resource addProperty( final Property p, final String o,
+			final String l ) throws AccessDeniedException;
+
+	@Override
+	public SecuredResource asResource();
+
+	@Override
+	public SecuredResource begin();
+
+	@Override
+	public SecuredResource commit();
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean equals( final Object o ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public AnonId getId() throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getLocalName() throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getNameSpace() throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredStatement getProperty( final Property p )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredResource getPropertyResourceValue( final Property p )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredStatement getRequiredProperty( final Property p )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getURI() throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final boolean o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final char o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final double o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final float o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final long o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasLiteral( final Property p, final Object o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasProperty( final Property p ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasProperty( final Property p, final RDFNode o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,o)
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasProperty( final Property p, final String o )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read Triple(this,p,literal(o,l))
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasProperty( final Property p, final String o, final String l )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean hasURI( final String uri ) throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read on returned Statements
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredStatementIterator listProperties()
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @tripleSec Read on returned Statements
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredStatementIterator listProperties( final Property p )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete on associated Statements
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredResource removeAll( final Property p )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete on all Statements
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredResource removeProperties() throws AccessDeniedException;
 }

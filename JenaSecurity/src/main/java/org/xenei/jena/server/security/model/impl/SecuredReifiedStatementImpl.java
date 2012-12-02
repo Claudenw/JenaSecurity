@@ -17,12 +17,16 @@
  */
 package org.xenei.jena.server.security.model.impl;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
-import com.hp.hpl.jena.rdf.model.Statement;
 
 import org.xenei.jena.server.security.ItemHolder;
+import org.xenei.jena.server.security.SecuredItem;
+import org.xenei.jena.server.security.SecuredItemInvoker;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.model.SecuredModel;
 import org.xenei.jena.server.security.model.SecuredReifiedStatement;
+import org.xenei.jena.server.security.model.SecuredStatement;
 
 /**
  * Implementation of SecuredReifiedStatement to be used by a SecuredItemInvoker
@@ -44,21 +48,58 @@ public class SecuredReifiedStatementImpl extends SecuredResourceImpl implements
 	 * @param holder
 	 *            the item holder that will contain this SecuredReifiedStatement
 	 */
-	public SecuredReifiedStatementImpl(
-			final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<? extends ReifiedStatement, ? extends SecuredReifiedStatement> holder )
+	protected SecuredReifiedStatementImpl(
+			final SecuredModel securedModel,
+			final ItemHolder<? extends ReifiedStatement, ? extends SecuredReifiedStatement> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
 	}
 
 	@Override
-	public Statement getStatement()
+	public SecuredStatement getStatement()
 	{
 		checkRead();
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getStatement());
+		return SecuredStatementImpl.getInstance(
+				getModel(), holder.getBaseItem().getStatement());
+	}
+
+	/**
+	 * Get an instance of SecuredReifiedStatement
+	 * 
+	 * @param securedItem
+	 *            The securedItem that provides the security context
+	 * @param stmt
+	 *            The ReifiedStatement to secure.
+	 * @return SecuredReifiedStatement
+	 */
+	static SecuredReifiedStatement getInstance( final SecuredModel securedModel,
+			final ReifiedStatement stmt )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException( "Secured model may not be null");
+		}
+		if (stmt == null)
+		{
+			throw new IllegalArgumentException( "Statement may not be null");
+		}
+		final ItemHolder<ReifiedStatement, SecuredReifiedStatement> holder = new ItemHolder<ReifiedStatement, SecuredReifiedStatement>(
+				stmt);
+		final SecuredReifiedStatementImpl checker = new SecuredReifiedStatementImpl(
+				securedModel,
+				holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (stmt instanceof SecuredReifiedStatement)
+		{
+			if (checker.isEquivalent((SecuredReifiedStatement) stmt))
+			{
+				return (SecuredReifiedStatement) stmt;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(stmt.getClass(),
+				checker));
 	}
 
 }

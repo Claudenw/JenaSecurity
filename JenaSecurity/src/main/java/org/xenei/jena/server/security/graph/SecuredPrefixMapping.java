@@ -36,7 +36,8 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String expandPrefix( final String prefixed ) throws AccessDeniedException;
+	public String expandPrefix( final String prefixed )
+			throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
@@ -50,14 +51,16 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getNsPrefixURI( final String prefix ) throws AccessDeniedException;
-	
+	public String getNsPrefixURI( final String prefix )
+			throws AccessDeniedException;
+
 	/**
 	 * @graphSec Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getNsURIPrefix( final String uri ) throws AccessDeniedException;
+	public String getNsURIPrefix( final String uri )
+			throws AccessDeniedException;
 
 	/**
 	 * @graphSec Update
@@ -76,38 +79,42 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 	/**
 	 * @graphSec Update
 	 * @throws AccessDeniedException
-	 */@Override
-	public SecuredPrefixMapping removeNsPrefix( final String prefix ) throws AccessDeniedException;
-
-
-	 /**
-		 * @graphSec Read
-		 * @throws AccessDeniedException
-		 */
-	 @Override
-	public boolean samePrefixMappingAs( final PrefixMapping other ) throws AccessDeniedException;
-
-	 /**
-		 * @graphSec Update
-		 * @throws AccessDeniedException
-		 */
+	 */
 	@Override
-	public SecuredPrefixMapping setNsPrefix( final String prefix, final String uri ) throws AccessDeniedException;
+	public SecuredPrefixMapping removeNsPrefix( final String prefix )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean samePrefixMappingAs( final PrefixMapping other )
+			throws AccessDeniedException;
 
 	/**
 	 * @graphSec Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public SecuredPrefixMapping setNsPrefixes( final Map<String, String> map ) throws AccessDeniedException;
-
+	public SecuredPrefixMapping setNsPrefix( final String prefix,
+			final String uri ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public SecuredPrefixMapping setNsPrefixes( final PrefixMapping other ) throws AccessDeniedException;
+	public SecuredPrefixMapping setNsPrefixes( final Map<String, String> map )
+			throws AccessDeniedException;
+
+	/**
+	 * @graphSec Update
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredPrefixMapping setNsPrefixes( final PrefixMapping other )
+			throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
@@ -116,12 +123,12 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 	@Override
 	public String shortForm( final String uri ) throws AccessDeniedException;
 
-
 	/**
 	 * @graphSec Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public SecuredPrefixMapping withDefaultMappings( final PrefixMapping map ) throws AccessDeniedException;
+	public SecuredPrefixMapping withDefaultMappings( final PrefixMapping map )
+			throws AccessDeniedException;
 
 }

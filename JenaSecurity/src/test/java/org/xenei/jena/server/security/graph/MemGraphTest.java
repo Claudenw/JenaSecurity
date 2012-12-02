@@ -9,26 +9,26 @@ import com.hp.hpl.jena.graph.TripleMatch;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.runner.Runner;
+import org.junit.runners.ParentRunner;
 import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.EqualityTester;
 import org.xenei.jena.server.security.MockPrefixMapping;
 import org.xenei.jena.server.security.MockSecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator;
-import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class MemGraphTest
@@ -66,105 +66,29 @@ public class MemGraphTest
 		g.add(t);
 	}
 
+	
 	@Test
-	public void testBulkHandlerAdd() throws Exception
+	public void testBulkUpdateHandler() throws Exception
 	{
-		final Graph g = GraphFactory.createDefaultGraph();
-		g.add(new Triple(Node.createURI("http://example.com/graph/s2"), Node
-				.createURI("http://example.com/graph/p2"), Node
-				.createURI("http://example.com/graph/o2")));
-		final Set<Action> updateAndCreate = SecurityEvaluator.Util
-				.asSet(new Action[] { Action.Create, Action.Update });
-		try
-		{
-			graph.getBulkUpdateHandler().add(g);
-			if (!securityEvaluator.evaluate(updateAndCreate))
+		final BulkUpdateHandler buh = graph.getBulkUpdateHandler();
+		Assert.assertNotNull( "BulkUpdateHandler may not be null", buh );
+		Assert.assertTrue( "BulkUpdateHandler should be secured", buh instanceof SecuredBulkUpdateHandler );
+		BulkUpdateHandlerTest buhTest = new BulkUpdateHandlerTest( securityEvaluator ) {
+			public void setup()
 			{
-				Assert.fail("Should have thrown AccessDenied Exception");
+				this.handler = (SecuredBulkUpdateHandler) buh;
 			}
-		}
-		catch (final AccessDeniedException e)
+		};
+		for (Method m : buhTest.getClass().getMethods())
 		{
-			if (securityEvaluator.evaluate(updateAndCreate))
+			if (m.isAnnotationPresent(Test.class))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				buhTest.setup();
+				m.invoke( buhTest ); 
 			}
 		}
 	}
-
-	@Test
-	public void testBulkHandlerDelete() throws Exception
-	{
-		final Graph g = GraphFactory.createDefaultGraph();
-		g.add(new Triple(Node.createURI("http://example.com/graph/s2"), Node
-				.createURI("http://example.com/graph/p2"), Node
-				.createURI("http://example.com/graph/o2")));
-		try
-		{
-			graph.getBulkUpdateHandler().delete(g);
-			if (!securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testBulkHandlerEquality() throws Exception
-	{
-		final BulkUpdateHandler bh = graph.getBulkUpdateHandler();
-		final BulkUpdateHandler bh2 = g.getBulkUpdateHandler();
-		EqualityTester.testInequality("Bulk handler test", bh, bh2);
-	}
-
-	@Test
-	public void testBulkHandlerRemove() throws Exception
-	{
-		try
-		{
-			graph.getBulkUpdateHandler().remove(s, p, o);
-			if (!securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testBulkHandlerRemoveAll() throws Exception
-	{
-		try
-		{
-			graph.getBulkUpdateHandler().removeAll();
-
-			if (!securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Delete))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
+	
 	@Test
 	public void testContainsNodes() throws Exception
 	{
@@ -180,7 +104,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -200,7 +126,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -209,7 +137,8 @@ public class MemGraphTest
 	@Test
 	public void testDelete() throws Exception
 	{
-		Set<Action> UD = SecurityEvaluator.Util.asSet( new Action[] { Action.Update, Action.Delete} );
+		final Set<Action> UD = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Delete });
 		try
 		{
 			graph.delete(t);
@@ -225,7 +154,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(UD))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -246,7 +177,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 		try
@@ -261,30 +194,14 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
 
-	@Test
-	public void testExpandPrefix()
-	{
-		try
-		{
-			graph.getPrefixMapping().expandPrefix("foo");
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
+	
 
 	@Test
 	public void testFindNodes() throws Exception
@@ -303,7 +220,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -323,69 +242,17 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
 
 	@Test
-	public void testGetNsPrefixMap()
+	public void testGetPrefixMapping() throws Exception
 	{
-		try
-		{
-			graph.getPrefixMapping().getNsPrefixMap();
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testGetNsPrefixURI()
-	{
-		try
-		{
-			graph.getPrefixMapping().getNsPrefixURI("foo");
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testGetNsURIPrefix()
-	{
-		try
-		{
-			graph.getPrefixMapping().getNsURIPrefix("foo");
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
+		SecuredPrefixMappingTest.runTests( securityEvaluator, graph.getPrefixMapping() );
 	}
 
 	@Test
@@ -415,7 +282,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 		try
@@ -430,50 +299,14 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
 
-	@Test
-	public void testLock()
-	{
-		try
-		{
-			graph.getPrefixMapping().lock();
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testQnameFor()
-	{
-		try
-		{
-			graph.getPrefixMapping().qnameFor("uri");
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
+	
 
 	@Test
 	public void testQueryHandler() throws Exception
@@ -490,56 +323,34 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
 
 	@Test
-	public void testReifierAllNodes()
+	public void testGetReifier() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 	{
-		try
+		final Reifier reifier = graph.getReifier();
+		Assert.assertNotNull( "Reifier may not be null", reifier );
+		Assert.assertTrue( "Reifier should be secured", reifier instanceof SecuredReifier );
+		SecuredReifierTest reifierTest = new SecuredReifierTest( securityEvaluator ){
+			public void setup() {
+				this.securedReifier = (SecuredReifier) reifier; 
+			}
+		};
+		
+		for (Method m : reifierTest.getClass().getMethods())
 		{
-			graph.getReifier().allNodes();
-			if (!securityEvaluator.evaluate(Action.Read))
+			if (m.isAnnotationPresent(Test.class))
 			{
-				Assert.fail("Should have thrown AccessDenied Exception");
+				reifierTest.setup();
+				m.invoke( reifierTest ); 
 			}
 		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierAllNodesTriple()
-	{
-		try
-		{
-			graph.getReifier().allNodes(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierClose()
-	{
-		graph.getReifier().close();
-
+		
 	}
 
 	@Test
@@ -551,385 +362,10 @@ public class MemGraphTest
 	}
 
 	@Test
-	public void testReifierFindEither()
-	{
-		try
-		{
-			graph.getReifier().findEither(t, true);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierFindExposed()
-	{
-		try
-		{
-			graph.getReifier().findExposed(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierFindTripleMatch()
-	{
-		try
-		{
-			graph.getReifier().hasTriple(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
 	public void testReifierGetParentGraph()
 	{
 		final Graph g2 = graph.getReifier().getParentGraph();
 		EqualityTester.testEquality("getParentGraph", graph, g2);
-	}
-
-	@Test
-	public void testReifierGetStyle()
-	{
-		graph.getReifier().getStyle();
-
-	}
-
-	@Test
-	public void testReifierGetTriple()
-	{
-		try
-		{
-			graph.getReifier().hasTriple(Node.createURI("foo"));
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierHandledAdd()
-	{
-		try
-		{
-			graph.getReifier().handledAdd(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierHandledRemove()
-	{
-		try
-		{
-			graph.getReifier().handledRemove(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierHasTriple()
-	{
-		try
-		{
-			graph.getReifier().hasTriple(t);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierHasTripleNode()
-	{
-		try
-		{
-			graph.getReifier().hasTriple(Node.createURI("foo"));
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierReifyAs()
-	{
-		Set<Action> CRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Create,
-					Action.Read, Action.Update });
-		try
-		{
-			graph.getReifier().reifyAs(Node.createURI("foo"), t);
-			if (!securityEvaluator.evaluate(CRU))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(CRU))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierRemoveNodeTriple()
-	{
-		Set<Action> DRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete,
-				Action.Read, Action.Update });
-		try
-		{
-			graph.getReifier().remove(Node.createURI("foo"), t);
-			if (!securityEvaluator.evaluate(DRU))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(DRU))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierRemoveTriple()
-	{
-		Set<Action> DRU = SecurityEvaluator.Util.asSet( new Action[] { Action.Delete,
-				Action.Read, Action.Update });
-		try
-		{
-			graph.getReifier().remove(t);
-			if (!securityEvaluator.evaluate(DRU))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(DRU))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierSize()
-	{
-		try
-		{
-			graph.getReifier().size();
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testRemoveNsPrefix()
-	{
-		try
-		{
-			graph.getPrefixMapping().removeNsPrefix("foo");
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-
-	}
-
-	@Test
-	public void testSamePrefixMappingAs()
-	{
-
-		final PrefixMapping pm = new MockPrefixMapping();
-		try
-		{
-			graph.getPrefixMapping().samePrefixMappingAs(pm);
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testSetNsPrefix()
-	{
-		try
-		{
-			graph.getPrefixMapping().setNsPrefix("foo",
-					"http://example.com/prefixTest/");
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-
-	}
-
-	@Test
-	public void testSetNsPrefixes()
-	{
-		try
-		{
-			graph.getPrefixMapping().setNsPrefixes(new MockPrefixMapping());
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-
-		try
-		{
-			graph.getPrefixMapping().setNsPrefixes(
-					new HashMap<String, String>());
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testShortForm()
-	{
-		try
-		{
-			graph.getPrefixMapping().shortForm("uri");
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
 	}
 
 	@Test
@@ -947,7 +383,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -992,28 +430,9 @@ public class MemGraphTest
 		{
 			if (securityEvaluator.evaluate(Action.Read))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testWithDefaultMappings()
-	{
-		try
-		{
-			graph.getPrefixMapping().setNsPrefixes(
-					new HashMap<String, String>());
-			if (!securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Update))
-			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}

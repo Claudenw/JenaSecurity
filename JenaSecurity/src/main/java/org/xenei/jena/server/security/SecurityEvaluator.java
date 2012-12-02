@@ -97,17 +97,17 @@ public interface SecurityEvaluator
 
 		/**
 		 * Matches any node in the secrity system.
-		 * Asking (Node, Node.ANY, Node.ANY) is asking if there 
+		 * Asking (Node, Node.ANY, Node.ANY) is asking if there
 		 * are any explicit using the Node as a Subject.
 		 */
 		public static final Node ANY = new Node(Type.Any, "any");
 		/**
 		 * Ignore the nodes in this position in the triple.
-		 * Asking (Node, Node.IGNORE, Node.IGNORE) is asking if there 
+		 * Asking (Node, Node.IGNORE, Node.IGNORE) is asking if there
 		 * are any implicit restrictions on using the Node as a Subject.
 		 */
 		public static final Node IGNORE = new Node(Type.Any, "ignore");
-		
+
 		/**
 		 * This is an anonymous node that will be created in the future.
 		 * FUTURE is used to check that an anonymous node may be created in
@@ -162,11 +162,11 @@ public interface SecurityEvaluator
 			}
 			return hashCode;
 		}
-		
+
 		@Override
 		public String toString()
 		{
-			return String.format( "[%s:%s]", getType(), getValue() );
+			return String.format("[%s:%s]", getType(), getValue());
 		}
 	}
 
@@ -375,10 +375,15 @@ public interface SecurityEvaluator
 	public boolean evaluateAny( Set<Action> action, Node graphIRI, Triple triple );
 
 	/**
-	 * Determine if the user is allowed to update the "from" triple to the "to" triple.
-	 * @param graphIRI The IRI for the graph
-	 * @param from The triple to be changed
-	 * @param to The value to change it to.
+	 * Determine if the user is allowed to update the "from" triple to the "to"
+	 * triple.
+	 * 
+	 * @param graphIRI
+	 *            The IRI for the graph
+	 * @param from
+	 *            The triple to be changed
+	 * @param to
+	 *            The value to change it to.
 	 * @return true if the user may make the change, false otherwise.
 	 */
 	public boolean evaluateUpdate( Node graphIRI, Triple from, Triple to );

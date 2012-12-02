@@ -16,14 +16,14 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.Factory;
 import org.xenei.jena.server.security.SecurityEvaluator;
-import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.utils.CollectionGraph;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class BulkUpdateHandlerTest
 {
-	private final SecuredBulkUpdateHandler handler;
+	protected SecuredBulkUpdateHandler handler;
 	private final SecurityEvaluator securityEvaluator;
 	private Triple[] tripleArray;
 	private Set<Action> deleteAndUpdate;
@@ -32,16 +32,7 @@ public class BulkUpdateHandlerTest
 	public BulkUpdateHandlerTest( final SecurityEvaluator securityEvaluator )
 	{
 		this.securityEvaluator = securityEvaluator;
-		final Graph g = GraphFactory.createDefaultGraph();
-
-		final SecuredGraph sg = Factory.getInstance(securityEvaluator,
-				"http://example.com/testGraph", g);
-		handler = (SecuredBulkUpdateHandler) sg.getBulkUpdateHandler();
-	}
-
-	@Before
-	public void setup()
-	{
+			
 		tripleArray = new Triple[] {
 				new Triple(Node.createURI("http://example.com/1"),
 						Node.createURI("http://example.com/v"),
@@ -52,10 +43,23 @@ public class BulkUpdateHandlerTest
 				new Triple(Node.createURI("http://example.com/3"),
 						Node.createURI("http://example.com/v"),
 						Node.createAnon()) };
-		createAndUpdate = SecurityEvaluator.Util.asSet( new Action[] {Action.Create,Action.Update});
-		deleteAndUpdate = SecurityEvaluator.Util.asSet( new Action[] {Action.Delete,Action.Update});
+		createAndUpdate = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Create, Action.Update });
+		deleteAndUpdate = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Delete, Action.Update });
+	}
+	
+	@Before
+	public void setup()
+	{
+		final Graph g = GraphFactory.createDefaultGraph();
+
+		final SecuredGraph sg = Factory.getInstance(securityEvaluator,
+				"http://example.com/testGraph", g);
+		handler = sg.getBulkUpdateHandler();
 	}
 
+	
 	@Test
 	public void testAdd()
 	{
@@ -65,7 +69,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -74,7 +78,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -84,7 +90,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -93,7 +99,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -103,7 +111,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -112,7 +120,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -122,7 +132,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -131,7 +141,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -141,7 +153,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -150,7 +162,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -160,7 +174,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -169,7 +183,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(createAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -184,7 +200,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -193,7 +209,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -203,7 +221,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -212,7 +230,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -222,7 +242,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -231,7 +251,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -241,7 +263,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -250,7 +272,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -269,7 +293,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 
@@ -284,7 +310,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -293,7 +319,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}
@@ -306,7 +334,7 @@ public class BulkUpdateHandlerTest
 			if (!securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				
+
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
 		}
@@ -315,7 +343,9 @@ public class BulkUpdateHandlerTest
 			if (securityEvaluator.evaluate(deleteAndUpdate,
 					handler.getModelNode()))
 			{
-				Assert.fail(String.format("Should not have thrown AccessDenied Exception: %s - %s", e, e.getTriple()));
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
 			}
 		}
 	}

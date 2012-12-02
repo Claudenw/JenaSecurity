@@ -33,8 +33,13 @@ import com.hp.hpl.jena.rdf.model.Seq;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 import org.xenei.jena.server.security.ItemHolder;
+import org.xenei.jena.server.security.SecuredItem;
 import org.xenei.jena.server.security.SecuredItemImpl;
+import org.xenei.jena.server.security.SecuredItemInvoker;
 import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.model.SecuredLiteral;
+import org.xenei.jena.server.security.model.SecuredModel;
+import org.xenei.jena.server.security.model.SecuredRDFNode;
 import org.xenei.jena.server.security.model.SecuredStatement;
 
 /**
@@ -45,6 +50,7 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 {
 	// the item holder that contains this SecuredStatement.
 	private final ItemHolder<Statement, SecuredStatement> holder;
+	private final SecuredModel securedModel;
 
 	/**
 	 * Constructor.
@@ -56,12 +62,12 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	 * @param holder
 	 *            The item holder that will contain this SecuredStatement.
 	 */
-	public SecuredStatementImpl( final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<Statement, SecuredStatement> holder )
+	private SecuredStatementImpl( final SecuredModel securedModel,
+			final ItemHolder<Statement, SecuredStatement> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
+		this.securedModel = securedModel;
 	}
 
 	@Override
@@ -98,8 +104,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -109,8 +115,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -120,8 +126,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -131,8 +137,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -142,8 +148,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -153,8 +159,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeLiteralObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeLiteralObject(o));
 	}
 
 	@Override
@@ -165,8 +171,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple newBase = new Triple(base.getSubject(),
 				base.getPredicate(), o.asNode());
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeObject(o));
 	}
 
 	@Override
@@ -176,8 +182,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple base = holder.getBaseItem().asTriple();
 		final Triple newBase = getNewTriple(base, o);
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeObject(o));
 	}
 
 	@Override
@@ -188,8 +194,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple newBase = new Triple(base.getSubject(),
 				base.getPredicate(), Node.createLiteral(o, "", wellFormed));
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeObject(o));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeObject(o));
 	}
 
 	@Override
@@ -200,8 +206,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple newBase = new Triple(base.getSubject(),
 				base.getPredicate(), Node.createLiteral(o, l, false));
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeObject(o, l));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeObject(o, l));
 	}
 
 	@Override
@@ -213,8 +219,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		final Triple newBase = new Triple(base.getSubject(),
 				base.getPredicate(), Node.createLiteral(o, l, wellFormed));
 		checkUpdate(base, newBase);
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().changeObject(o, l, wellFormed));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().changeObject(o, l, wellFormed));
 	}
 
 	@Override
@@ -223,8 +229,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		checkUpdate();
 		checkCreateReified(null,
 				SecuredItemImpl.convert(holder.getBaseItem().asTriple()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().createReifiedStatement());
+		return SecuredReifiedStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().createReifiedStatement());
 	}
 
 	@Override
@@ -233,8 +239,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 		checkUpdate();
 		checkCreateReified(uri,
 				SecuredItemImpl.convert(holder.getBaseItem().asTriple()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().createReifiedStatement(uri));
+		return SecuredReifiedStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().createReifiedStatement(uri));
 	}
 
 	@Override
@@ -242,8 +248,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getAlt());
+		return SecuredAltImpl.getInstance(
+				getModel(),holder.getBaseItem().getAlt());
 	}
 
 	@Override
@@ -251,8 +257,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getBag());
+		return SecuredBagImpl.getInstance(
+				getModel(),holder.getBaseItem().getBag());
 	}
 
 	@Override
@@ -313,12 +319,12 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public Literal getLiteral()
+	public SecuredLiteral getLiteral()
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getLiteral());
+		return SecuredLiteralImpl.getInstance(
+				getModel(), holder.getBaseItem().getLiteral() );
 	}
 
 	@Override
@@ -330,12 +336,9 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public Model getModel()
+	public SecuredModel getModel()
 	{
-		checkRead();
-		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getModel());
+		return securedModel;
 	}
 
 	private Triple getNewTriple( final Triple t, final Object o )
@@ -345,19 +348,13 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public RDFNode getObject()
+	public SecuredRDFNode getObject()
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
 		final RDFNode rdfNode = holder.getBaseItem().getObject();
-		if (rdfNode.isLiteral())
-		{
-			return org.xenei.jena.server.security.model.impl.Factory
-					.getInstance(this, holder.getBaseItem().getObject()
-							.asLiteral());
-		}
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getObject().asResource());
+		return SecuredRDFNodeImpl.getInstance(getModel(),rdfNode);
+		
 	}
 
 	@Override
@@ -365,8 +362,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getPredicate());
+		return SecuredPropertyImpl.getInstance(
+				getModel(),holder.getBaseItem().getPredicate());
 	}
 
 	@Override
@@ -374,8 +371,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getProperty(p));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().getProperty(p));
 	}
 
 	@Override
@@ -383,8 +380,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getResource());
+		return SecuredResourceImpl.getInstance(
+				getModel(),holder.getBaseItem().getResource() );
 	}
 
 	@Override
@@ -393,8 +390,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getResource(f));
+		return SecuredResourceImpl.getInstance(
+				getModel(),holder.getBaseItem().getResource(f));
 	}
 
 	@Override
@@ -402,8 +399,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getSeq());
+		return SecuredSeqImpl.getInstance(
+				getModel(),holder.getBaseItem().getSeq());
 	}
 
 	@Override
@@ -419,8 +416,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getStatementProperty(p));
+		return SecuredStatementImpl.getInstance(
+				getModel(),holder.getBaseItem().getStatementProperty(p));
 	}
 
 	@Override
@@ -436,8 +433,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getSubject());
+		return SecuredResourceImpl.getInstance(
+				getModel(),holder.getBaseItem().getSubject());
 	}
 
 	@Override
@@ -461,7 +458,7 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(holder.getBaseItem().asTriple());
-		return new SecuredRSIterator(this, holder.getBaseItem()
+		return new SecuredRSIterator(getModel(),holder.getBaseItem()
 				.listReifiedStatements());
 	}
 
@@ -478,6 +475,45 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkUpdate();
 		holder.getBaseItem().removeReification();
+	}
+
+	/**
+	 * get a SecuredStatement
+	 * 
+	 * @param securedItem
+	 *            the secured item that provides the security context.
+	 * @param stmt
+	 *            The statement to secure.
+	 * @return the SecuredStatement
+	 */
+	static SecuredStatement getInstance( final SecuredModel securedModel,
+			final Statement stmt )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException( "Secured model may not be null");
+		}
+		if (stmt == null)
+		{
+			throw new IllegalArgumentException( "Statement may not be null");
+		}
+		
+		final ItemHolder<Statement, SecuredStatement> holder = new ItemHolder<Statement, SecuredStatement>(
+				stmt);
+	
+		final SecuredStatementImpl checker = new SecuredStatementImpl(securedModel,
+				holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (stmt instanceof SecuredStatement)
+		{
+			if (checker.isEquivalent((SecuredStatement) stmt))
+			{
+				return (SecuredStatement) stmt;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(holder
+				.getBaseItem().getClass(), checker));
 	}
 
 }

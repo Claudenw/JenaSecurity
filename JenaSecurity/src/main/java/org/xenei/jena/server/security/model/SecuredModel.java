@@ -34,7 +34,6 @@ import com.hp.hpl.jena.rdf.model.ResourceF;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.shared.PropertyNotFoundException;
 
 import java.io.InputStream;
@@ -44,7 +43,6 @@ import java.io.Writer;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.SecuredItem;
@@ -748,8 +746,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public Model difference( final Model model )
-			throws AccessDeniedException;
+	public Model difference( final Model model ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read if read lock is requested
@@ -908,8 +905,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public Model intersection( final Model model )
-			throws AccessDeniedException;
+	public Model intersection( final Model model ) throws AccessDeniedException;
 
 	/**
 	 * 
@@ -1365,7 +1361,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Update
-	 * @tripleSec Delete on every statement in m.
+	 * @tripleSec Delete on every statement in baseModel.
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -1374,7 +1370,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Update
-	 * @tripleSec Delete on every statement in m.
+	 * @tripleSec Delete on every statement in baseModel.
 	 * @tripleSec Delete on every statement in reified statements if
 	 *            suppressReifications is false.
 	 * @throws AccessDeniedException

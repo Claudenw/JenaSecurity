@@ -17,7 +17,6 @@
  */
 package org.xenei.jena.server.security.graph.impl;
 
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.Triple;
@@ -40,8 +39,20 @@ import org.xenei.jena.server.security.utils.PermTripleFilter;
 public class SecuredReifierImpl extends SecuredItemImpl implements
 		SecuredReifier
 {
+	private class ReadNodeFilter extends Filter<Node>
+	{
+		@Override
+		public boolean accept( final Node o )
+		{
+			return canRead(new Triple(o, RDF.subject.asNode(), Node.ANY))
+					|| canRead(new Triple(o, RDF.predicate.asNode(), Node.ANY))
+					|| canRead(new Triple(o, RDF.object.asNode(), Node.ANY));
+		}
+	}
+
 	// The holder that contains this SecuredReifier
 	private final ItemHolder<Reifier, SecuredReifier> holder;
+
 	// the secured graph this reifier is for.
 	private final SecuredGraph graph;
 
@@ -73,7 +84,8 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		checkRead(t);
-		return holder.getBaseItem().allNodes(t).filterKeep(new ReadNodeFilter());
+		return holder.getBaseItem().allNodes(t)
+				.filterKeep(new ReadNodeFilter());
 	}
 
 	// check that all entries for n associated with reified t can be read.
@@ -95,7 +107,8 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	public ExtendedIterator<Triple> find( final TripleMatch m )
 	{
 		checkRead();
-		return holder.getBaseItem().find(m).filterKeep( new PermTripleFilter( Action.Read, this));
+		return holder.getBaseItem().find(m)
+				.filterKeep(new PermTripleFilter(Action.Read, this));
 	}
 
 	@Override
@@ -104,7 +117,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		return holder.getBaseItem().findEither(m, showHidden)
-				.filterKeep(new PermTripleFilter( Action.Read, this));
+				.filterKeep(new PermTripleFilter(Action.Read, this));
 	}
 
 	@Override
@@ -112,7 +125,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		return holder.getBaseItem().findExposed(m)
-				.filterKeep( new PermTripleFilter( Action.Read, this) );
+				.filterKeep(new PermTripleFilter(Action.Read, this));
 	}
 
 	@Override
@@ -210,17 +223,5 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	{
 		checkRead();
 		return holder.getBaseItem().size();
-	}
-	
-	private class ReadNodeFilter extends Filter<Node>
-	{
-		@Override
-		public boolean accept( final Node o )
-		{
-			return canRead(new Triple(o, RDF.subject.asNode(), Node.ANY))
-					|| canRead(new Triple(o, RDF.predicate.asNode(),
-							Node.ANY))
-					|| canRead(new Triple(o, RDF.object.asNode(), Node.ANY));
-		}
 	}
 }

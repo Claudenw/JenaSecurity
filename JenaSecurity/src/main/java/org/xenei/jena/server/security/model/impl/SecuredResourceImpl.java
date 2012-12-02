@@ -32,12 +32,17 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.PropertyNotFoundException;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.ItemHolder;
-import org.xenei.jena.server.security.SecurityEvaluator;
+import org.xenei.jena.server.security.SecuredItemImpl;
+import org.xenei.jena.server.security.SecuredItemInvoker;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
+import org.xenei.jena.server.security.model.SecuredModel;
 import org.xenei.jena.server.security.model.SecuredResource;
+import org.xenei.jena.server.security.model.SecuredStatement;
+import org.xenei.jena.server.security.utils.PermStatementFilter;
 
 /**
  * Implementation of SecuredResource to be used by a SecuredItemInvoker proxy.
@@ -45,6 +50,65 @@ import org.xenei.jena.server.security.model.SecuredResource;
 public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 		SecuredResource
 {
+	/**
+	 * Get a SecuredResource.
+	 * 
+	 * @param securedModel
+	 *            the securedItem that provides the security context.
+	 * @param resource
+	 *            The resource to secure.
+	 * @return The SecuredResource
+	 */
+	public static SecuredResource getInstance( final SecuredModel securedModel,
+			final Resource resource )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException("Secured model may not be null");
+		}
+		if (resource == null)
+		{
+			throw new IllegalArgumentException("Resource may not be null");
+		}
+		if (resource.isLiteral())
+		{
+			throw new IllegalArgumentException("Resource may not be a literal");
+		}
+		// check that resource has a model.
+		Resource goodResource = resource;
+		if (goodResource.getModel() == null)
+		{
+			final Node n = resource.asNode();
+			if (resource.isAnon())
+			{
+				goodResource = securedModel.createResource(n.getBlankNodeId());
+			}
+			else
+			{
+				goodResource = securedModel.createResource(n.getURI());
+			}
+		}
+
+		final ItemHolder<Resource, SecuredResource> holder = new ItemHolder<Resource, SecuredResource>(
+				goodResource);
+
+		final SecuredResourceImpl checker = new SecuredResourceImpl(
+				securedModel, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (goodResource instanceof SecuredResource)
+		{
+			if (checker.isEquivalent((SecuredResource) goodResource))
+			{
+				return (SecuredResource) goodResource;
+			}
+		}
+
+		return holder.setSecuredItem(new SecuredItemInvoker(
+				resource.getClass(), checker));
+
+	}
+
 	// the item holder that contains this SecuredResource
 	private final ItemHolder<? extends Resource, ? extends SecuredResource> holder;
 
@@ -58,12 +122,11 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @param holder
 	 *            the item holder that will contain this SecuredResource.
 	 */
-	public SecuredResourceImpl(
-			final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
+	protected SecuredResourceImpl(
+			final SecuredModel securedModel,
 			final ItemHolder<? extends Resource, ? extends SecuredResource> holder )
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
 	}
 
@@ -73,7 +136,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to permit cascading.
 	 */
 	@Override
-	public Resource abort()
+	public SecuredResource abort()
 	{
 		holder.getBaseItem().abort();
 		return holder.getSecuredItem();
@@ -87,13 +150,14 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property p, final boolean o )
+	public SecuredResource addLiteral( final Property p, final boolean o )
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(p, l);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -108,9 +172,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(p, o));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(p, o);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -125,9 +190,11 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(d);
-		checkCreate(new Triple(this.asNode(), value.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(value, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), value.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(value, l);
+		return holder.getSecuredItem();
+
 	}
 
 	/**
@@ -142,9 +209,11 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(d);
-		checkCreate(new Triple(this.asNode(), value.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(value, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), value.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(value, l);
+		return holder.getSecuredItem();
+
 	}
 
 	/**
@@ -158,10 +227,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public Resource addLiteral( final Property p, final Literal o )
 	{
 		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				o.asNode()));
+		holder.getBaseItem().addLiteral(p, o);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -176,9 +245,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(p, l);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -193,9 +263,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addLiteral(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addLiteral(p, l);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -216,9 +287,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public Resource addProperty( final Property p, final RDFNode o )
 	{
 		checkUpdate();
-		checkCreate(new Triple(this.asNode(), p.asNode(), o.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addProperty(p, o));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				o.asNode()));
+		holder.getBaseItem().addProperty(p, o);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -240,9 +312,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addProperty(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addProperty(p, l);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -268,9 +341,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 		checkUpdate();
 		final Literal l = ResourceFactory.createTypedLiteral(lexicalForm,
 				datatype);
-		checkCreate(new Triple(this.asNode(), p.asNode(), l.asNode()));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addProperty(p, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				l.asNode()));
+		holder.getBaseItem().addProperty(p, l);
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -294,10 +368,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 			final String l )
 	{
 		checkUpdate();
-		checkCreate(new Triple(this.asNode(), p.asNode(), Node.createLiteral(o,
-				l, false)));
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().addProperty(p, o, l));
+		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				Node.createLiteral(o, l, false)));
+		holder.getBaseItem().addProperty(p, o, l);
+		return holder.getSecuredItem();
 	}
 
 	@Override
@@ -307,9 +381,9 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	@Override
-	public Resource asResource()
+	public SecuredResource asResource()
 	{
-		return this;
+		return holder.getSecuredItem();
 	}
 
 	/**
@@ -318,7 +392,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to permit cascading.
 	 */
 	@Override
-	public Resource begin()
+	public SecuredResource begin()
 	{
 		holder.getBaseItem().begin();
 		return holder.getSecuredItem();
@@ -333,7 +407,10 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		if (!canReadProperty(p))
 		{
-			throw new AccessDeniedException(getModelNode(), convert( new Triple(holder.getBaseItem().asNode(), p, Node.ANY)).toString(), Action.Read);
+			throw new AccessDeniedException(getModelNode(), SecuredItemImpl
+					.convert(
+							new Triple(holder.getBaseItem().asNode(), p,
+									Node.ANY)).toString(), Action.Read);
 		}
 	}
 
@@ -343,7 +420,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to permit cascading.
 	 */
 	@Override
-	public Resource commit()
+	public SecuredResource commit()
 	{
 		holder.getBaseItem().commit();
 		return holder.getSecuredItem();
@@ -432,11 +509,28 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 *         here
 	 */
 	@Override
-	public Statement getProperty( final Property p )
+	public SecuredStatement getProperty( final Property p )
 	{
 		checkRead();
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getProperty(p));
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.listProperties(p)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			if (iter.hasNext())
+			{
+				return org.xenei.jena.server.security.model.impl.SecuredStatementImpl
+						.getInstance(getModel(), iter.next());
+			}
+			else
+			{
+				return null;
+			}
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -444,11 +538,26 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * or null if no such R exists.
 	 */
 	@Override
-	public Resource getPropertyResourceValue( final Property p )
+	public SecuredResource getPropertyResourceValue( final Property p )
 	{
-		checkRead();
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getPropertyResourceValue(p));
+		final SecuredStatementIterator iter = listProperties(p);
+		try
+		{
+			while (iter.hasNext())
+			{
+				final Statement s = iter.next();
+				if (s.getObject().isResource())
+				{
+					return SecuredResourceImpl.getInstance(getModel(), s
+							.getObject().asResource());
+				}
+			}
+			return null;
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -469,11 +578,31 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 *             if no such statement found
 	 */
 	@Override
-	public Statement getRequiredProperty( final Property p )
+	public SecuredStatement getRequiredProperty( final Property p )
+			throws PropertyNotFoundException
 	{
 		checkRead();
-		return org.xenei.jena.server.security.model.impl.Factory.getInstance(
-				this, holder.getBaseItem().getRequiredProperty(p));
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.listProperties(p)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			if (iter.hasNext())
+			{
+				return org.xenei.jena.server.security.model.impl.SecuredStatementImpl
+						.getInstance(getModel(), iter.next());
+			}
+			else
+			{
+				throw new PropertyNotFoundException(p);
+			}
+		}
+		finally
+		{
+			iter.close();
+		}
+		// return org.xenei.jena.server.security.model.impl.Factory.getInstance(
+		// this, holder.getBaseItem().getRequiredProperty(p));
 	}
 
 	/**
@@ -497,6 +626,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final boolean o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -509,6 +640,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final char o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -521,6 +654,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final double o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -533,6 +668,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final float o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -545,6 +682,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final long o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -557,6 +696,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasLiteral( final Property p, final Object o )
 	{
 		checkRead();
+		checkRead(new Triple(holder.getBaseItem().asNode(), p.asNode(),
+				ResourceFactory.createTypedLiteral(o).asNode()));
 		return holder.getBaseItem().hasLiteral(p, o);
 	}
 
@@ -572,7 +713,17 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasProperty( final Property p )
 	{
 		checkRead();
-		return holder.getBaseItem().hasProperty(p);
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.listProperties(p)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			return iter.hasNext();
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -589,7 +740,17 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasProperty( final Property p, final RDFNode o )
 	{
 		checkRead();
-		return holder.getBaseItem().hasProperty(p, o);
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.getModel().listStatements(this, p, o)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			return iter.hasNext();
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -606,7 +767,17 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasProperty( final Property p, final String o )
 	{
 		checkRead();
-		return holder.getBaseItem().hasProperty(p, o);
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.getModel().listStatements(this, p, o)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			return iter.hasNext();
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -625,7 +796,18 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public boolean hasProperty( final Property p, final String o, final String l )
 	{
 		checkRead();
-		return holder.getBaseItem().hasProperty(p, o, l);
+		final Literal ll = holder.getBaseItem().getModel().createLiteral(o, l);
+		final ExtendedIterator<Statement> iter = holder.getBaseItem()
+				.getModel().listStatements(this, p, ll)
+				.filterKeep(new PermStatementFilter(Action.Read, this));
+		try
+		{
+			return iter.hasNext();
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	/**
@@ -660,7 +842,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public SecuredStatementIterator listProperties()
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(getModel(), holder.getBaseItem()
 				.listProperties());
 	}
 
@@ -680,7 +862,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	public SecuredStatementIterator listProperties( final Property p )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(getModel(), holder.getBaseItem()
 				.listProperties(p));
 
 	}
@@ -694,16 +876,24 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return this resource, to permit cascading
 	 */
 	@Override
-	public Resource removeAll( final Property p )
+	public SecuredResource removeAll( final Property p )
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(new Triple(holder.getBaseItem().asNode(), p.asNode(),
 				Node.ANY)))
 		{
 			final StmtIterator iter = holder.getBaseItem().listProperties(p);
 			try
 			{
-				checkDelete(iter.next().asTriple());
+				if (!iter.hasNext())
+				{
+					// thre arn't any to delete -- so return
+					return  holder.getSecuredItem();
+				}
+				while (iter.hasNext())
+				{
+					checkDelete(iter.next().asTriple());
+				}
 			}
 			finally
 			{
@@ -720,16 +910,24 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to permit cascading.
 	 */
 	@Override
-	public Resource removeProperties()
+	public SecuredResource removeProperties()
 	{
-		checkDelete();
+		checkUpdate();
 		if (!canDelete(new Triple(holder.getBaseItem().asNode(), Node.ANY,
 				Node.ANY)))
 		{
 			final StmtIterator iter = holder.getBaseItem().listProperties();
 			try
 			{
-				checkDelete(iter.next().asTriple());
+				if (!iter.hasNext())
+				{
+					// thre arn't any to delete -- so return
+					return  holder.getSecuredItem();
+				}
+				while (iter.hasNext())
+				{
+					checkDelete(iter.next().asTriple());
+				}
 			}
 			finally
 			{

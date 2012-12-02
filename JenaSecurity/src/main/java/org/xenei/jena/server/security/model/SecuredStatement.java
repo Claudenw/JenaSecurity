@@ -28,4 +28,12 @@ import org.xenei.jena.server.security.SecuredItem;
  */
 public interface SecuredStatement extends Statement, SecuredItem
 {
+	@Override
+	SecuredRDFNode getObject();
+	
+	@Override
+	SecuredModel getModel();
+	
+	@Override
+	SecuredLiteral getLiteral();
 }

@@ -17,6 +17,7 @@
  */
 package org.xenei.jena.server.security.model.impl;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -29,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.xenei.jena.server.security.SecuredItem;
+import org.xenei.jena.server.security.model.SecuredModel;
 import org.xenei.jena.server.security.model.SecuredRDFNode;
 
 /**
@@ -38,17 +40,17 @@ public class SecuredNodeIterator implements NodeIterator
 {
 	private class PermNodeMap implements Map1<RDFNode, RDFNode>
 	{
-		private final SecuredItem securedItem;
+		private final SecuredModel securedModel;
 
-		public PermNodeMap( final SecuredItem securedItem )
+		public PermNodeMap( final SecuredModel securedModel )
 		{
-			this.securedItem = securedItem;
+			this.securedModel = securedModel;
 		}
 
 		@Override
 		public SecuredRDFNode map1( final RDFNode o )
 		{
-			return Factory.getInstance(securedItem, o);
+			return SecuredRDFNodeImpl.getInstance(securedModel, o);
 		}
 	}
 
@@ -62,10 +64,10 @@ public class SecuredNodeIterator implements NodeIterator
 	 * @param wrapped
 	 *            the iterator to be wrapped.
 	 */
-	SecuredNodeIterator( final SecuredItem securedItem,
+	SecuredNodeIterator( final SecuredModel securedModel,
 			final ExtendedIterator<RDFNode> wrapped )
 	{
-		final PermNodeMap map1 = new PermNodeMap(securedItem);
+		final PermNodeMap map1 = new PermNodeMap(securedModel);
 		iter = wrapped.mapWith(map1);
 	}
 

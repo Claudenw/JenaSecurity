@@ -19,7 +19,6 @@ package org.xenei.jena.server.security.graph;
 
 import com.hp.hpl.jena.graph.Capabilities;
 
-import org.xenei.jena.server.security.AccessDeniedException;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
@@ -57,10 +56,10 @@ public class SecuredCapabilities implements Capabilities
 		this.capabilities = capabilities;
 	}
 
-
 	/**
 	 * @graphSec Update
 	 */
+	@Override
 	public boolean addAllowed()
 	{
 		return securityEvaluator.evaluate(Action.Update, graphIRI)
@@ -69,7 +68,7 @@ public class SecuredCapabilities implements Capabilities
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create (if everyTriple is true) 
+	 * @tripleSec Create (if everyTriple is true)
 	 */
 	@Override
 	public boolean addAllowed( final boolean everyTriple )
@@ -103,7 +102,7 @@ public class SecuredCapabilities implements Capabilities
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Delete (if everyTriple is true) 
+	 * @tripleSec Delete (if everyTriple is true)
 	 */
 	@Override
 	public boolean deleteAllowed( final boolean everyTriple )

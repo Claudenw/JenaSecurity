@@ -17,14 +17,18 @@
  */
 package org.xenei.jena.server.security.model.impl;
 
+import com.hp.hpl.jena.enhanced.UnsupportedPolymorphismException;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.xenei.jena.server.security.ItemHolder;
+import org.xenei.jena.server.security.SecuredItem;
 import org.xenei.jena.server.security.SecuredItemImpl;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.model.SecuredModel;
@@ -39,8 +43,8 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 {
 	// the item holder that contains this SecuredRDFNode
 	private ItemHolder<? extends RDFNode, ? extends SecuredRDFNode> holder;
-	// the secured model that contains this node.
-	private SecuredModel model;
+	// the secured securedModel that contains this node.
+	private SecuredModel securedModel;
 
 	/**
 	 * Constructor
@@ -52,61 +56,66 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 	 * @param holder
 	 *            the item holder that will contain this SecuredRDFNode.
 	 */
-	protected SecuredRDFNodeImpl( final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<? extends RDFNode, ? extends SecuredRDFNode> holder )
+	protected SecuredRDFNodeImpl( SecuredModel securedModel,
+			final ItemHolder<? extends RDFNode, ? extends SecuredRDFNode> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
-		if (holder.getBaseItem().getModel() != null)
+		super(securedModel, holder);
+		if (holder.getBaseItem().getModel()==null)
 		{
-			this.model = org.xenei.jena.server.security.model.impl.Factory
-					.getInstance(this, holder.getBaseItem().getModel());
+			throw new IllegalArgumentException( String.format( "Holder base item (%s) must have a model", holder.getBaseItem().getClass()) );
 		}
+		this.securedModel = securedModel;
+		this.holder = holder;
 	}
 
+	private <T extends RDFNode> Method getConstructor( Class<T> view )
+	{
+		String classNm = SecuredRDFNodeImpl.class.getName();
+		classNm = String.format("%s.Secured%sImpl",
+				classNm.substring(0, classNm.lastIndexOf(".")),
+				view.getSimpleName());
+		try
+		{
+			final Class<?> c = Class.forName(classNm);
+			return c.getDeclaredMethod("getInstance",
+						SecuredModel.class, view);
+		}
+		catch (final ClassNotFoundException e)
+		{
+			return null;
+		}
+		catch (SecurityException e)
+		{
+			return null;
+		}
+		catch (NoSuchMethodException e)
+		{
+			return null;
+		}
+	}
+	
 	@SuppressWarnings( "unchecked" )
 	@Override
 	public <T extends RDFNode> T as( final Class<T> view )
 	{
-		if (canAs(view))
+		checkRead();
+		// see if the base Item can as
+		if (holder.getBaseItem().canAs(view))
 		{
-			if (view.equals(SecuredRDFNodeImpl.class))
+			if (view.equals(SecuredRDFNodeImpl.class) || view.equals(RDFNode.class))
 			{
 				return (T) this;
 			}
-			String classNm = SecuredRDFNodeImpl.class.getName();
-			classNm = String.format("%s.Secured%s",
-					classNm.substring(0, classNm.lastIndexOf(".")),
-					view.getSimpleName());
-			final T retval = holder.getBaseItem().as(view);
-			try
-			{
-				final Class<?> c = Class.forName(classNm);
-				Method getInstance = null;
-				try
-				{
-					getInstance = c.getDeclaredMethod("getInstance",
-							SecuredItemImpl.class, view);
-
-					return (T) getInstance.invoke(null, this, retval);
-				}
-				catch (final NoSuchMethodException e)
-				{
-					getInstance = c.getDeclaredMethod("getInstance",
-							SecurityEvaluator.class, String.class, view);
-					return (T) getInstance.invoke(null,
-							this.getSecurityEvaluator(), this.getModelIRI(),
-							retval);
-				}
-
+			Method m = getConstructor( view );
+			if (m  == null) {
+				throw new SecuredUnsupportedPolymorphismException(this, view);
 			}
-			catch (final ClassNotFoundException e)
-			{
-				return retval;
+			try {
+			return (T) m.invoke(null, securedModel, holder.getBaseItem().as(view));
 			}
-			catch (final NoSuchMethodException e)
+			catch (UnsupportedPolymorphismException e)
 			{
-				throw new RuntimeException(e);
+				throw new SecuredUnsupportedPolymorphismException(this, view);
 			}
 			catch (final IllegalArgumentException e)
 			{
@@ -138,22 +147,31 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 	public <T extends RDFNode> boolean canAs( final Class<T> view )
 	{
 		checkRead();
-		return holder.getBaseItem().canAs(view);
+		// see if the base Item can as
+		if (holder.getBaseItem().canAs(view))
+		{
+			return getConstructor( view ) != null;
+		}
+		return false;
 	}
 
 	@Override
-	public Model getModel()
+	public SecuredModel getModel()
 	{
-		return model;
+		return securedModel;
 	}
 
 	@Override
 	public RDFNode inModel( final Model m )
 	{
 		checkRead();
-		if (model.equals(m))
+		if (securedModel.equals(m))
 		{
 			return this;
+		}
+		if (m instanceof SecuredModel)
+		{
+			return getInstance( (SecuredModel)m, holder.getBaseItem().inModel(m) );
 		}
 		return holder.getBaseItem().inModel(m);
 	}
@@ -180,6 +198,20 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 	public boolean isURIResource()
 	{
 		return holder.getBaseItem().isURIResource();
+	}
+
+	public static SecuredRDFNode getInstance( final SecuredModel securedModel,
+			final RDFNode rdfNode )
+	{
+		if (rdfNode instanceof Literal)
+		{
+			return SecuredLiteralImpl.getInstance(securedModel, (Literal) rdfNode);
+		}
+		else
+		{
+			return SecuredResourceImpl
+					.getInstance(securedModel, (Resource) rdfNode);
+		}
 	}
 
 }

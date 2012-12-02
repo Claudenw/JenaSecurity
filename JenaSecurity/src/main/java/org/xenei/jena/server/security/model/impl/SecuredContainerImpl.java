@@ -21,6 +21,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Container;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -29,6 +30,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.xenei.jena.server.security.ItemHolder;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.model.SecuredContainer;
+import org.xenei.jena.server.security.model.SecuredModel;
 
 /**
  * Implementation of SecuredContainer to be used by a SecuredItemInvoker proxy.
@@ -50,16 +52,15 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	 *            The item holder that will contain this SecuredContainer
 	 */
 	protected SecuredContainerImpl(
-			final SecurityEvaluator securityEvaluator,
-			final String graphIRI,
-			final ItemHolder<? extends Container, ? extends SecuredContainer> holder )
+			final SecuredModel securedModel,
+			final ItemHolder<? extends Container, ? extends SecuredContainer> holder)
 	{
-		super(securityEvaluator, graphIRI, holder);
+		super(securedModel, holder);
 		this.holder = holder;
 	}
 
 	@Override
-	public Container add( final boolean o )
+	public SecuredContainer add( final boolean o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -68,7 +69,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final char o )
+	public SecuredContainer add( final char o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -77,7 +78,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final double o )
+	public SecuredContainer add( final double o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -86,7 +87,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final float o )
+	public SecuredContainer add( final float o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -95,7 +96,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final long o )
+	public SecuredContainer add( final long o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -104,7 +105,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final Object o )
+	public SecuredContainer add( final Object o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -113,7 +114,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final RDFNode o )
+	public SecuredContainer add( final RDFNode o )
 	{
 		checkUpdate();
 		checkAdd(o.asNode());
@@ -122,7 +123,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final String o )
+	public SecuredContainer add( final String o )
 	{
 		checkUpdate();
 		checkAdd(ResourceFactory.createTypedLiteral(o));
@@ -131,7 +132,7 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	}
 
 	@Override
-	public Container add( final String o, final String l )
+	public SecuredContainer add( final String o, final String l )
 	{
 		checkUpdate();
 		checkAdd(Node.createLiteral(o, l, false));
@@ -259,11 +260,11 @@ public abstract class SecuredContainerImpl extends SecuredResourceImpl
 	{
 		checkRead();
 		checkRead(new Triple(holder.getBaseItem().asNode(), Node.ANY, Node.ANY));
-		return new SecuredNodeIterator(this, holder.getBaseItem().iterator());
+		return new SecuredNodeIterator(getModel(), holder.getBaseItem().iterator());
 	}
 
 	@Override
-	public Container remove( final Statement s )
+	public SecuredContainer remove( final Statement s )
 	{
 		checkUpdate();
 		checkDelete(s.asTriple());

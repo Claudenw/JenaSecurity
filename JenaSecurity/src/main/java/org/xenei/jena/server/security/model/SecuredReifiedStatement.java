@@ -19,6 +19,8 @@ package org.xenei.jena.server.security.model;
 
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 
+import org.xenei.jena.server.security.AccessDeniedException;
+
 /**
  * The interface for secured ReifiedStatement instances.
  * 
@@ -27,4 +29,11 @@ import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 public interface SecuredReifiedStatement extends ReifiedStatement,
 		SecuredResource
 {
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public SecuredStatement getStatement();
+
 }

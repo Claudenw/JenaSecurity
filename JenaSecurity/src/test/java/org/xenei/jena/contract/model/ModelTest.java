@@ -1,4 +1,4 @@
-package org.xenei.jena.server.security.model;
+package org.xenei.jena.contract.model;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Graph;
@@ -13,6 +13,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,12 +25,13 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xenei.jena.server.security.AccessDeniedException;
@@ -41,28 +43,20 @@ import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluatorParameters;
 import org.xenei.jena.server.security.graph.SecuredGraph;
-import org.xenei.jena.server.security.graph.SecuredPrefixMappingTest;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
-public class SecuredModelTest
+public class ModelTest
 {
-	protected final MockSecurityEvaluator securityEvaluator;
-	protected SecuredModel model;
+	protected Model model;
 	protected Model m;
 	protected Resource s;
 	protected Property p;
 	protected Resource o;
 
-	public SecuredModelTest( final MockSecurityEvaluator securityEvaluator )
+	public ModelTest( final MockSecurityEvaluator securityEvaluator )
 	{
-		this.securityEvaluator = securityEvaluator;
 	}
 
-	/**
-	 * create an unsecured model.
-	 * 
-	 * @return
-	 */
 	protected Model createModel()
 	{
 		return ModelFactory.createDefaultModel();
@@ -73,8 +67,6 @@ public class SecuredModelTest
 	{
 		m = createModel();
 		m.removeAll();
-		model = Factory.getInstance(securityEvaluator,
-				"http://example.com/securedGraph", m);
 		s = ResourceFactory.createResource("http://example.com/graph/s");
 		p = ResourceFactory.createProperty("http://example.com/graph/p");
 		o = ResourceFactory.createResource("http://example.com/graph/o");
@@ -279,16 +271,6 @@ public class SecuredModelTest
 	}
 
 	@Test
-	public void testAnonymousInModel()
-	{
-		// test anonymous
-		final RDFNode rdfNode = ResourceFactory.createResource();
-		final RDFNode rdfNode2 = rdfNode.inModel(model);
-		Assert.assertEquals("Should have placed RDFNode in secured model",
-				model, rdfNode2.getModel());
-	}
-
-	@Test
 	public void testAsRDFNode() throws Exception
 	{
 		model.asRDFNode(Node.createURI("http://example.com/rdfNode"));
@@ -338,7 +320,6 @@ public class SecuredModelTest
 								e, e.getTriple()));
 			}
 		}
-
 		try
 		{
 			model.contains(s, p);
@@ -928,6 +909,72 @@ public class SecuredModelTest
 	}
 
 	@Test
+	public void testGetNsPrefixMap()
+	{
+		try
+		{
+			model.getNsPrefixMap();
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	@Test
+	public void testGetNsPrefixURI()
+	{
+		try
+		{
+			model.getNsPrefixURI("foo");
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	@Test
+	public void testGetNsURIPrefix() throws Exception
+	{
+		try
+		{
+			model.getNsURIPrefix("foo");
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	@Test
 	public void testGetProperty()
 	{
 
@@ -1327,12 +1374,6 @@ public class SecuredModelTest
 	}
 
 	@Test
-	public void testPrefixMapping() throws Exception
-	{
-		SecuredPrefixMappingTest.runTests(securityEvaluator, model);
-	}
-
-	@Test
 	public void testQuery() throws Exception
 	{
 		final Selector s = new SimpleSelector();
@@ -1378,17 +1419,6 @@ public class SecuredModelTest
 	}
 
 	@Test
-	public void testRDFNodeInModel()
-	{
-		// test uri
-		final RDFNode rdfNode = ResourceFactory
-				.createResource("http://exmple.com/testInModel");
-		final RDFNode rdfNode2 = rdfNode.inModel(model);
-		Assert.assertEquals("Should have placed RDFNode in secured model",
-				model, rdfNode2.getModel());
-	}
-
-	@Test
 	public void testReadEmpty() throws Exception
 	{
 		final Set<Action> createAndUpdate = SecurityEvaluator.Util
@@ -1406,7 +1436,7 @@ public class SecuredModelTest
 		final String lang = "TURTLE";
 		try
 		{
-			final URL url = SecuredModelTest.class.getResource("./test.xml");
+			final URL url = ModelTest.class.getResource("./test.xml");
 			model.read(url.toString());
 			if (!securityEvaluator.evaluate(createAndUpdate))
 			{
@@ -1476,7 +1506,7 @@ public class SecuredModelTest
 
 		try
 		{
-			final URL url = SecuredModelTest.class.getResource("./test.ttl");
+			final URL url = ModelTest.class.getResource("./test.ttl");
 			model.read(url.toString(), lang);
 			if (!securityEvaluator.evaluate(createAndUpdate))
 			{
@@ -1546,7 +1576,7 @@ public class SecuredModelTest
 
 		try
 		{
-			final URL url = SecuredModelTest.class.getResource("./test.ttl");
+			final URL url = ModelTest.class.getResource("./test.ttl");
 			model.read(url.toString(), base, lang);
 			if (!securityEvaluator.evaluate(createAndUpdate))
 			{
@@ -1796,6 +1826,108 @@ public class SecuredModelTest
 	}
 
 	@Test
+	public void testSamePrefix() throws Exception
+	{
+		try
+		{
+			final PrefixMapping pm = new MockPrefixMapping();
+			model.samePrefixMappingAs(pm);
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	public void testSetNs() throws Exception
+	{
+		try
+		{
+			model.setNsPrefix("foo", "http://example.com/foo");
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+		try
+		{
+			final Map<String, String> nsMap = new HashMap<String, String>();
+			nsMap.put("foo", "http://example.com/foo");
+			model.setNsPrefixes(nsMap);
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+		try
+		{
+			model.setNsPrefixes(new MockPrefixMapping());
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	@Test
+	public void testShortForm() throws Exception
+	{
+		try
+		{
+			model.shortForm("foo");
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+
+	@Test
 	public void testSize() throws Exception
 	{
 		try
@@ -1858,14 +1990,26 @@ public class SecuredModelTest
 	}
 
 	@Test
-	@Ignore
-	public void testVariableInModel()
+	public void testWithDefaultMappings() throws Exception
 	{
-		// test literal
-		final RDFNode rdfNode = ResourceFactory.createTypedLiteral("yeehaw");
-		final RDFNode rdfNode2 = rdfNode.inModel(model);
-		Assert.assertEquals("Should have placed RDFNode in secured model",
-				model, rdfNode2.getModel());
+		try
+		{
+			model.withDefaultMappings(new MockPrefixMapping());
+			if (!securityEvaluator.evaluate(Action.Update))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Update))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+
 	}
 
 	@Test

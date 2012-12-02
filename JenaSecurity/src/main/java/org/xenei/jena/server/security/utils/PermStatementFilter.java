@@ -17,7 +17,7 @@
  */
 package org.xenei.jena.server.security.utils;
 
-import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
 
 import java.util.Collection;
@@ -30,11 +30,11 @@ import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
 
 /**
- * A filter for to filter ExtendedIterators on Triples.
+ * A filter for to filter ExtendedIterators on Statements.
  * This filter removes any triple that the user can not perform all
  * the actions on.
  */
-public class PermTripleFilter extends Filter<Triple>
+public class PermStatementFilter extends Filter<Statement>
 {
 	private final SecurityEvaluator evaluator;
 	private final Node modelNode;
@@ -49,7 +49,8 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param securedItem
 	 *            The secured item that secures this iterator.
 	 */
-	public PermTripleFilter( final Action action, final SecuredItem securedItem )
+	public PermStatementFilter( final Action action,
+			final SecuredItem securedItem )
 	{
 		this.modelNode = securedItem.getModelNode();
 		this.actions = SecurityEvaluator.Util.asSet(new Action[] { action });
@@ -68,7 +69,7 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param evaluator
 	 *            The security evaluator to evaluate the security queries.
 	 */
-	public PermTripleFilter( final Action action,
+	public PermStatementFilter( final Action action,
 			final SecuredItem securedItem, final SecurityEvaluator evaluator )
 	{
 		this.modelNode = securedItem.getModelNode();
@@ -85,7 +86,7 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param securedItem
 	 *            The secured item that secures this iterator.
 	 */
-	public PermTripleFilter( final Action[] actions,
+	public PermStatementFilter( final Action[] actions,
 			final SecuredItem securedItem )
 	{
 		this.modelNode = securedItem.getModelNode();
@@ -104,7 +105,7 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param evaluator
 	 *            The security evaluator to evaluate the security queries.
 	 */
-	public PermTripleFilter( final Action[] actions,
+	public PermStatementFilter( final Action[] actions,
 			final SecuredItem securedItem, final SecurityEvaluator evaluator )
 	{
 		this.modelNode = securedItem.getModelNode();
@@ -121,7 +122,7 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param securedItem
 	 *            The secured item that secures this iterator.
 	 */
-	public PermTripleFilter( final Collection<Action> actions,
+	public PermStatementFilter( final Collection<Action> actions,
 			final SecuredItem securedItem )
 	{
 		this.modelNode = securedItem.getModelNode();
@@ -141,7 +142,7 @@ public class PermTripleFilter extends Filter<Triple>
 	 * @param evaluator
 	 *            The security evaluator to evaluate the security queries.
 	 */
-	public PermTripleFilter( final Collection<Action> actions,
+	public PermStatementFilter( final Collection<Action> actions,
 			final SecuredItem securedItem, final SecurityEvaluator evaluator )
 	{
 		this.modelNode = securedItem.getModelNode();
@@ -150,10 +151,10 @@ public class PermTripleFilter extends Filter<Triple>
 	}
 
 	@Override
-	public boolean accept( final Triple t )
+	public boolean accept( final Statement s )
 	{
 		return evaluator.evaluateAny(actions, modelNode,
-				SecuredItemImpl.convert(t));
+				SecuredItemImpl.convert(s.asTriple()));
 	}
 
 }

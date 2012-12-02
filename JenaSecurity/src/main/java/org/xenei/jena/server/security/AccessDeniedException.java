@@ -20,30 +20,27 @@ package org.xenei.jena.server.security;
 
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
-import org.xenei.jena.server.security.SecurityEvaluator.Triple;
 
 /**
  * Exception thrown by the security system when an action is not allowed.
  * 
  * Contains the graphIRI and the action that was not allowed.
-
  */
 public class AccessDeniedException extends RuntimeException
 {
 	private static final long serialVersionUID = 2789332975364811725L;
-	
+
 	String triple;
 
 	public AccessDeniedException( final Node uri, final Action action )
 	{
-		super(String.format(
-				"model sec. %s: %s", uri, action));
+		super(String.format("model sec. %s: %s", uri, action));
 	}
-	
-	public AccessDeniedException( final Node uri, String triple,  final Action action )
+
+	public AccessDeniedException( final Node uri, final String triple,
+			final Action action )
 	{
-		super(String.format(
-				"triple sec. %s: %s", uri, action));
+		super(String.format("triple sec. %s: %s", uri, action));
 		this.triple = triple;
 	}
 
@@ -51,5 +48,5 @@ public class AccessDeniedException extends RuntimeException
 	{
 		return triple;
 	}
-	
+
 }

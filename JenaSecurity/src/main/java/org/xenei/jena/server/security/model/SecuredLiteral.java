@@ -17,7 +17,12 @@
  */
 package org.xenei.jena.server.security.model;
 
+import com.hp.hpl.jena.datatypes.DatatypeFormatException;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+
+import org.xenei.jena.server.security.AccessDeniedException;
 
 /**
  * The interface for secured Literal instances.
@@ -26,4 +31,131 @@ import com.hp.hpl.jena.rdf.model.Literal;
  */
 public interface SecuredLiteral extends Literal, SecuredRDFNode
 {
+
+	@Override
+	public SecuredLiteral asLiteral();
+
+	//@Override
+	//public SecuredResource asResource();
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean getBoolean() throws AccessDeniedException,DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public byte getByte() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public char getChar() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public RDFDatatype getDatatype() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getDatatypeURI() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public double getDouble() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public float getFloat() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public int getInt() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getLanguage() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getLexicalForm() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public long getLong() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public short getShort() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public String getString() throws AccessDeniedException, DatatypeFormatException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Object getValue() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public Literal inModel( final Model m ) throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean isWellFormedXML() throws AccessDeniedException;
+
+	/**
+	 * @secGraph Read
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public boolean sameValueAs( final Literal other )
+			throws AccessDeniedException;
+
 }

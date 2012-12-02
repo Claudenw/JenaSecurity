@@ -17,6 +17,7 @@
  */
 package org.xenei.jena.server.security.model.impl;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RSIterator;
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -32,6 +33,7 @@ import org.xenei.jena.server.security.SecuredItemImpl;
 import org.xenei.jena.server.security.SecurityEvaluator;
 import org.xenei.jena.server.security.SecurityEvaluator.Action;
 import org.xenei.jena.server.security.SecurityEvaluator.Node;
+import org.xenei.jena.server.security.model.SecuredModel;
 
 /**
  * A secured RSIterator implementation
@@ -40,16 +42,16 @@ public class SecuredRSIterator implements RSIterator
 {
 	private class PermReifiedStatementFilter extends Filter<ReifiedStatement>
 	{
-		SecurityEvaluator evaluator;
-		Node modelNode;
-		Set<Action> actions;
+		private SecurityEvaluator evaluator;
+		private Node modelNode;
+		private Set<Action> actions;
 
 		public PermReifiedStatementFilter( final Action[] actions,
-				final SecuredItem sg, final SecurityEvaluator evaluator )
+				final SecuredModel securedModel )
 		{
-			this.modelNode = sg.getModelNode();
+			this.modelNode = securedModel.getModelNode();
 			this.actions = SecurityEvaluator.Util.asSet(actions);
-			this.evaluator = evaluator;
+			this.evaluator = securedModel.getSecurityEvaluator();
 		}
 
 		@Override
@@ -64,21 +66,22 @@ public class SecuredRSIterator implements RSIterator
 	private class PermReifiedStatementMap implements
 			Map1<ReifiedStatement, ReifiedStatement>
 	{
-		private final SecuredItem securedItem;
+		private final SecuredModel securedModel;
 
-		public PermReifiedStatementMap( final SecuredItem securedItem )
+		public PermReifiedStatementMap( final SecuredModel securedModel )
 		{
-			this.securedItem = securedItem;
+			this.securedModel = securedModel;
 		}
 
 		@Override
 		public ReifiedStatement map1( final ReifiedStatement o )
 		{
-			return Factory.getInstance(securedItem, o);
+			return SecuredReifiedStatementImpl.getInstance(securedModel, o);
 		}
 	}
 
 	private final ExtendedIterator<ReifiedStatement> iter;
+
 
 	/**
 	 * Constructor
@@ -88,16 +91,14 @@ public class SecuredRSIterator implements RSIterator
 	 * @param wrapped
 	 *            The wrapped iterator.
 	 */
-	public SecuredRSIterator( final SecuredItem securedItem,
+	public SecuredRSIterator( final SecuredModel securedModel,
 			final ExtendedIterator<ReifiedStatement> wrapped )
 	{
 		final PermReifiedStatementFilter filter = new PermReifiedStatementFilter(
-				new Action[] { Action.Read }, securedItem,
-				securedItem.getSecurityEvaluator());
+				new Action[] { Action.Read }, securedModel);
 		final PermReifiedStatementMap map1 = new PermReifiedStatementMap(
-				securedItem);
+				securedModel);
 		iter = wrapped.filterKeep(filter).mapWith(map1);
-
 	}
 
 	@Override
