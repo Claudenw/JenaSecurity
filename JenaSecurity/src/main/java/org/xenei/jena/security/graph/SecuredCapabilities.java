@@ -21,9 +21,9 @@ import com.hp.hpl.jena.graph.Capabilities;
 
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.SecurityEvaluator.Node;
-import org.xenei.jena.security.SecurityEvaluator.Triple;
-import org.xenei.jena.security.SecurityEvaluator.Node.Type;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
+import org.xenei.jena.security.SecurityEvaluator.SecNode.Type;
 
 /**
  * The interface for secured Capabilities instances.
@@ -34,7 +34,7 @@ public class SecuredCapabilities implements Capabilities
 	// the security evaluator in use
 	private final SecurityEvaluator securityEvaluator;
 	// the graphIRI that the capabilities belong to.
-	private final Node graphIRI;
+	private final SecNode graphIRI;
 	// the unsecured capabilities.
 	private final Capabilities capabilities;
 
@@ -52,7 +52,7 @@ public class SecuredCapabilities implements Capabilities
 			final String graphURI, final Capabilities capabilities )
 	{
 		this.securityEvaluator = securityEvaluator;
-		this.graphIRI = new Node(Type.URI, graphURI);
+		this.graphIRI = new SecNode(Type.URI, graphURI);
 		this.capabilities = capabilities;
 	}
 
@@ -79,7 +79,7 @@ public class SecuredCapabilities implements Capabilities
 		{
 			// special security check
 			retval = securityEvaluator.evaluate(Action.Create, graphIRI,
-					Triple.ANY);
+					SecTriple.ANY);
 		}
 		return retval;
 	}
@@ -113,7 +113,7 @@ public class SecuredCapabilities implements Capabilities
 		{
 			// special security check
 			retval = securityEvaluator.evaluate(Action.Delete, graphIRI,
-					Triple.ANY);
+					SecTriple.ANY);
 		}
 		return retval;
 	}

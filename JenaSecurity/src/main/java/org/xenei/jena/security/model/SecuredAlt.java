@@ -32,7 +32,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 {
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -40,7 +40,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -48,7 +48,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -56,7 +56,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -64,7 +64,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -72,7 +72,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -80,7 +80,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -88,7 +88,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -96,7 +96,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -104,7 +104,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -112,7 +112,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -120,7 +120,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -128,7 +128,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -136,7 +136,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -146,7 +146,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -154,7 +154,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -162,7 +162,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -170,7 +170,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -180,7 +180,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -189,7 +189,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -198,7 +198,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -207,7 +207,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -216,7 +216,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -225,7 +225,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -235,7 +235,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
@@ -244,7 +244,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple(this, RDF.li(1), existing ), Triple(this,
+	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */

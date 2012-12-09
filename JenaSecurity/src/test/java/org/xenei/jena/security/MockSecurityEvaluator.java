@@ -65,20 +65,20 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	@Override
-	public boolean evaluate( final Action action, final Node uri )
+	public boolean evaluate( final Action action, final SecNode uri )
 	{
 		return evaluate(action);
 	}
 
 	@Override
-	public boolean evaluate( final Action action, final Node graphIRI,
-			final Triple triple )
+	public boolean evaluate( final Action action, final SecNode graphIRI,
+			final SecTriple triple )
 	{
 		if (forceTripleChecks)
 		{
-			if (triple.getSubject().equals( Node.ANY ) ||
-					triple.getPredicate().equals(Node.ANY) ||
-					triple.getObject().equals(Node.ANY))
+			if (triple.getSubject().equals( SecNode.ANY ) ||
+					triple.getPredicate().equals(SecNode.ANY) ||
+					triple.getObject().equals(SecNode.ANY))
 			{
 				return false;
 			}
@@ -125,14 +125,14 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	@Override
-	public boolean evaluate( final Set<Action> action, final Node uri )
+	public boolean evaluate( final Set<Action> action, final SecNode uri )
 	{
 		return evaluate(action);
 	}
 
 	@Override
-	public boolean evaluate( final Set<Action> action, final Node graphIRI,
-			final Triple triple )
+	public boolean evaluate( final Set<Action> action, final SecNode graphIRI,
+			final SecTriple triple )
 	{
 		for (final Action a : action)
 		{
@@ -155,7 +155,7 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	@Override
-	public boolean evaluateAny( final Set<Action> action, final Node graphIRI )
+	public boolean evaluateAny( final Set<Action> action, final SecNode graphIRI )
 	{
 		for (final Action a : action)
 		{
@@ -168,20 +168,20 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	@Override
-	public boolean evaluateAny( final Set<Action> action, final Node graphIRI,
-			final Triple triple )
+	public boolean evaluateAny( final Set<Action> action, final SecNode graphIRI,
+			final SecTriple triple )
 	{
 		return evaluateAny(action, graphIRI);
 	}
 
 	@Override
-	public boolean evaluateUpdate( final Node graphIRI, final Triple from,
-			final Triple to )
+	public boolean evaluateUpdate( final SecNode graphIRI, final SecTriple from,
+			final SecTriple to )
 	{
 		return evaluate(Action.Update);
 	}
 
-	public Set<Action> getPermissions( final Node uri )
+	public Set<Action> getPermissions( final SecNode uri )
 	{
 		return Collections.emptySet();
 	}

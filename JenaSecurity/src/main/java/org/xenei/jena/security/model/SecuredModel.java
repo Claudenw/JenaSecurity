@@ -93,7 +93,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create the triple Triple(s,p,o)
+	 * @tripleSec Create the triple SecTriple(s,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -102,7 +102,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create the triple Triple(s,p,o)
+	 * @tripleSec Create the triple SecTriple(s,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -111,7 +111,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create the triple Triple(s,p,o)
+	 * @tripleSec Create the triple SecTriple(s,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -121,7 +121,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create the triple Triple(s,p,literal(lex,datatype))
+	 * @tripleSec Create the triple SecTriple(s,p,literal(lex,datatype))
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -131,7 +131,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create the triple Triple(s,p,literal(o,l,false))
+	 * @tripleSec Create the triple SecTriple(s,p,literal(o,l,false))
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -259,7 +259,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, Node.ANY )
+	 * @tripleSec Read SecTriple( s, p, SecNode.ANY )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -268,7 +268,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, o )
+	 * @tripleSec Read SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -277,7 +277,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, o )
+	 * @tripleSec Read SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -286,7 +286,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o,l,null) )
+	 * @tripleSec Read SecTriple( s, p, literal(o,l,null) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -295,7 +295,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read s as a triple with null replaced by Node.ANY
+	 * @tripleSec Read s as a triple with null replaced by SecNode.ANY
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -341,7 +341,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -350,7 +350,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -359,7 +359,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -368,7 +368,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -377,7 +377,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -386,7 +386,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, literal(o) )
+	 * @tripleSec Read SecTriple( s, p, literal(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -395,7 +395,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, typedLiteral(o) )
+	 * @tripleSec Read SecTriple( s, p, typedLiteral(o) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -404,7 +404,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( s, p, r) where Triple(s,p,r) is in the model.
+	 * @tripleSec Read SecTriple( s, p, r) where SecTriple(s,p,r) is in the model.
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -413,7 +413,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.ANY, RDF.type, Rdf.Alt)
+	 * @tripleSec Create SecTriple( SecNode.ANY, RDF.type, Rdf.Alt)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -421,7 +421,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( uri, RDF.type, Rdf.Alt)
+	 * @tripleSec Create SecTriple( uri, RDF.type, Rdf.Alt)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -430,7 +430,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.ANY, RDF.type, Rdf.Bag)
+	 * @tripleSec Create SecTriple( SecNode.ANY, RDF.type, Rdf.Bag)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -438,7 +438,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( uri, RDF.type, Rdf.Bag)
+	 * @tripleSec Create SecTriple( uri, RDF.type, Rdf.Bag)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -447,7 +447,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( RDF.nil, Node.IGNORE, Node.IGNORE)
+	 * @tripleSec Create SecTriple( RDF.nil, SecNode.IGNORE, SecNode.IGNORE)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -455,10 +455,10 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( RDF.nil, Node.IGNORE, Node.IGNORE)
-	 * @tripleSec Create for each member Triple(Node.ANY, RDF.first.asNode(),
+	 * @tripleSec Create SecTriple( RDF.nil, SecNode.IGNORE, SecNode.IGNORE)
+	 * @tripleSec Create for each member SecTriple(SecNode.ANY, RDF.first.asNode(),
 	 *            member.asNode())
-	 * @tripleSec Create Triple(Node.ANY, RDF.rest.asNode(), Node.ANY)
+	 * @tripleSec Create SecTriple(SecNode.ANY, RDF.rest.asNode(), SecNode.ANY)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -467,10 +467,10 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( RDF.nil, Node.IGNORE, Node.IGNORE)
-	 * @tripleSec Create for each member Triple(Node.ANY, RDF.first.asNode(),
+	 * @tripleSec Create SecTriple( RDF.nil, SecNode.IGNORE, SecNode.IGNORE)
+	 * @tripleSec Create for each member SecTriple(SecNode.ANY, RDF.first.asNode(),
 	 *            member.asNode())
-	 * @tripleSec Create Triple(Node.ANY, RDF.rest.asNode(), Node.ANY)
+	 * @tripleSec Create SecTriple(SecNode.ANY, RDF.rest.asNode(), SecNode.ANY)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -479,7 +479,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -488,7 +488,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -497,7 +497,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -506,7 +506,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -515,7 +515,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -524,7 +524,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -533,7 +533,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -542,7 +542,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -551,7 +551,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s,p,o )
+	 * @tripleSec Create SecTriple( s,p,o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -561,9 +561,9 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read s as a triple
-	 * @tripleSec create Triple( Node.Future, RDF.subject, t.getSubject() )
-	 * @tripleSec create Triple( Node.Future, RDF.subject, t.getPredicate() )
-	 * @tripleSec create Triple( Node.Future, RDF.subject, t.getObject() )
+	 * @tripleSec create SecTriple( SecNode.Future, RDF.subject, t.getSubject() )
+	 * @tripleSec create SecTriple( SecNode.Future, RDF.subject, t.getPredicate() )
+	 * @tripleSec create SecTriple( SecNode.Future, RDF.subject, t.getObject() )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -573,9 +573,9 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read s as a triple
-	 * @tripleSec create Triple( uri, RDF.subject, t.getSubject() )
-	 * @tripleSec create Triple( uri, RDF.subject, t.getPredicate() )
-	 * @tripleSec create Triple( uri, RDF.subject, t.getObject() )
+	 * @tripleSec create SecTriple( uri, RDF.subject, t.getSubject() )
+	 * @tripleSec create SecTriple( uri, RDF.subject, t.getPredicate() )
+	 * @tripleSec create SecTriple( uri, RDF.subject, t.getObject() )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -585,7 +585,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read s as a triple
-	 * @tripleSec create Triple( Node.FUTURE, Node.IGNORE, Node.IGNORE )
+	 * @tripleSec create SecTriple( SecNode.FUTURE, SecNode.IGNORE, SecNode.IGNORE )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -594,7 +594,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read s as a triple
-	 * @tripleSec create Triple( Anonymous(id), Node.IGNORE, Node.IGNORE )
+	 * @tripleSec create SecTriple( Anonymous(id), SecNode.IGNORE, SecNode.IGNORE )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -603,7 +603,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.type, type )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.type, type )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -620,8 +620,8 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * @graphSec Update if uri exists
 	 * @graphSec Create if uri does not exist
-	 * @tripleSec Read if Triple( uri, RDF.type, type ) exists
-	 * @tripleSec Create if Triple( uri, RDF.type, type ) does not exist
+	 * @tripleSec Read if SecTriple( uri, RDF.type, type ) exists
+	 * @tripleSec Create if SecTriple( uri, RDF.type, type ) does not exist
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -634,7 +634,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.type, RDF.Alt )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.type, RDF.Alt )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -642,7 +642,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( uri, RDF.type, RDF.Alt )
+	 * @tripleSec Create SecTriple( uri, RDF.type, RDF.Alt )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -651,7 +651,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s, p, o )
+	 * @tripleSec Create SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -660,7 +660,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s, p, o )
+	 * @tripleSec Create SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -669,7 +669,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s, p, o )
+	 * @tripleSec Create SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -679,7 +679,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s, p, literal(o,l,false ))
+	 * @tripleSec Create SecTriple( s, p, literal(o,l,false ))
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -689,7 +689,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( s, p, literal(o,l,wellFormed )
+	 * @tripleSec Create SecTriple( s, p, literal(o,l,wellFormed )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -767,7 +767,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( r, RDF.type, RDF.alt )
+	 * @tripleSec Read SecTriple( r, RDF.type, RDF.alt )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -775,7 +775,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( uri, RDF.type, RDF.alt )
+	 * @tripleSec Read SecTriple( uri, RDF.type, RDF.alt )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -785,17 +785,17 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	 * @graphSec Read if statement exists
 	 * @graphSec Update if statement does not exist
 	 * @tripleSec Read s as a triple
-	 * @tripleSec Read Triple( result, RDF.subject, s.getSubject() ) if
+	 * @tripleSec Read SecTriple( result, RDF.subject, s.getSubject() ) if
 	 *            reification existed
-	 * @tripleSec Read Triple( result, RDF.predicate, s.getPredicate() ) if
+	 * @tripleSec Read SecTriple( result, RDF.predicate, s.getPredicate() ) if
 	 *            reification existed
-	 * @tripleSec Read Triple( result, RDF.object, s.getObject() ) if
+	 * @tripleSec Read SecTriple( result, RDF.object, s.getObject() ) if
 	 *            reification existed
-	 * @tripleSec Create Triple( result, RDF.subject, s.getSubject() ) if
+	 * @tripleSec Create SecTriple( result, RDF.subject, s.getSubject() ) if
 	 *            reification did not exist.
-	 * @tripleSec Create Triple( result, RDF.redicate, s.getPredicate() ) if
+	 * @tripleSec Create SecTriple( result, RDF.redicate, s.getPredicate() ) if
 	 *            reification did not exist
-	 * @tripleSec Create Triple( result, RDF.object, s.getObject() ) if
+	 * @tripleSec Create SecTriple( result, RDF.object, s.getObject() ) if
 	 *            reification did not exist
 	 * @throws AccessDeniedException.
 	 */
@@ -805,7 +805,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( r, RDF.type, RDF.Bag )
+	 * @tripleSec Read SecTriple( r, RDF.type, RDF.Bag )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -813,7 +813,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( uri, RDF.type, RDF.Bag )
+	 * @tripleSec Read SecTriple( uri, RDF.type, RDF.Bag )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -858,12 +858,12 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * .
 	 * If the PropertyNotFoundException was thrown by the enclosed model and the
-	 * user can not read Triple(s, p, Node.ANY) AccessDeniedExcepiton is thrown,
+	 * user can not read SecTriple(s, p, SecNode.ANY) AccessDeniedExcepiton is thrown,
 	 * otherwise the PropertyNotFoundException will be thrown.
 	 * 
 	 * @graphSec Read
 	 * @tripleSec Read on the returned statement
-	 * @tripleSec Read on Triple(s, p, Node.ANY) if PropertyNotFoundException
+	 * @tripleSec Read on SecTriple(s, p, SecNode.ANY) if PropertyNotFoundException
 	 *            was thrown
 	 * @throws AccessDeniedException
 	 * @throws PropertyNotFoundException
@@ -883,7 +883,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read on Triple(r, RDF.type, RDF.Seq)
+	 * @tripleSec Read on SecTriple(r, RDF.type, RDF.Seq)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -892,7 +892,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read on Triple(uri, RDF.type, RDF.Seq)
+	 * @tripleSec Read on SecTriple(uri, RDF.type, RDF.Seq)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -1055,7 +1055,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1066,7 +1066,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1078,7 +1078,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1090,7 +1090,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1101,7 +1101,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1112,7 +1112,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1123,7 +1123,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned;
 	 * @throws AccessDeniedException
 	 */
@@ -1134,7 +1134,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1197,7 +1197,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1207,7 +1207,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1218,7 +1218,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1229,7 +1229,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1240,7 +1240,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read at least one Triple( resource, p, o ) for each resource
+	 * @tripleSec Read at least one SecTriple( resource, p, o ) for each resource
 	 *            returned
 	 * @throws AccessDeniedException
 	 */
@@ -1382,7 +1382,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Update
-	 * @tripleSec Delete on Triple( s, p, o )
+	 * @tripleSec Delete on SecTriple( s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -1431,7 +1431,7 @@ public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
 	/**
 	 * 
 	 * @graphSec Update
-	 * @tripleSec Delete on every statement identified by Triple( s,p,o)
+	 * @tripleSec Delete on every statement identified by SecTriple( s,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override

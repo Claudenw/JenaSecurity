@@ -46,7 +46,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * 
  * Note on triple checks:
  * 
- * If any s,p or o is Node.ANY then the methods must return false if there are
+ * If any s,p or o is SecNode.ANY then the methods must return false if there are
  * any restrictions where the remaining nodes and held constant and the ANY node
  * is allowed to vary.
  * examples:
@@ -57,7 +57,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * 
  * The (ANY, ANY, ANY) pattern is used to determine if the system has any
  * restrictions that should
- * be checked when dealing with collections of triples (e.g. delete(Triple[])).
+ * be checked when dealing with collections of triples (e.g. delete(SecTriple[])).
  * If (ANY,ANY,ANY)
  * returns true then we don't have to check each of the triples in the
  * collection.
@@ -75,11 +75,11 @@ public interface SecurityEvaluator
 	 * 
 	 * A node with no value represents a node of that type but unknown
 	 * exactitude. (e.g.
-	 * Node(URI,"") is a URI but of unknown value. Useful for systems that
+	 * SecNode(URI,"") is a URI but of unknown value. Useful for systems that
 	 * restrict
 	 * type creation.
 	 * 
-	 * Node(Anymous,"") represents an anymous node that will be created.
+	 * SecNode(Anymous,"") represents an anymous node that will be created.
 	 * Otherwise anonymous
 	 * node values are the values within the secured graph.
 	 * 
@@ -87,7 +87,7 @@ public interface SecurityEvaluator
 	 * 
 	 * 
 	 */
-	public static class Node implements Comparable<Node>
+	public static class SecNode implements Comparable<SecNode>
 	{
 
 		public static enum Type
@@ -97,36 +97,30 @@ public interface SecurityEvaluator
 
 		/**
 		 * Matches any node in the secrity system.
-		 * Asking (Node, Node.ANY, Node.ANY) is asking if there
-		 * are any explicit using the Node as a Subject.
+		 * Asking (SecNode, SecNode.ANY, SecNode.ANY) is asking if there
+		 * are any explicit using the SecNode as a Subject.
 		 */
-		public static final Node ANY = new Node(Type.Any, "any");
-		/**
-		 * Ignore the nodes in this position in the triple.
-		 * Asking (Node, Node.IGNORE, Node.IGNORE) is asking if there
-		 * are any implicit restrictions on using the Node as a Subject.
-		 */
-		public static final Node IGNORE = new Node(Type.Any, "ignore");
-
+		public static final SecNode ANY = new SecNode(Type.Any, "any");
+		
 		/**
 		 * This is an anonymous node that will be created in the future.
 		 * FUTURE is used to check that an anonymous node may be created in
 		 * as specific position in a triple.
 		 */
-		public static final Node FUTURE = new Node(Type.Anonymous, "");
+		public static final SecNode FUTURE = new SecNode(Type.Anonymous, "");
 
 		private final Type type;
 		private final String value;
 		private Integer hashCode;
 
-		public Node( final Type type, final String value )
+		public SecNode( final Type type, final String value )
 		{
 			this.type = type;
 			this.value = value == null ? "" : value;
 		}
 
 		@Override
-		public int compareTo( final Node node )
+		public int compareTo( final SecNode node )
 		{
 			final int retval = type.compareTo(node.type);
 			return retval == 0 ? value.compareTo(node.value) : retval;
@@ -135,9 +129,9 @@ public interface SecurityEvaluator
 		@Override
 		public boolean equals( final Object o )
 		{
-			if (o instanceof Node)
+			if (o instanceof SecNode)
 			{
-				return this.compareTo((Node) o) == 0;
+				return this.compareTo((SecNode) o) == 0;
 			}
 			return false;
 		}
@@ -174,18 +168,18 @@ public interface SecurityEvaluator
 	 * A triple of nodes.
 	 * 
 	 */
-	public static class Triple implements Comparable<Triple>
+	public static class SecTriple implements Comparable<SecTriple>
 	{
-		private final Node subject;
-		private final Node predicate;
-		private final Node object;
+		private final SecNode subject;
+		private final SecNode predicate;
+		private final SecNode object;
 		private transient Integer hashCode;
 
-		public static final Triple ANY = new Triple(Node.ANY, Node.ANY,
-				Node.ANY);
+		public static final SecTriple ANY = new SecTriple(SecNode.ANY, SecNode.ANY,
+				SecNode.ANY);
 
-		public Triple( final Node subject, final Node predicate,
-				final Node object )
+		public SecTriple( final SecNode subject, final SecNode predicate,
+				final SecNode object )
 		{
 			if (subject == null)
 			{
@@ -205,7 +199,7 @@ public interface SecurityEvaluator
 		}
 
 		@Override
-		public int compareTo( final Triple o )
+		public int compareTo( final SecTriple o )
 		{
 			if (o == null)
 			{
@@ -222,24 +216,24 @@ public interface SecurityEvaluator
 		@Override
 		public boolean equals( final Object o )
 		{
-			if (o instanceof Triple)
+			if (o instanceof SecTriple)
 			{
-				return this.compareTo((Triple) o) == 0;
+				return this.compareTo((SecTriple) o) == 0;
 			}
 			return false;
 		}
 
-		public Node getObject()
+		public SecNode getObject()
 		{
 			return object;
 		}
 
-		public Node getPredicate()
+		public SecNode getPredicate()
 		{
 			return predicate;
 		}
 
-		public Node getSubject()
+		public SecNode getSubject()
 		{
 			return subject;
 		}
@@ -291,11 +285,11 @@ public interface SecurityEvaluator
 	 *            The IRI of the graph to check
 	 * @return true if the action is allowed, false otherwise.
 	 */
-	public boolean evaluate( Action action, Node graphIRI );
+	public boolean evaluate( Action action, SecNode graphIRI );
 
 	/**
 	 * Determine if the action is allowed on the triple within the graph.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -314,7 +308,7 @@ public interface SecurityEvaluator
 	 *            The triple to check
 	 * @return true if the action is allowed, false otherwise.
 	 */
-	public boolean evaluate( Action action, Node graphIRI, Triple triple );
+	public boolean evaluate( Action action, SecNode graphIRI, SecTriple triple );
 
 	/**
 	 * Determine if the action is allowed on the triple.
@@ -325,18 +319,18 @@ public interface SecurityEvaluator
 	 *            The IRI of the graph to check.
 	 * @return true if all the actions are allowed, false otherwise.
 	 */
-	public boolean evaluate( Set<Action> action, Node graphIRI );
+	public boolean evaluate( Set<Action> action, SecNode graphIRI );
 
 	/**
 	 * Determine if the action is allowed on the triple within the graph.
 	 * 
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See evaluate( Action, Triple for examples)
+	 * See evaluate( Action, SecTriple for examples)
 	 * 
 	 * @param action
 	 *            The action to perform.
@@ -346,7 +340,7 @@ public interface SecurityEvaluator
 	 *            The triple to check
 	 * @return true if all the actions are allowed, false otherwise.
 	 */
-	public boolean evaluate( Set<Action> action, Node graphIRI, Triple triple );
+	public boolean evaluate( Set<Action> action, SecNode graphIRI, SecTriple triple );
 
 	/**
 	 * Determine if the action is allowed on the triple.
@@ -357,17 +351,17 @@ public interface SecurityEvaluator
 	 *            The IRI of the graph to check.
 	 * @return true true if any the actions are allowed, false otherwise.
 	 */
-	public boolean evaluateAny( Set<Action> action, Node graphIRI );
+	public boolean evaluateAny( Set<Action> action, SecNode graphIRI );
 
 	/**
 	 * Determine if the action is allowed on the triple.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See evaluate( Action, Triple for examples)
+	 * See evaluate( Action, SecTriple for examples)
 	 * 
 	 * @param action
 	 *            The action to perform
@@ -377,7 +371,7 @@ public interface SecurityEvaluator
 	 *            The triple to check
 	 * @return true if any the actions are allowed, false otherwise.
 	 */
-	public boolean evaluateAny( Set<Action> action, Node graphIRI, Triple triple );
+	public boolean evaluateAny( Set<Action> action, SecNode graphIRI, SecTriple triple );
 
 	/**
 	 * Determine if the user is allowed to update the "from" triple to the "to"
@@ -391,7 +385,7 @@ public interface SecurityEvaluator
 	 *            The value to change it to.
 	 * @return true if the user may make the change, false otherwise.
 	 */
-	public boolean evaluateUpdate( Node graphIRI, Triple from, Triple to );
+	public boolean evaluateUpdate( SecNode graphIRI, SecTriple from, SecTriple to );
 
 	/**
 	 * returns the current principal or null if there is no current principal.

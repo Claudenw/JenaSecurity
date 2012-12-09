@@ -87,9 +87,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	/**
 	 * @graphSec Read
 	 * @tripleSec Read returned triple,
-	 * @tripleSec Read Triple(n, RDF.subject.asNode(), t.getSubject())
-	 * @tripleSec Read Triple(n, RDF.predicate.asNode(), t.getPredicate())
-	 * @tripleSec Read Triple(n, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Read SecTriple(n, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Read SecTriple(n, RDF.predicate.asNode(), t.getPredicate())
+	 * @tripleSec Read SecTriple(n, RDF.object.asNode(), t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -117,9 +117,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read on one of Triple(n, RDF.subject.asNode(), Node.ANY)
-	 * @tripleSec Read Triple(n, RDF.predicate.asNode(), Node.ANY)
-	 * @tripleSec Read Triple(n, RDF.object.asNode(), Node.ANY)
+	 * @tripleSec Read on one of SecTriple(n, RDF.subject.asNode(), SecNode.ANY)
+	 * @tripleSec Read SecTriple(n, RDF.predicate.asNode(), SecNode.ANY)
+	 * @tripleSec Read SecTriple(n, RDF.object.asNode(), SecNode.ANY)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -127,10 +127,10 @@ public interface SecuredReifier extends Reifier, SecuredItem
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read on one of Read Triple(Node.ANY, RDF.subject.asNode(), t.getSubject())
-	 * @tripleSec Read Triple(Node.ANY, RDF.predicate.asNode(),
+	 * @tripleSec Read on one of Read SecTriple(SecNode.ANY, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Read SecTriple(SecNode.ANY, RDF.predicate.asNode(),
 	 *            t.getPredicate())
-	 * @tripleSec Read Triple(Node.ANY, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Read SecTriple(SecNode.ANY, RDF.object.asNode(), t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -139,9 +139,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read t
-	 * @tripleSec Create Triple(n, RDF.subject.asNode(), t.getSubject())
-	 * @tripleSec Create Triple(n, RDF.predicate.asNode(), t.getPredicate())
-	 * @tripleSec Create Triple(n, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Create SecTriple(n, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Create SecTriple(n, RDF.predicate.asNode(), t.getPredicate())
+	 * @tripleSec Create SecTriple(n, RDF.object.asNode(), t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -151,9 +151,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read t,
-	 * @tripleSec Delete Triple(n, RDF.subject.asNode(), t.getSubject())
-	 * @tripleSec Delete Triple(n, RDF.predicate.asNode(), t.getPredicate())
-	 * @tripleSec Delete Triple(n, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Delete SecTriple(n, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Delete SecTriple(n, RDF.predicate.asNode(), t.getPredicate())
+	 * @tripleSec Delete SecTriple(n, RDF.object.asNode(), t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -163,10 +163,10 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read t,
-	 * @tripleSec Delete Triple(Node.ANY, RDF.subject.asNode(), t.getSubject())
-	 * @tripleSec Delete Triple(Node.ANY, RDF.predicate.asNode(),
+	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.predicate.asNode(),
 	 *            t.getPredicate())
-	 * @tripleSec Delete Triple(Node.ANY, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.object.asNode(), t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override

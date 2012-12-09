@@ -207,7 +207,7 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 
 	}
 
-	/*private Triple getDefaultTriple()
+	/*private SecTriple getDefaultTriple()
 	{
 		final StmtIterator iter = holder.getBaseItem().getModel()
 				.listStatements(this, RDF.li(1), (RDFNode) null);
@@ -222,9 +222,9 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 
 	}
 
-	private Triple getNewTriple( final Triple t, final Object o )
+	private SecTriple getNewTriple( final SecTriple t, final Object o )
 	{
-		return new Triple(t.getSubject(), t.getPredicate(), Node.createLiteral(
+		return new SecTriple(t.getSubject(), t.getPredicate(), SecNode.createLiteral(
 				String.valueOf(o), "", false));
 	}
 */

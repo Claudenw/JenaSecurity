@@ -27,33 +27,33 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.SecurityEvaluator.Node;
-import org.xenei.jena.security.SecurityEvaluator.Triple;
-import org.xenei.jena.security.SecurityEvaluator.Node.Type;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
+import org.xenei.jena.security.SecurityEvaluator.SecNode.Type;
 
 public abstract class SecuredItemImpl implements SecuredItem
 {
 	private class CacheKey implements Comparable<CacheKey>
 	{
 		private final Action action;
-		private final Node modelNode;
-		private final Triple from;
-		private final Triple to;
+		private final SecNode modelNode;
+		private final SecTriple from;
+		private final SecTriple to;
 		private Integer hashCode;
 
-		public CacheKey( final Action action, final Node modelNode )
+		public CacheKey( final Action action, final SecNode modelNode )
 		{
 			this(action, modelNode, null, null);
 		}
 
-		public CacheKey( final Action action, final Node modelNode,
-				final Triple to )
+		public CacheKey( final Action action, final SecNode modelNode,
+				final SecTriple to )
 		{
 			this(action, modelNode, to, null);
 		}
 
-		public CacheKey( final Action action, final Node modelNode,
-				final Triple to, final Triple from )
+		public CacheKey( final Action action, final SecNode modelNode,
+				final SecTriple to, final SecTriple from )
 		{
 			this.action = action;
 			this.modelNode = modelNode;
@@ -123,26 +123,26 @@ public abstract class SecuredItemImpl implements SecuredItem
 
 	public static final ThreadLocal<Integer> COUNT = new ThreadLocal<Integer>();
 
-	public static Node convert( final com.hp.hpl.jena.graph.Node jenaNode )
+	public static SecNode convert( final com.hp.hpl.jena.graph.Node jenaNode )
 	{
 		if (com.hp.hpl.jena.graph.Node.ANY.equals(jenaNode))
 		{
-			return Node.ANY;
+			return SecNode.ANY;
 		}
 		if (jenaNode.isLiteral())
 		{
-			return new Node(Type.Literal, jenaNode.getLiteral().toString());
+			return new SecNode(Type.Literal, jenaNode.getLiteral().toString());
 		}
 		if (jenaNode.isBlank())
 		{
-			return new Node(Type.Anonymous, jenaNode.getBlankNodeLabel());
+			return new SecNode(Type.Anonymous, jenaNode.getBlankNodeLabel());
 		}
-		return new Node(Type.URI, jenaNode.getURI());
+		return new SecNode(Type.URI, jenaNode.getURI());
 	}
 
-	public static Triple convert( final com.hp.hpl.jena.graph.Triple jenaTriple )
+	public static SecTriple convert( final com.hp.hpl.jena.graph.Triple jenaTriple )
 	{
-		return new Triple(SecuredItemImpl.convert(jenaTriple.getSubject()),
+		return new SecTriple(SecuredItemImpl.convert(jenaTriple.getSubject()),
 				SecuredItemImpl.convert(jenaTriple.getPredicate()),
 				SecuredItemImpl.convert(jenaTriple.getObject()));
 	}
@@ -186,7 +186,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 
 	private final SecurityEvaluator securityEvaluator;
 
-	private final SecurityEvaluator.Node modelNode;
+	private final SecurityEvaluator.SecNode modelNode;
 
 	private final ItemHolder<?, ?> itemHolder;
 
@@ -206,8 +206,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new IllegalArgumentException( "ItemHolder may not be null");
 		}
 		this.securityEvaluator = securedItem.getSecurityEvaluator();
-		this.modelNode = new SecurityEvaluator.Node(
-				SecurityEvaluator.Node.Type.URI, securedItem.getModelIRI());
+		this.modelNode = new SecurityEvaluator.SecNode(
+				SecurityEvaluator.SecNode.Type.URI, securedItem.getModelIRI());
 		this.itemHolder = holder;
 	}
 
@@ -227,8 +227,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new IllegalArgumentException( "ItemHolder may not be null");
 		}
 		this.securityEvaluator = securityEvaluator;
-		this.modelNode = new SecurityEvaluator.Node(
-				SecurityEvaluator.Node.Type.URI, modelURI);
+		this.modelNode = new SecurityEvaluator.SecNode(
+				SecurityEvaluator.SecNode.Type.URI, modelURI);
 		this.itemHolder = holder;
 	}
 
@@ -277,7 +277,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	@Override
-	public boolean canCreate( final Triple t )
+	public boolean canCreate( final SecTriple t )
 	{
 		final CacheKey key = new CacheKey(Action.Create, modelNode, t);
 		Boolean retval = cacheGet(key);
@@ -318,7 +318,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	@Override
-	public boolean canDelete( final Triple t )
+	public boolean canDelete( final SecTriple t )
 	{
 		final CacheKey key = new CacheKey(Action.Delete, modelNode, t);
 		Boolean retval = cacheGet(key);
@@ -359,7 +359,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	@Override
-	public boolean canRead( final Triple t )
+	public boolean canRead( final SecTriple t )
 	{
 		final CacheKey key = new CacheKey(Action.Read, modelNode, t);
 		Boolean retval = cacheGet(key);
@@ -402,7 +402,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	@Override
-	public boolean canUpdate( final Triple from, final Triple to )
+	public boolean canUpdate( final SecTriple from, final SecTriple to )
 	{
 		final CacheKey key = new CacheKey(Action.Update, modelNode, from, to);
 		Boolean retval = cacheGet(key);
@@ -444,7 +444,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkCreate( final Triple t )
+	protected void checkCreate( final SecTriple t )
 	{
 		if (!canCreate(t))
 		{
@@ -453,23 +453,23 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 	}
 
-	protected void checkCreateReified( final String uri, final Triple t )
+	protected void checkCreateReified( final String uri, final SecTriple t )
 	{
 		checkUpdate();
-		final Node n = uri == null ? Node.FUTURE : new Node(
+		final SecNode n = uri == null ? SecNode.FUTURE : new SecNode(
 				Type.URI, uri);
-		checkCreate(new Triple(n, SecuredItemImpl.convert(RDF.subject.asNode()),
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.subject.asNode()),
 				t.getSubject()));
-		checkCreate(new Triple(n,
+		checkCreate(new SecTriple(n,
 				SecuredItemImpl.convert(RDF.predicate.asNode()),
 				t.getPredicate()));
-		checkCreate(new Triple(n, SecuredItemImpl.convert(RDF.object.asNode()),
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.object.asNode()),
 				t.getObject()));
 	}
 
 	protected void checkCreateStatement( final ExtendedIterator<Statement> stmts )
 	{
-		if (!canCreate(Triple.ANY))
+		if (!canCreate(SecTriple.ANY))
 		{
 			try
 			{
@@ -488,7 +488,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	protected void checkCreateTriples(
 			final ExtendedIterator<com.hp.hpl.jena.graph.Triple> triples )
 	{
-		if (!canCreate(Triple.ANY))
+		if (!canCreate(SecTriple.ANY))
 		{
 			try
 			{
@@ -534,7 +534,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkDelete( final Triple t )
+	protected void checkDelete( final SecTriple t )
 	{
 		if (!canDelete(t))
 		{
@@ -546,7 +546,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	protected void checkDeleteStatements(
 			final ExtendedIterator<Statement> stmts )
 	{
-		if (!canDelete(Triple.ANY))
+		if (!canDelete(SecTriple.ANY))
 		{
 			try
 			{
@@ -565,7 +565,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	protected void checkDeleteTriples(
 			final ExtendedIterator<com.hp.hpl.jena.graph.Triple> triples )
 	{
-		if (!canDelete(Triple.ANY))
+		if (!canDelete(SecTriple.ANY))
 		{
 			try
 			{
@@ -611,7 +611,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkRead( final Triple t )
+	protected void checkRead( final SecTriple t )
 	{
 		if (!canRead(t))
 		{
@@ -681,7 +681,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	 * @throws AccessDeniedException
 	 *             on failure
 	 */
-	protected void checkUpdate( final Triple from, final Triple to )
+	protected void checkUpdate( final SecTriple from, final SecTriple to )
 	{
 		if (!canUpdate(from, to))
 		{
@@ -731,7 +731,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	@Override
-	public Node getModelNode()
+	public SecNode getModelNode()
 	{
 		return modelNode;
 	}

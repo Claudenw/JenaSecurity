@@ -62,7 +62,7 @@ public class CollectionGraph extends GraphBase
 		{
 			if (t == null)
 			{
-				throw new IllegalArgumentException("Triple must not be null");
+				throw new IllegalArgumentException("SecTriple must not be null");
 			}
 			return matches(t.getMatchSubject(), m.getMatchSubject())
 					&& matches(t.getMatchPredicate(), m.getMatchPredicate())

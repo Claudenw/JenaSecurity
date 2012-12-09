@@ -32,7 +32,7 @@ import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.SecurityEvaluator.Node;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.model.SecuredModel;
 
 /**
@@ -43,7 +43,7 @@ public class SecuredRSIterator implements RSIterator
 	private class PermReifiedStatementFilter extends Filter<ReifiedStatement>
 	{
 		private SecurityEvaluator evaluator;
-		private Node modelNode;
+		private SecNode modelNode;
 		private Set<Action> actions;
 
 		public PermReifiedStatementFilter( final Action[] actions,

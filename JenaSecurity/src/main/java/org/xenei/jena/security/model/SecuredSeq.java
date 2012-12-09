@@ -36,7 +36,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 {
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final boolean o )
@@ -44,7 +44,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final char o )
@@ -52,7 +52,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final double o )
@@ -60,7 +60,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final float o )
@@ -68,7 +68,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final long o )
@@ -76,7 +76,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final Object o )
@@ -84,7 +84,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final RDFNode o )
@@ -92,7 +92,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final String o )
@@ -100,7 +100,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( this, RDF.li(1), o )
+	 * @tripleSec Create SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq add( final int index, final String o, final String l )
@@ -108,70 +108,70 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredAlt getAlt( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredBag getBag( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public boolean getBoolean( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public byte getByte( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public char getChar( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public double getDouble( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public float getFloat( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int getInt( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public String getLanguage( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredLiteral getLiteral( final int index )
@@ -179,14 +179,14 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public long getLong( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredRDFNode getObject( final int index )
@@ -194,7 +194,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredResource getResource( final int index )
@@ -202,7 +202,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	@Deprecated
@@ -211,84 +211,84 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public SecuredSeq getSeq( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public short getShort( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public String getString( final int index ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final boolean o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final char o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final double o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final float o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final long o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final Object o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final RDFNode o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final String o ) throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple( this, RDF.li(1), o )
+	 * @tripleSec Read SecTriple( this, RDF.li(1), o )
 	 */
 	@Override
 	public int indexOf( final String o, final String l )
@@ -296,7 +296,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Delete Triple( this, RDF.li(1), o )
+	 * @tripleSec Delete SecTriple( this, RDF.li(1), o )
 	 * @tripleSec Update Triples after index
 	 */
 	@Override
@@ -304,7 +304,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -313,7 +313,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -322,7 +322,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -331,7 +331,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -340,7 +340,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -349,7 +349,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -358,7 +358,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -367,7 +367,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override
@@ -376,7 +376,7 @@ public interface SecuredSeq extends Seq, SecuredContainer
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Update Triple( this, RDF.li(index), old ) Triple( this,
+	 * @tripleSec Update SecTriple( this, RDF.li(index), old ) SecTriple( this,
 	 *            RDF.li(index), o )
 	 */
 	@Override

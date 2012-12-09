@@ -124,7 +124,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				if (t == null)
 				{
 					throw new IllegalArgumentException(
-							"Triple must not be null");
+							"SecTriple must not be null");
 				}
 				return matches(t.getMatchSubject(), m.getMatchSubject())
 						&& matches(t.getMatchPredicate(), m.getMatchPredicate())
@@ -510,25 +510,25 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		return holder.getSecuredItem();
 	}
 
-	private void checkCreate( final SecurityEvaluator.Node n, final Triple t )
+	private void checkCreate( final SecurityEvaluator.SecNode n, final Triple t )
 	{
 		checkRead(t);
-		checkCreate(new SecurityEvaluator.Triple(n,
+		checkCreate(new SecurityEvaluator.SecTriple(n,
 				SecuredItemImpl.convert(RDF.subject.asNode()),
 				SecuredItemImpl.convert(t.getSubject())));
-		checkCreate(new SecurityEvaluator.Triple(n,
+		checkCreate(new SecurityEvaluator.SecTriple(n,
 				SecuredItemImpl.convert(RDF.predicate.asNode()),
 				SecuredItemImpl.convert(t.getPredicate())));
-		checkCreate(new SecurityEvaluator.Triple(n,
+		checkCreate(new SecurityEvaluator.SecTriple(n,
 				SecuredItemImpl.convert(RDF.object.asNode()),
 				SecuredItemImpl.convert(t.getObject())));
 	}
 
-	/*private void checkCreateAnonymousResource( final SecurityEvaluator.Node n )
+	/*private void checkCreateAnonymousResource( final SecurityEvaluator.SecNode n )
 	{
 		checkUpdate();
-		final SecurityEvaluator.Triple t = new SecurityEvaluator.Triple(n,
-				SecurityEvaluator.Node.IGNORE, SecurityEvaluator.Node.IGNORE);
+		final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(n,
+				SecurityEvaluator.SecNode.IGNORE, SecurityEvaluator.SecNode.IGNORE);
 		checkCreate(t);
 	}
 */
@@ -745,7 +745,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredAlt createAlt()
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE, 
+		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
 				convert(RDF.type.asNode()), 
 				convert(RDF.Alt.asNode())));
 		return SecuredAltImpl.getInstance(
@@ -766,7 +766,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredBag createBag()
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE, 
+		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
 				convert(RDF.type.asNode()), 
 				convert(RDF.Bag.asNode())));
 		return SecuredBagImpl.getInstance(
@@ -800,10 +800,10 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredRDFList createList( final Iterator<? extends RDFNode> members )
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE, 
+		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
 				convert(RDF.rest.asNode()), 
-				SecurityEvaluator.Node.FUTURE));
-		if (! (canCreate( new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE, 
+				SecurityEvaluator.SecNode.FUTURE));
+		if (! (canCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
 				convert(RDF.first.asNode()), 
 				convert(Node.ANY)))))
 		{
@@ -812,7 +812,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			{
 				
 				RDFNode n = members.next();
-				checkCreate( new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE, 
+				checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
 						convert(RDF.first.asNode()), 
 						convert(n.asNode())));
 				nodes.add(n);
@@ -946,7 +946,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public ReifiedStatement createReifiedStatement( final Statement s )
 	{
 		checkUpdate();
-		checkCreate(SecurityEvaluator.Node.FUTURE, s.asTriple());
+		checkCreate(SecurityEvaluator.SecNode.FUTURE, s.asTriple());
 		return SecuredReifiedStatementImpl.getInstance(
 				this, holder.getBaseItem().createReifiedStatement(s));
 	}
@@ -956,7 +956,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Statement s )
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.Node(SecurityEvaluator.Node.Type.URI,
+		checkCreate(new SecurityEvaluator.SecNode(SecurityEvaluator.SecNode.Type.URI,
 				uri), s.asTriple());
 		return SecuredReifiedStatementImpl.getInstance(
 				this, holder.getBaseItem().createReifiedStatement(uri, s));
@@ -965,7 +965,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredResource createResource()
 	{
-//		checkCreateAnonymousResource(SecurityEvaluator.Node.FUTURE);
+//		checkCreateAnonymousResource(SecurityEvaluator.SecNode.FUTURE);
 		return SecuredResourceImpl.getInstance(
 				this, holder.getBaseItem().createResource());
 	}
@@ -973,8 +973,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredResource createResource( final AnonId id )
 	{
-//		checkCreateAnonymousResource(new SecurityEvaluator.Node(
-//				SecurityEvaluator.Node.Type.Anonymous, id.getLabelString()));
+//		checkCreateAnonymousResource(new SecurityEvaluator.SecNode(
+//				SecurityEvaluator.SecNode.Type.Anonymous, id.getLabelString()));
 		return SecuredResourceImpl.getInstance(
 				this, holder.getBaseItem().createResource(id));
 	}
@@ -983,8 +983,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResource createResource( final Resource type )
 	{
 		checkUpdate();
-		final SecurityEvaluator.Triple t = new SecurityEvaluator.Triple(
-				SecurityEvaluator.Node.FUTURE, SecuredItemImpl.convert(RDF.type
+		final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE, SecuredItemImpl.convert(RDF.type
 						.asNode()), SecuredItemImpl.convert(type.asNode()));
 		checkCreate(t);
 
@@ -1011,7 +1011,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResource createResource( final String uri, final Resource type )
 	{
 		final Resource r = ResourceFactory.createResource(uri);
-		final SecurityEvaluator.Triple t = new SecurityEvaluator.Triple(
+		final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(
 				SecuredItemImpl.convert(r.asNode()),
 				SecuredItemImpl.convert(RDF.type.asNode()),
 				SecuredItemImpl.convert(type.asNode()));
@@ -1045,7 +1045,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredSeq createSeq()
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(RDF.type.asNode()),
 				SecuredItemImpl.convert(RDF.Alt.asNode())));
 		return SecuredSeqImpl.getInstance(
@@ -1393,7 +1393,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			throw new IllegalArgumentException("Illegal Node type: " + n);
+			throw new IllegalArgumentException("Illegal SecNode type: " + n);
 		}
 
 		if (holder.getBaseItem().containsResource(rdfNode))

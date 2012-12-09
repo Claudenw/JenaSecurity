@@ -17,8 +17,8 @@
  */
 package org.xenei.jena.security;
 
-import org.xenei.jena.security.SecurityEvaluator.Node;
-import org.xenei.jena.security.SecurityEvaluator.Triple;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
 /**
  * The secured item interface is mixed into instances of secured objects by the
@@ -56,19 +56,19 @@ public interface SecuredItem
 
 	/**
 	 * Return true if the triple can be created.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param t
 	 *            The triple to check
 	 * @return true if the triple can be created.
 	 */
-	public boolean canCreate( Triple t );
+	public boolean canCreate( SecTriple t );
 
 	/**
 	 * @return true if the model allows items to to be deleted.
@@ -77,19 +77,19 @@ public interface SecuredItem
 
 	/**
 	 * Return true if the triple can be deleted.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param t
 	 *            The triple to check
 	 * @return true if the triple can be deleted.
 	 */
-	public boolean canDelete( Triple t );
+	public boolean canDelete( SecTriple t );
 
 	/**
 	 * @return true if the model allows items to to be read.
@@ -98,7 +98,7 @@ public interface SecuredItem
 
 	/**
 	 * Return true if the triple can be read.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -113,7 +113,7 @@ public interface SecuredItem
 	 *            The triple to check
 	 * @return true if the triple can be read.
 	 */
-	public boolean canRead( Triple t );
+	public boolean canRead( SecTriple t );
 
 	/**
 	 * @return true if the model allows items to to be updated.
@@ -122,13 +122,13 @@ public interface SecuredItem
 
 	/**
 	 * Return true if the triple can be updated.
-	 * If any s,p or o is Node.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
 	 * is allowed to vary.
 	 * 
-	 * See canRead(Triple t)
+	 * See canRead(SecTriple t)
 	 * 
 	 * @param from
 	 *            The triple that will be changed
@@ -136,7 +136,7 @@ public interface SecuredItem
 	 *            The resulting triple.
 	 * @return true if the from triple can be updated as the to triple.
 	 */
-	public boolean canUpdate( Triple from, Triple to );
+	public boolean canUpdate( SecTriple from, SecTriple to );
 
 	@Override
 	public boolean equals( Object o );
@@ -154,7 +154,7 @@ public interface SecuredItem
 	/**
 	 * @return The node represnetation of the model IRI.
 	 */
-	public Node getModelNode();
+	public SecNode getModelNode();
 
 	/**
 	 * The SecurityEvaluator implementation that is being used to determine

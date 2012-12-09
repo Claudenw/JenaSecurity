@@ -27,7 +27,7 @@ import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.SecurityEvaluator.Node;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
 
 /**
  * A filter for to filter ExtendedIterators on Triples.
@@ -37,7 +37,7 @@ import org.xenei.jena.security.SecurityEvaluator.Node;
 public class PermTripleFilter extends Filter<Triple>
 {
 	private final SecurityEvaluator evaluator;
-	private final Node modelNode;
+	private final SecNode modelNode;
 	private final Set<Action> actions;
 
 	/**

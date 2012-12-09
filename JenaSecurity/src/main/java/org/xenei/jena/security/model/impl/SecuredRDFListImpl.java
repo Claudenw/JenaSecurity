@@ -96,12 +96,12 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	 * {
 	 * if (!endOfList())
 	 * {
-	 * final Node candidate = current.getRequiredProperty(listFirst())
+	 * final SecNode candidate = current.getRequiredProperty(listFirst())
 	 * .getObject().asNode();
 	 * return getSecurityEvaluator().evaluate(
 	 * restrictions,
 	 * getModelNode(),
-	 * new SecurityEvaluator.Triple(SecuredItemImpl
+	 * new SecurityEvaluator.SecTriple(SecuredItemImpl
 	 * .convert(current.asNode()), SecuredItemImpl
 	 * .convert(RDF.first.asNode()), SecuredItemImpl
 	 * .convert(candidate)));
@@ -363,10 +363,10 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 
 	private void checkCreateNewList( final RDFNode value, final Resource tail )
 	{
-		checkCreate(new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listFirst().asNode()),
 				SecuredItemImpl.convert(value.asNode())));
-		checkCreate(new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listRest().asNode()),
 				SecuredItemImpl.convert(tail.asNode())));
 	}
@@ -403,20 +403,20 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 		}
 		else
 		{
-			final org.xenei.jena.security.SecurityEvaluator.Node p = SecuredItemImpl
+			final org.xenei.jena.security.SecurityEvaluator.SecNode p = SecuredItemImpl
 					.convert(listFirst().asNode());
-			org.xenei.jena.security.SecurityEvaluator.Triple t = new org.xenei.jena.security.SecurityEvaluator.Triple(
-					org.xenei.jena.security.SecurityEvaluator.Node.FUTURE,
+			org.xenei.jena.security.SecurityEvaluator.SecTriple t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
+					org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
 					p,
-					org.xenei.jena.security.SecurityEvaluator.Node.ANY);
+					org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
 			if (!canCreate(t))
 			{
 				final List<RDFNode> list = new ArrayList<RDFNode>();
 				while (nodes.hasNext())
 				{
 					final RDFNode n = nodes.next();
-					t = new org.xenei.jena.security.SecurityEvaluator.Triple(
-							org.xenei.jena.security.SecurityEvaluator.Node.FUTURE,
+					t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
+							org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
 							p, SecuredItemImpl.convert(n.asNode()));
 					checkCreate(t);
 					list.add(n);
@@ -443,12 +443,12 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 		}
 		else
 		{
-			final org.xenei.jena.security.SecurityEvaluator.Node p = SecuredItemImpl
+			final org.xenei.jena.security.SecurityEvaluator.SecNode p = SecuredItemImpl
 					.convert(listFirst().asNode());
-			org.xenei.jena.security.SecurityEvaluator.Triple t = new org.xenei.jena.security.SecurityEvaluator.Triple(
-					org.xenei.jena.security.SecurityEvaluator.Node.FUTURE,
+			org.xenei.jena.security.SecurityEvaluator.SecTriple t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
+					org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
 					p,
-					org.xenei.jena.security.SecurityEvaluator.Node.ANY);
+					org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
 			if (!canCreate(t))
 			{
 				final ExtendedIterator<RDFNode> iter = list.iterator();
@@ -456,8 +456,8 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 				{
 					while (iter.hasNext())
 					{
-						t = new org.xenei.jena.security.SecurityEvaluator.Triple(
-								org.xenei.jena.security.SecurityEvaluator.Node.FUTURE,
+						t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
+								org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
 								p, SecuredItemImpl
 										.convert(iter.next().asNode()));
 						checkCreate(t);
@@ -1041,7 +1041,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	public SecuredRDFList with( final RDFNode value )
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.Triple(SecurityEvaluator.Node.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listFirst().asNode()),
 				SecuredItemImpl.convert(value.asNode())));
 		return SecuredRDFListImpl.getInstance(getModel(), holder.getBaseItem()

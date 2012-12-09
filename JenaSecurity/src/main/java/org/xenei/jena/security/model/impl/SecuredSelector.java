@@ -9,8 +9,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecurityEvaluator.Node;
-import org.xenei.jena.security.SecurityEvaluator.Triple;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
 public class SecuredSelector implements Selector
 {
@@ -29,9 +29,9 @@ public class SecuredSelector implements Selector
 		this.selector = selector;
 	}
 
-	private Node getNode( final RDFNode node )
+	private SecNode getNode( final RDFNode node )
 	{
-		return node == null ? Node.ANY : SecuredItemImpl.convert(node.asNode());
+		return node == null ? SecNode.ANY : SecuredItemImpl.convert(node.asNode());
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class SecuredSelector implements Selector
 	@Override
 	public boolean isSimple()
 	{
-		return securedItem.canRead(Triple.ANY);
+		return securedItem.canRead(SecTriple.ANY);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class SecuredSelector implements Selector
 	{
 		if (selector.test(s))
 		{
-			final Triple t = new Triple(getNode(s.getSubject()),
+			final SecTriple t = new SecTriple(getNode(s.getSubject()),
 					getNode(s.getPredicate()), getNode(s.getObject()));
 			return securedItem.canRead(t);
 		}

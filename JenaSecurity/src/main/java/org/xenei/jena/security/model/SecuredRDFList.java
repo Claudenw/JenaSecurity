@@ -19,8 +19,8 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple(Node.FUTURE, listFirst(), value)
-	 * @tripleSec Create Triple(Node.FUTURE, listFirst(), listNil())
+	 * @tripleSec Create SecTriple(SecNode.FUTURE, listFirst(), value)
+	 * @tripleSec Create SecTriple(SecNode.FUTURE, listFirst(), listNil())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -85,7 +85,7 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.first, node ) for each node in
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each node in
 	 *            nodes.
 	 * @throws AccessDeniedException
 	 */
@@ -95,7 +95,7 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.first, node ) for each node in
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each node in
 	 *            list.
 	 * @throws AccessDeniedException
 	 */
@@ -104,8 +104,8 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.first, value )
-	 * @tripleSec Create Triple( Node.FUTURE, RDF.rest, this )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, value )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.rest, this )
 	 * @throws AccessDeniedException
 	 */
 	@Override

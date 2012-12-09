@@ -19,7 +19,7 @@
 package org.xenei.jena.security;
 
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.SecurityEvaluator.Node;
+import org.xenei.jena.security.SecurityEvaluator.SecNode;
 
 /**
  * Exception thrown by the security system when an action is not allowed.
@@ -32,12 +32,12 @@ public class AccessDeniedException extends RuntimeException
 
 	String triple;
 
-	public AccessDeniedException( final Node uri, final Action action )
+	public AccessDeniedException( final SecNode uri, final Action action )
 	{
 		super(String.format("model sec. %s: %s", uri, action));
 	}
 
-	public AccessDeniedException( final Node uri, final String triple,
+	public AccessDeniedException( final SecNode uri, final String triple,
 			final Action action )
 	{
 		super(String.format("triple sec. %s: %s", uri, action));

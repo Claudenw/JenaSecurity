@@ -207,7 +207,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -216,7 +216,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -225,7 +225,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -234,7 +234,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -243,7 +243,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -252,7 +252,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -261,7 +261,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -269,7 +269,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -278,7 +278,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,o)
+	 * @tripleSec Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -287,7 +287,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read Triple(this,p,literal(o,l))
+	 * @tripleSec Read SecTriple(this,p,literal(o,l))
 	 * @throws AccessDeniedException
 	 */
 	@Override
