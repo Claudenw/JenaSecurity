@@ -58,7 +58,7 @@ import org.xenei.jena.security.model.impl.SecuredStatementIterator;
  * 
  * Use the SecuredModel.Factory to create instances
  */
-public interface SecuredModel extends Model, SecuredItem, SecuredPrefixMapping
+public interface SecuredModel extends Model, SecuredPrefixMapping//, SecuredItem
 {
 
 	@Override

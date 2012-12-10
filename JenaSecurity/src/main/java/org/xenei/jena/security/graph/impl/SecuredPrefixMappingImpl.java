@@ -44,7 +44,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	 * @param holder
 	 *            The item holder that will contain this SecuredPrefixMapping.
 	 */
-	SecuredPrefixMappingImpl( final SecuredGraph graph,
+	SecuredPrefixMappingImpl( final SecuredGraphImpl graph,
 			final ItemHolder<PrefixMapping, SecuredPrefixMapping> holder )
 	{
 		super(graph, holder);

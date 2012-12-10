@@ -64,7 +64,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	 * @param holder
 	 *            The item holder that will contain this SecuredReifier.
 	 */
-	SecuredReifierImpl( final SecuredGraph graph,
+	SecuredReifierImpl( final SecuredGraphImpl graph,
 			final ItemHolder<Reifier, SecuredReifier> holder )
 	{
 		super(graph, holder);

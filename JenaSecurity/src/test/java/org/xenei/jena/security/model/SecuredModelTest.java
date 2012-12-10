@@ -1861,14 +1861,29 @@ public class SecuredModelTest
 	}
 
 	@Test
-	@Ignore
 	public void testVariableInModel()
 	{
-		// test literal
-		final RDFNode rdfNode = ResourceFactory.createTypedLiteral("yeehaw");
-		final RDFNode rdfNode2 = rdfNode.inModel(model);
-		Assert.assertEquals("Should have placed RDFNode in secured model",
-				model, rdfNode2.getModel());
+		try
+		{
+			final RDFNode rdfNode = ResourceFactory.createTypedLiteral("yeehaw");
+			final RDFNode rdfNode2 = rdfNode.inModel(model);
+			if (!securityEvaluator.evaluate(Action.Update))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+			Assert.assertEquals("Should have placed RDFNode in secured model",
+					model, rdfNode2.getModel());
+			
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Update))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
 	}
 
 	@Test

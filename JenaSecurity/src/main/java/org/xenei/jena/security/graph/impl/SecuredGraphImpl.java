@@ -51,7 +51,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	// the prefixMapping for this graph.
 	private SecuredPrefixMapping prefixMapping;
 	// the item holder that contains this SecuredGraph
-	private final ItemHolder<Graph, SecuredGraph> holder;
+	private final ItemHolder<Graph, SecuredGraphImpl> holder;
 
 	private final SecuredGraphEventManager eventManager;
 
@@ -66,20 +66,20 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	 *            The item holder that will contain this SecuredGraph.
 	 */
 	SecuredGraphImpl( final SecuredItem securedItem,
-			final ItemHolder<Graph, SecuredGraph> holder )
+			final ItemHolder<Graph, SecuredGraphImpl> holder )
 	{
 		super(securedItem, holder);
 		this.holder = holder;
-		this.eventManager = new SecuredGraphEventManager(this, holder
+		this.eventManager = new SecuredGraphEventManager(this, holder.getBaseItem(), holder
 				.getBaseItem().getEventManager());
 	}
 
 	SecuredGraphImpl( final SecurityEvaluator securityEvaluator,
-			final String modelURI, final ItemHolder<Graph, SecuredGraph> holder )
+			final String modelURI, final ItemHolder<Graph, SecuredGraphImpl> holder )
 	{
 		super(securityEvaluator, modelURI, holder);
 		this.holder = holder;
-		this.eventManager = new SecuredGraphEventManager(this, holder
+		this.eventManager = new SecuredGraphEventManager(this, holder.getBaseItem(), holder
 				.getBaseItem().getEventManager());
 	}
 
@@ -100,17 +100,33 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	@Override
 	public boolean contains( final Node s, final Node p, final Node o )
 	{
-		checkRead();
-		checkRead(new Triple(s, p, o));
-		return holder.getBaseItem().contains(s, p, o);
+		return contains(new Triple(s, p, o));
 	}
 
 	@Override
 	public boolean contains( final Triple t )
 	{
 		checkRead();
-		checkRead(t);
-		return holder.getBaseItem().contains(t);
+		if (canRead(t))
+		{
+			return holder.getBaseItem().contains(t);
+		}
+		ExtendedIterator<Triple> iter = holder.getBaseItem().find(t);
+		try 
+		{
+			while (iter.hasNext())
+			{
+				if (canRead(iter.next()))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		finally {
+			iter.close();
+		}
+			
 	}
 
 	private synchronized void createPrefixMapping()
@@ -179,7 +195,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	public SecuredBulkUpdateHandler getBulkUpdateHandler()
 	{
 		return org.xenei.jena.security.graph.impl.Factory.getInstance(
-				this, holder.getBaseItem().getBulkUpdateHandler());
+				this, holder.getBaseItem(), holder.getBaseItem().getBulkUpdateHandler());
 	}
 
 	@Override
@@ -238,7 +254,7 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	public boolean isEmpty()
 	{
 		checkRead();
-		return holder.getBaseItem().isClosed();
+		return holder.getBaseItem().isEmpty();
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import org.xenei.jena.security.CachedSecurityEvaluator;
 import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.graph.impl.SecuredGraphImpl;
 import org.xenei.jena.security.utils.CollectionGraph;
 import org.xenei.jena.security.utils.PermTripleFilter;
 
@@ -45,15 +46,51 @@ public class SecuredGraphEventManager implements GraphEventManager
 			this.runAs = securedGraph.getSecurityEvaluator().getPrincipal();
 		}
 
+		private Triple[] getArray( Graph g, Triple[] triples, Set<Action> perms)
+		{
+			Triple[] retval = triples;
+			if (g instanceof SecuredGraphImpl)
+			{
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
+				final SecurityEvaluator evaluator = CachedSecurityEvaluator
+						.getInstance(sg.getSecurityEvaluator(), runAs);
+				if (evaluator.evaluateAny(perms,
+						sg.getModelNode()))
+				{
+					if (!evaluator.evaluateAny(perms,
+							sg.getModelNode(),
+							SecuredItemImpl.convert(Triple.ANY)))
+					{
+						List<Triple> list = wrapPermIterator( sg, Arrays.asList(triples).iterator(), perms ).toList();
+						retval = list.toArray( new Triple[list.size()]);
+					}
+					else {
+						retval = triples;
+					}
+				}
+				else
+				{
+					retval = new Triple[0];
+				}
+			}
+			return retval;
+		}
+		
 		@Override
 		public void notifyAddArray( final Graph g, final Triple[] triples )
 		{
-			notifyAddList(g, Arrays.asList(triples));
+			Triple[] added = getArray( g, triples, SecuredGraphEventManager.ADD );
+
+			if (added.length > 0)
+			{
+				wrapped.notifyAddArray(g, added );
+			}
 		}
 
 		@Override
 		public void notifyAddGraph( final Graph g, final Graph added )
 		{
+			Graph addGraph = added;
 			if (g instanceof SecuredGraph)
 			{
 				final SecuredGraph sg = (SecuredGraph) g;
@@ -62,66 +99,55 @@ public class SecuredGraphEventManager implements GraphEventManager
 				if (evaluator.evaluateAny(SecuredGraphEventManager.ADD,
 						sg.getModelNode()))
 				{
-					Graph g2 = added;
 					if (!evaluator.evaluateAny(SecuredGraphEventManager.ADD,
 							sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						g2 = new CollectionGraph(added
-								.find(Triple.ANY)
-								.filterKeep(
-										new PermTripleFilter(
-												SecuredGraphEventManager.ADD,
-												sg, evaluator)).toList());
-
+						List<Triple> lst = added.find(Triple.ANY).toList();
+					addGraph = new CollectionGraph( Arrays.asList( getArray( g, lst.toArray(new Triple[lst.size()]), SecuredGraphEventManager.ADD )));
 					}
-					wrapped.notifyAddGraph(g, g2);
+					else
+					{
+						addGraph = added;
+					}
 				}
 				else
 				{
-					// do nothing.
+					addGraph = new CollectionGraph( Collections.<Triple> emptyList() );
 				}
-			}
-			else
-			{
-				wrapped.notifyAddGraph(g, added);
-			}
+			}	
+				if (addGraph.size()>0)
+				{
+					wrapped.notifyAddGraph(g, addGraph);
+					
+				}		
 		}
 
-		@SuppressWarnings( "unchecked" )
 		@Override
 		public void notifyAddIterator( final Graph g, final Iterator<Triple> it )
 		{
-			Iterator<Triple> iter = it;
-			if (g instanceof SecuredGraph)
+		
+			if (g instanceof SecuredGraphImpl)
 			{
-				final SecuredGraph sg = (SecuredGraph) g;
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
+				// only report if we can write to the graph
 				if (evaluator.evaluateAny(SecuredGraphEventManager.ADD,
 						sg.getModelNode()))
 				{
-
-					if (!evaluator.evaluateAny(SecuredGraphEventManager.ADD,
-							sg.getModelNode(),
-							SecuredItemImpl.convert(Triple.ANY)))
-					{
-						iter = WrappedIterator.create(it).filterKeep(
-								new PermTripleFilter(
-										SecuredGraphEventManager.ADD, sg,
-										evaluator));
+					ExtendedIterator<Triple> iter = wrapPermIterator( sg, it, SecuredGraphEventManager.ADD );
+					try {
+						wrapped.notifyAddIterator(g, iter);
 					}
-					// else use the default list as all can bee seen
-					wrapped.notifyAddIterator(g, iter);
-				}
-				else
-				{
-					// do nothing.
+					finally {
+						iter.close();
+					}
 				}
 			}
 			else
 			{
-				wrapped.notifyAddIterator(g, iter);
+				wrapped.notifyAddIterator(g, it);
 			}
 
 		}
@@ -130,9 +156,9 @@ public class SecuredGraphEventManager implements GraphEventManager
 		public void notifyAddList( final Graph g, final List<Triple> triples )
 		{
 			List<Triple> list = triples;
-			if (g instanceof SecuredGraph)
+			if (g instanceof SecuredGraphImpl)
 			{
-				final SecuredGraph sg = (SecuredGraph) g;
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
 				if (evaluator.evaluateAny(SecuredGraphEventManager.ADD,
@@ -142,14 +168,11 @@ public class SecuredGraphEventManager implements GraphEventManager
 							sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						list = WrappedIterator
-								.create(triples.iterator())
-								.filterKeep(
-										new PermTripleFilter(
-												SecuredGraphEventManager.ADD,
-												sg, evaluator)).toList();
+						list = wrapPermIterator( sg, triples.iterator(), SecuredGraphEventManager.ADD ).toList();
 					}
-					// else use the default list as all can bee seen
+					else {
+						list = triples;
+					}
 				}
 				else
 				{
@@ -159,7 +182,8 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 			if (list.size() > 0)
 			{
-				wrapped.notifyAddList(g, list);
+				
+				wrapped.notifyAddList(g, list );
 			}
 		}
 
@@ -194,15 +218,44 @@ public class SecuredGraphEventManager implements GraphEventManager
 		@Override
 		public void notifyDeleteArray( final Graph g, final Triple[] triples )
 		{
-			notifyDeleteList(g, Arrays.asList(triples));
+			Triple[] deleted = triples;
+			if (g instanceof SecuredGraphImpl)
+			{
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
+				final SecurityEvaluator evaluator = CachedSecurityEvaluator
+						.getInstance(sg.getSecurityEvaluator(), runAs);
+				if (evaluator.evaluateAny(SecuredGraphEventManager.DELETE,
+						sg.getModelNode()))
+				{
+					if (!evaluator.evaluateAny(SecuredGraphEventManager.DELETE,
+							sg.getModelNode(),
+							SecuredItemImpl.convert(Triple.ANY)))
+					{
+						List<Triple> list = wrapPermIterator( sg, Arrays.asList(triples).iterator(), SecuredGraphEventManager.DELETE ).toList();
+						deleted = list.toArray( new Triple[list.size()]);
+					}
+					else {
+						deleted = triples;
+					}
+				}
+				else
+				{
+					deleted = new Triple[0];
+				}
+			}
+
+			if (deleted.length > 0)
+			{
+				wrapped.notifyDeleteArray(g, deleted );
+			}
 		}
 
 		@Override
 		public void notifyDeleteGraph( final Graph g, final Graph removed )
 		{
-			if (g instanceof SecuredGraph)
+			if (g instanceof SecuredGraphImpl)
 			{
-				final SecuredGraph sg = (SecuredGraph) g;
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
 				if (evaluator.evaluateAny(SecuredGraphEventManager.DELETE,
@@ -240,9 +293,9 @@ public class SecuredGraphEventManager implements GraphEventManager
 				final Iterator<Triple> it )
 		{
 			Iterator<Triple> iter = it;
-			if (g instanceof SecuredGraph)
+			if (g instanceof SecuredGraphImpl)
 			{
-				final SecuredGraph sg = (SecuredGraph) g;
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
 				if (evaluator.evaluateAny(SecuredGraphEventManager.DELETE,
@@ -277,9 +330,9 @@ public class SecuredGraphEventManager implements GraphEventManager
 		public void notifyDeleteList( final Graph g, final List<Triple> triples )
 		{
 			List<Triple> list = triples;
-			if (g instanceof SecuredGraph)
+			if (g instanceof SecuredGraphImpl)
 			{
-				final SecuredGraph sg = (SecuredGraph) g;
+				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
 				if (evaluator.evaluateAny(SecuredGraphEventManager.DELETE,
@@ -344,10 +397,28 @@ public class SecuredGraphEventManager implements GraphEventManager
 			wrapped.notifyEvent(source, value);
 		}
 
+		private ExtendedIterator<Triple> wrapPermIterator( SecuredGraphImpl sg, Iterator<Triple> it, Set<Action> perms )
+		{
+			final SecurityEvaluator evaluator = CachedSecurityEvaluator
+					.getInstance(sg.getSecurityEvaluator(), runAs);
+			if (!evaluator.evaluateAny(perms,
+						sg.getModelNode(),
+						SecuredItemImpl.convert(Triple.ANY)))
+				{
+					// nope so wrap the iterator with security iterator
+					return WrappedIterator.create(it).filterKeep(
+							new PermTripleFilter(
+									perms, sg,
+									evaluator));
+				}
+				return WrappedIterator.create(it);	
+		}
+
 	}
 
 	// the security evaluator in use
 	private final SecuredGraph securedGraph;
+	private final Graph baseGraph;
 	private final Map<GraphListener, Stack<SecuredGraphListener>> listenerMap = new HashMap<GraphListener, Stack<SecuredGraphListener>>();
 	private static Set<Action> DELETE;
 
@@ -361,10 +432,11 @@ public class SecuredGraphEventManager implements GraphEventManager
 				Arrays.asList(new Action[] { Action.Delete, Action.Read }));
 	}
 
-	public SecuredGraphEventManager( final SecuredGraph securedGraph,
+	public SecuredGraphEventManager( final SecuredGraph securedGraph, final Graph baseGraph,
 			final GraphEventManager manager )
 	{
 		this.securedGraph = securedGraph;
+		this.baseGraph = baseGraph;
 		manager.register(this);
 	}
 
@@ -388,7 +460,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddArray( final Graph g, final Triple[] triples )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -406,7 +478,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddGraph( final Graph g, final Graph added )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -424,24 +496,24 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddIterator( final Graph g, final Iterator<Triple> it )
 	{
-		notifyAddList(g, WrappedIterator.create(it).toList());
-		securedGraph.getBaseItem().equals(g);
+		notifyAddIterator(g, WrappedIterator.create(it).toList());
+		baseGraph.equals(g);
 	}
 
 	@Override
 	public void notifyAddIterator( final Graph g, final List<Triple> triples )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
-				sgl.notifyAddList(securedGraph, triples);
+				sgl.notifyAddIterator(securedGraph, triples.iterator());
 			}
 			else
 			{
-				sgl.notifyAddList(g, triples);
+				sgl.notifyAddIterator(g, triples.iterator());
 			}
 		}
 	}
@@ -449,7 +521,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddList( final Graph g, final List<Triple> triples )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -467,7 +539,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyAddTriple( final Graph g, final Triple t )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -485,7 +557,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyDeleteArray( final Graph g, final Triple[] triples )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -503,7 +575,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyDeleteGraph( final Graph g, final Graph removed )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -521,23 +593,23 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyDeleteIterator( final Graph g, final Iterator<Triple> it )
 	{
-		notifyDeleteList(g, WrappedIterator.create(it).toList());
+		notifyDeleteIterator(g, WrappedIterator.create(it).toList());
 	}
 
 	@Override
 	public void notifyDeleteIterator( final Graph g, final List<Triple> triples )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
 			if (wrap)
 			{
-				sgl.notifyDeleteList(securedGraph, triples);
+				sgl.notifyDeleteIterator(securedGraph, triples.iterator());
 			}
 			else
 			{
-				sgl.notifyDeleteList(g, triples);
+				sgl.notifyDeleteIterator(g, triples.iterator());
 			}
 		}
 	}
@@ -545,7 +617,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyDeleteList( final Graph g, final List<Triple> L )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -563,7 +635,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyDeleteTriple( final Graph g, final Triple t )
 	{
-		final boolean wrap = securedGraph.getBaseItem().equals(g);
+		final boolean wrap = baseGraph.equals(g);
 
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
@@ -581,15 +653,20 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyEvent( final Graph source, final Object value )
 	{
-		if (source.equals(securedGraph))
-		{
-			final Graph g = (Graph) securedGraph.getBaseItem();
-			g.getEventManager().notifyEvent(g, value);
-		}
+		final boolean wrap = baseGraph.equals(source);
+
 		for (final SecuredGraphListener sgl : getListenerCollection())
 		{
-			sgl.notifyEvent(source, value);
+			if (wrap)
+			{
+				sgl.notifyEvent(securedGraph, value);
+			}
+			else
+			{
+				sgl.notifyEvent(source, value);
+			}
 		}
+		
 	}
 
 	@Override
@@ -599,7 +676,6 @@ public class SecuredGraphEventManager implements GraphEventManager
 		if (sgl == null)
 		{
 			sgl = new Stack<SecuredGraphListener>();
-			;
 		}
 		sgl.push(new SecuredGraphListener(listener));
 		listenerMap.put(listener, sgl);

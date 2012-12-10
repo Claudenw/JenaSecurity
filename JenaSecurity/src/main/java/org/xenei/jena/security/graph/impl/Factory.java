@@ -42,14 +42,14 @@ public class Factory
 	 *            The unsecured handler from the base graph.
 	 * @return SecuredBulkUpdateHandler.
 	 */
-	static SecuredBulkUpdateHandler getInstance( final SecuredGraph graph,
+	static SecuredBulkUpdateHandler getInstance( final SecuredGraphImpl graph, final Graph baseGraph,
 			final BulkUpdateHandler handler )
 	{
 		final ItemHolder<BulkUpdateHandler, SecuredBulkUpdateHandler> holder = new ItemHolder<BulkUpdateHandler, SecuredBulkUpdateHandler>(
 				handler);
 
 		final SecuredBulkUpdateHandlerImpl checker = new SecuredBulkUpdateHandlerImpl(
-				graph, holder);
+				graph, baseGraph, holder );
 
 		// if we are going to create a duplicate proxy, just return this
 		// one.
@@ -74,7 +74,7 @@ public class Factory
 	 *            The prefixmapping returned from the base graph.
 	 * @return The SecuredPrefixMapping.
 	 */
-	static SecuredPrefixMapping getInstance( final SecuredGraph graph,
+	static SecuredPrefixMapping getInstance( final SecuredGraphImpl graph,
 			final PrefixMapping prefixMapping )
 	{
 
@@ -104,7 +104,7 @@ public class Factory
 	 *            The base reifier from the base graph.
 	 * @return
 	 */
-	static SecuredReifier getInstance( final SecuredGraph graph,
+	static SecuredReifier getInstance( final SecuredGraphImpl graph,
 			final Reifier reifier )
 	{
 
@@ -139,16 +139,16 @@ public class Factory
 			final Graph graph )
 	{
 
-		final ItemHolder<Graph, SecuredGraph> holder = new ItemHolder<Graph, SecuredGraph>(
+		final ItemHolder<Graph, SecuredGraphImpl> holder = new ItemHolder<Graph, SecuredGraphImpl>(
 				graph);
 		final SecuredGraphImpl checker = new SecuredGraphImpl(
 				securityEvaluator, graphIRI, holder) {
 		};
 
-		// If we goint to create a duplicate proxy return this one.
-		if (graph instanceof SecuredGraph)
+		// If we going to create a duplicate proxy return this one.
+		if (graph instanceof SecuredGraphImpl)
 		{
-			if (checker.isEquivalent((SecuredGraph) graph))
+			if (checker.isEquivalent((SecuredGraphImpl) graph))
 			{
 				return (SecuredGraph) graph;
 			}
