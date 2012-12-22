@@ -50,13 +50,14 @@ public interface SecuredItem
 	}
 
 	/**
-	 * @return true if the model allows items to to be created.
+	 * @return true if the securedModel allows items to to be created.
 	 */
 	public boolean canCreate();
 
 	/**
 	 * Return true if the triple can be created.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -71,13 +72,14 @@ public interface SecuredItem
 	public boolean canCreate( SecTriple t );
 
 	/**
-	 * @return true if the model allows items to to be deleted.
+	 * @return true if the securedModel allows items to to be deleted.
 	 */
 	public boolean canDelete();
 
 	/**
 	 * Return true if the triple can be deleted.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -92,13 +94,14 @@ public interface SecuredItem
 	public boolean canDelete( SecTriple t );
 
 	/**
-	 * @return true if the model allows items to to be read.
+	 * @return true if the securedModel allows items to to be read.
 	 */
 	public boolean canRead();
 
 	/**
 	 * Return true if the triple can be read.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -116,13 +119,14 @@ public interface SecuredItem
 	public boolean canRead( SecTriple t );
 
 	/**
-	 * @return true if the model allows items to to be updated.
+	 * @return true if the securedModel allows items to to be updated.
 	 */
 	public boolean canUpdate();
 
 	/**
 	 * Return true if the triple can be updated.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -147,12 +151,12 @@ public interface SecuredItem
 	public Object getBaseItem();
 
 	/**
-	 * @return The IRI of the model that the item belongs to.
+	 * @return The IRI of the securedModel that the item belongs to.
 	 */
 	public String getModelIRI();
 
 	/**
-	 * @return The node represnetation of the model IRI.
+	 * @return The node represnetation of the securedModel IRI.
 	 */
 	public SecNode getModelNode();
 

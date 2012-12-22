@@ -12,9 +12,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredAlt;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredAltImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )

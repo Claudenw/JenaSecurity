@@ -4,7 +4,6 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -16,57 +15,59 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.graph.SecuredGraph;
-import org.xenei.jena.security.graph.SecuredPrefixMapping;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class SecuredPrefixMappingTest
 {
-	private final SecurityEvaluator securityEvaluator;
-	protected SecuredPrefixMapping securedMapping;
-
-	
-	public static void runTests(SecurityEvaluator securityEvaluator, PrefixMapping prefixMapping) throws Exception
+	public static void runTests( final SecurityEvaluator securityEvaluator,
+			final PrefixMapping prefixMapping ) throws Exception
 	{
 		final PrefixMapping pm = prefixMapping;
-			Assert.assertNotNull( "PrefixMapping may not be null", pm );
-			Assert.assertTrue( "PrefixMapping should be secured", pm instanceof SecuredPrefixMapping );
-			SecuredPrefixMappingTest pmTest = new SecuredPrefixMappingTest( securityEvaluator ){
-				public void setup()
-				{
-					this.securedMapping = (SecuredPrefixMapping)pm;
-				}
-			};
-			Method lockTest = null;
-			for (Method m : pmTest.getClass().getMethods())
+		Assert.assertNotNull("PrefixMapping may not be null", pm);
+		Assert.assertTrue("PrefixMapping should be secured",
+				pm instanceof SecuredPrefixMapping);
+		final SecuredPrefixMappingTest pmTest = new SecuredPrefixMappingTest(
+				securityEvaluator) {
+			@Override
+			public void setup()
 			{
-				if (m.isAnnotationPresent(Test.class))
-				{
-					// lock test must come last
-					if (!m.getName().equals( "lockTest"))
-					{
-						lockTest = m;
-					}
-					else
-					{
-						pmTest.setup();
-						m.invoke( pmTest );
-					}
-					
-				}
+				this.securedMapping = (SecuredPrefixMapping) pm;
 			}
-			pmTest.setup();
-			lockTest.invoke( pmTest );
-		
+		};
+		Method lockTest = null;
+		for (final Method m : pmTest.getClass().getMethods())
+		{
+			if (m.isAnnotationPresent(Test.class))
+			{
+				// lock test must come last
+				if (!m.getName().equals("lockTest"))
+				{
+					lockTest = m;
+				}
+				else
+				{
+					pmTest.setup();
+					m.invoke(pmTest);
+				}
+
+			}
+		}
+		pmTest.setup();
+		lockTest.invoke(pmTest);
+
 	}
-	
-	public SecuredPrefixMappingTest( final SecurityEvaluator securityEvaluator)
+
+	private final SecurityEvaluator securityEvaluator;
+
+	protected SecuredPrefixMapping securedMapping;
+
+	public SecuredPrefixMappingTest( final SecurityEvaluator securityEvaluator )
 	{
 		this.securityEvaluator = securityEvaluator;
 	}
-	
+
 	@Before
 	public void setup()
 	{
@@ -77,7 +78,6 @@ public class SecuredPrefixMappingTest
 		this.securedMapping = sg.getPrefixMapping();
 	}
 
-	
 	@Test
 	public void testExpandPrefix()
 	{

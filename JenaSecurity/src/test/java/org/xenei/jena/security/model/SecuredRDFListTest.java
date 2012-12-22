@@ -8,7 +8,6 @@ import com.hp.hpl.jena.rdf.model.RDFList.ReduceFn;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
 
 import java.util.ArrayList;
@@ -18,15 +17,13 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredRDFList;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredRDFListImpl;
 import org.xenei.jena.security.utils.RDFListIterator;
 import org.xenei.jena.security.utils.RDFListSecFilter;
@@ -34,10 +31,29 @@ import org.xenei.jena.security.utils.RDFListSecFilter;
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class SecuredRDFListTest extends SecuredResourceTest
 {
-
+	private RDFList baseList;
+	
 	public SecuredRDFListTest( final MockSecurityEvaluator securityEvaluator )
 	{
 		super(securityEvaluator);
+	}
+
+	private int count( final Action action )
+	{
+		final Iterator<RDFList> iter = new RDFListIterator(
+				(RDFList) getBaseRDFNode());
+		return WrappedIterator.create(iter)
+				.filterKeep(new RDFListSecFilter(getSecuredRDFList(), action))
+				.toList().size();
+	}
+
+	private int count( final Set<Action> action )
+	{
+		final Iterator<RDFList> iter = new RDFListIterator(
+				(RDFList) getBaseRDFNode());
+		return WrappedIterator.create(iter)
+				.filterKeep(new RDFListSecFilter(getSecuredRDFList(), action))
+				.toList().size();
 	}
 
 	private SecuredRDFList getSecuredRDFList()
@@ -55,8 +71,8 @@ public class SecuredRDFListTest extends SecuredResourceTest
 				ResourceFactory.createResource("http://example.com/ListNode2"),
 				ResourceFactory.createResource("http://example.com/ListNode3"),
 				ResourceFactory.createResource("http://example.com/ListNode4") };
-		final RDFList r = baseModel.createList(listElements);
-		setSecuredRDFNode(SecuredRDFListImpl.getInstance(securedModel, r), r);
+		baseList = baseModel.createList(listElements);
+		setSecuredRDFNode(SecuredRDFListImpl.getInstance(securedModel, baseList), baseList);
 	}
 
 	@Test
@@ -85,12 +101,56 @@ public class SecuredRDFListTest extends SecuredResourceTest
 	}
 
 	@Test
-	public void testAppend()
+	public void testAppendNodeIterator()
 	{
-		
-		getSecuredRDFList().append(baseModel.listObjects());
-		
-		getSecuredRDFList().append(baseModel.createList());
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+		try
+		{
+			getSecuredRDFList().append(baseModel.listObjects());
+			if (!securityEvaluator.evaluate(perms))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(perms))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+	
+	@Test
+	public void testAppendRDFList()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+
+		try {
+			getSecuredRDFList().append(baseModel.createList());
+			if (!securityEvaluator.evaluate(Action.Update))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+			if (!securityEvaluator.evaluate(Action.Create) && (baseList.size()>0 && securityEvaluator.evaluate(Action.Read) ))
+			{
+				Assert.fail("Should have thrown AccessDenied Exception");
+			}
+
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(perms))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
 	}
 
 	@Test
@@ -193,9 +253,11 @@ public class SecuredRDFListTest extends SecuredResourceTest
 
 		try
 		{
-			List<Resource> lst = new ArrayList<Resource>();
-			lst.add( ResourceFactory.createResource( "http://example.com/dummyList") );
-			getSecuredRDFList().concatenate(baseModel.createList( lst.iterator() ));
+			final List<Resource> lst = new ArrayList<Resource>();
+			lst.add(ResourceFactory
+					.createResource("http://example.com/dummyList"));
+			getSecuredRDFList().concatenate(
+					baseModel.createList(lst.iterator()));
 			if (!securityEvaluator.evaluate(perms))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
@@ -250,6 +312,26 @@ public class SecuredRDFListTest extends SecuredResourceTest
 		catch (final AccessDeniedException e)
 		{
 			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
+	
+	@Test
+	public void testCopy()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Read, Action.Update, Action.Create });
+		try
+		{
+			getSecuredRDFList().copy();
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(perms) ) 
 			{
 				Assert.fail(String
 						.format("Should not have thrown AccessDenied Exception: %s - %s",
@@ -559,17 +641,6 @@ public class SecuredRDFListTest extends SecuredResourceTest
 		}
 	}
 
-	private int count( Action action )
-	{
-		Iterator<RDFList> iter = new RDFListIterator((RDFList)getBaseRDFNode());
-		return WrappedIterator.create(iter).filterKeep( new RDFListSecFilter( getSecuredRDFList(), action )).toList().size();
-	}
-	
-	private int count( Set<Action> action )
-	{
-		Iterator<RDFList> iter = new RDFListIterator((RDFList)getBaseRDFNode());
-		return WrappedIterator.create(iter).filterKeep( new RDFListSecFilter( getSecuredRDFList(), action )).toList().size();
-	}
 	@Test
 	public void testRemove()
 	{
@@ -578,9 +649,11 @@ public class SecuredRDFListTest extends SecuredResourceTest
 
 		try
 		{
-			int count = count( Action.Delete );
+			final int count = count(Action.Delete);
 			getSecuredRDFList().remove(SecuredRDFNodeTest.s);
-			if (!securityEvaluator.evaluate(Action.Update) || (count>0 && !securityEvaluator.evaluate(Action.Delete)))
+			if (!securityEvaluator.evaluate(Action.Update)
+					|| ((count > 0) && !securityEvaluator
+							.evaluate(Action.Delete)))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -605,9 +678,12 @@ public class SecuredRDFListTest extends SecuredResourceTest
 
 		try
 		{
-			int count = count( SecurityEvaluator.Util.asSet(new Action[]{Action.Delete, Action.Read }));
+			final int count = count(SecurityEvaluator.Util.asSet(new Action[] {
+					Action.Delete, Action.Read }));
 			getSecuredRDFList().removeAll();
-			if (!securityEvaluator.evaluate(Action.Update) || (count>0 && !securityEvaluator.evaluate(Action.Delete)))
+			if (!securityEvaluator.evaluate(Action.Update)
+					|| ((count > 0) && !securityEvaluator
+							.evaluate(Action.Delete)))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -621,9 +697,9 @@ public class SecuredRDFListTest extends SecuredResourceTest
 								e, e.getTriple()));
 			}
 		}
-		catch (EmptyListException  e)
+		catch (final EmptyListException e)
 		{
-			if (count(Action.Read ) == 0)
+			if (count(Action.Read) == 0)
 			{
 				// expected.
 			}
@@ -657,9 +733,9 @@ public class SecuredRDFListTest extends SecuredResourceTest
 								e, e.getTriple()));
 			}
 		}
-		catch (EmptyListException  e)
+		catch (final EmptyListException e)
 		{
-			if (count(Action.Read ) == 0)
+			if (count(Action.Read) == 0)
 			{
 				// expected.
 			}
@@ -678,9 +754,11 @@ public class SecuredRDFListTest extends SecuredResourceTest
 
 		try
 		{
-			int count = count( Action.Delete );
+			final int count = count(Action.Delete);
 			getSecuredRDFList().removeList();
-			if (!securityEvaluator.evaluate(Action.Update) || (count>0 && !securityEvaluator.evaluate(Action.Delete)))
+			if (!securityEvaluator.evaluate(Action.Update)
+					|| ((count > 0) && !securityEvaluator
+							.evaluate(Action.Delete)))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -716,9 +794,9 @@ public class SecuredRDFListTest extends SecuredResourceTest
 								e, e.getTriple()));
 			}
 		}
-		catch (ListIndexException  e)
+		catch (final ListIndexException e)
 		{
-			if (count(Action.Read ) == 0)
+			if (count(Action.Read) == 0)
 			{
 				// expected.
 			}
@@ -754,7 +832,7 @@ public class SecuredRDFListTest extends SecuredResourceTest
 	@Test
 	public void testSetHead()
 	{
-		
+
 		try
 		{
 			getSecuredRDFList().setHead(SecuredRDFNodeTest.s);
@@ -772,9 +850,9 @@ public class SecuredRDFListTest extends SecuredResourceTest
 								e, e.getTriple()));
 			}
 		}
-		catch (EmptyListException  e)
+		catch (final EmptyListException e)
 		{
-			if (count(Action.Read ) == 0)
+			if (count(Action.Read) == 0)
 			{
 				// expected.
 			}

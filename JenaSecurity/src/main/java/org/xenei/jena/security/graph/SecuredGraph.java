@@ -28,7 +28,6 @@ import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 
@@ -40,10 +39,6 @@ import org.xenei.jena.security.SecurityEvaluator.SecNode;
 public interface SecuredGraph extends Graph
 {
 
-	public SecurityEvaluator getSecurityEvaluator();
-	
-	public SecNode getModelNode();
-	
 	/**
 	 * @graphSec Update
 	 * @tripleSec Create
@@ -115,11 +110,15 @@ public interface SecuredGraph extends Graph
 	@Override
 	public SecuredGraphEventManager getEventManager();
 
+	public SecNode getModelNode();
+
 	@Override
 	public SecuredPrefixMapping getPrefixMapping();
 
 	@Override
 	public SecuredReifier getReifier();
+
+	public SecurityEvaluator getSecurityEvaluator();
 
 	/**
 	 * @graphSec Read

@@ -22,8 +22,8 @@ import com.hp.hpl.jena.graph.Capabilities;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
-import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 import org.xenei.jena.security.SecurityEvaluator.SecNode.Type;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
 /**
  * The interface for secured Capabilities instances.

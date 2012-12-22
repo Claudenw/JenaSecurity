@@ -19,10 +19,8 @@ import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredModel;
-import org.xenei.jena.security.model.SecuredStatement;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredStatementImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -316,6 +314,31 @@ public class SecuredStatementTest
 	}
 
 	@Test
+	public void testGetProperty()
+	{
+		// get property of the object
+		baseModel.add(baseStatement.getObject().asResource(), property,
+				ResourceFactory.createResource());
+		try
+		{
+			securedStatement.getProperty(property);
+			if (!securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail("Should have thrown PropertyNotFound Exception");
+			}
+		}
+		catch (final PropertyNotFoundException e)
+		{
+			if (securityEvaluator.evaluate(Action.Read))
+			{
+				Assert.fail(String
+						.format("Should not have thrown PropertyNotFound Exception: %s - %s",
+								e, securityEvaluator));
+			}
+		}
+	}
+
+	@Test
 	public void testGets()
 	{
 		final Set<Action> perms = SecurityEvaluator.Util
@@ -543,6 +566,16 @@ public class SecuredStatementTest
 	}
 
 	@Test
+	public void testGetStatementProperty()
+	{
+		// get property of the subject
+		final ReifiedStatement s = baseStatement.createReifiedStatement();
+		s.addLiteral(property, "yee haw");
+		securedStatement.getStatementProperty(property);
+
+	}
+
+	@Test
 	public void testIsReified()
 	{
 		final Set<Action> perms = SecurityEvaluator.Util
@@ -622,7 +655,7 @@ public class SecuredStatementTest
 	{
 		baseStatement.createReifiedStatement();
 		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
-				Action.Update, Action.Delete});
+				Action.Update, Action.Delete });
 
 		try
 		{
@@ -654,45 +687,9 @@ public class SecuredStatementTest
 		// securedStatement.getResource( ResourceF f );
 		securedStatement.getSubject();
 
-		
-
 		securedStatement = SecuredStatementImpl.getInstance(securedModel,
 				baseStatement.changeLiteralObject(true));
 		securedStatement.getLiteral();
-	}
-	
-	@Test
-	public void testGetProperty()
-	{
-		// get property of the object
-				baseModel.add(baseStatement.getObject().asResource(), property,
-						ResourceFactory.createResource());
-				try {
-				securedStatement.getProperty(property);
-				if (!securityEvaluator.evaluate(Action.Read))
-				{
-					Assert.fail("Should have thrown PropertyNotFound Exception");
-				}
-			}
-			catch (final PropertyNotFoundException e)
-			{
-				if (securityEvaluator.evaluate(Action.Read))
-				{
-					Assert.fail(String
-							.format("Should not have thrown PropertyNotFound Exception: %s - %s",
-									e, securityEvaluator));
-				}
-			}
-	}
-	
-	@Test
-	public void testGetStatementProperty()
-	{
-		// get property of the subject
-		final ReifiedStatement s = baseStatement.createReifiedStatement();
-		s.addLiteral(property, "yee haw");
-		securedStatement.getStatementProperty(property);
-		
 	}
 
 }

@@ -46,7 +46,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * 
  * Note on triple checks:
  * 
- * If any s,p or o is SecNode.ANY then the methods must return false if there are
+ * If any s,p or o is SecNode.ANY then the methods must return false if there
+ * are
  * any restrictions where the remaining nodes and held constant and the ANY node
  * is allowed to vary.
  * examples:
@@ -57,7 +58,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * 
  * The (ANY, ANY, ANY) pattern is used to determine if the system has any
  * restrictions that should
- * be checked when dealing with collections of triples (e.g. delete(SecTriple[])).
+ * be checked when dealing with collections of triples (e.g.
+ * delete(SecTriple[])).
  * If (ANY,ANY,ANY)
  * returns true then we don't have to check each of the triples in the
  * collection.
@@ -96,12 +98,22 @@ public interface SecurityEvaluator
 		}
 
 		/**
-		 * Matches any node in the secrity system.
-		 * Asking (SecNode, SecNode.ANY, SecNode.ANY) is asking if there
-		 * are any explicit using the SecNode as a Subject.
+		 * Matches any node in the security system.
+		 * Asking (SecNode.X, SecNode.ANY, SecNode.ANY) is asking if there
+		 * are any explicit prohibitions on using the SecNode X as a Subject.
 		 */
 		public static final SecNode ANY = new SecNode(Type.Any, "any");
 		
+		/**
+		 * Indicates a variable in the triple.
+		 * Generally not used execpt in query engines. 
+		 * (SecNode.VARIABLE, SecNode.X, SecNode.Y ) indicates that the system will
+		 * be looking for all subjects that have property X with a value of Y.
+		 * If there are explicit prohibitions against the user accessing (?, X, Y) 
+		 * this tests should probably return true. 
+		 */
+		public static final SecNode VARIABLE = new SecNode(Type.Any, "variable");
+
 		/**
 		 * This is an anonymous node that will be created in the future.
 		 * FUTURE is used to check that an anonymous node may be created in
@@ -175,8 +187,8 @@ public interface SecurityEvaluator
 		private final SecNode object;
 		private transient Integer hashCode;
 
-		public static final SecTriple ANY = new SecTriple(SecNode.ANY, SecNode.ANY,
-				SecNode.ANY);
+		public static final SecTriple ANY = new SecTriple(SecNode.ANY,
+				SecNode.ANY, SecNode.ANY);
 
 		public SecTriple( final SecNode subject, final SecNode predicate,
 				final SecNode object )
@@ -252,7 +264,8 @@ public interface SecurityEvaluator
 		@Override
 		public String toString()
 		{
-			return String.format( "( %s, %s, %s )", getSubject(), getPredicate(), getObject());
+			return String.format("( %s, %s, %s )", getSubject(),
+					getPredicate(), getObject());
 		}
 	}
 
@@ -289,7 +302,8 @@ public interface SecurityEvaluator
 
 	/**
 	 * Determine if the action is allowed on the triple within the graph.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -324,7 +338,8 @@ public interface SecurityEvaluator
 	/**
 	 * Determine if the action is allowed on the triple within the graph.
 	 * 
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -340,7 +355,8 @@ public interface SecurityEvaluator
 	 *            The triple to check
 	 * @return true if all the actions are allowed, false otherwise.
 	 */
-	public boolean evaluate( Set<Action> action, SecNode graphIRI, SecTriple triple );
+	public boolean evaluate( Set<Action> action, SecNode graphIRI,
+			SecTriple triple );
 
 	/**
 	 * Determine if the action is allowed on the triple.
@@ -355,7 +371,8 @@ public interface SecurityEvaluator
 
 	/**
 	 * Determine if the action is allowed on the triple.
-	 * If any s,p or o is SecNode.ANY then this method must return false if there
+	 * If any s,p or o is SecNode.ANY then this method must return false if
+	 * there
 	 * are
 	 * any restrictions where the remaining nodes and held constant and the ANY
 	 * node
@@ -371,7 +388,8 @@ public interface SecurityEvaluator
 	 *            The triple to check
 	 * @return true if any the actions are allowed, false otherwise.
 	 */
-	public boolean evaluateAny( Set<Action> action, SecNode graphIRI, SecTriple triple );
+	public boolean evaluateAny( Set<Action> action, SecNode graphIRI,
+			SecTriple triple );
 
 	/**
 	 * Determine if the user is allowed to update the "from" triple to the "to"
@@ -385,7 +403,8 @@ public interface SecurityEvaluator
 	 *            The value to change it to.
 	 * @return true if the user may make the change, false otherwise.
 	 */
-	public boolean evaluateUpdate( SecNode graphIRI, SecTriple from, SecTriple to );
+	public boolean evaluateUpdate( SecNode graphIRI, SecTriple from,
+			SecTriple to );
 
 	/**
 	 * returns the current principal or null if there is no current principal.

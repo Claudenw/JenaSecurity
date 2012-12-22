@@ -23,8 +23,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.xenei.jena.security.SecurityEvaluator;
-
 public class MockSecurityEvaluator implements SecurityEvaluator
 {
 
@@ -36,7 +34,7 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	private final boolean forceTripleChecks;
 
 	public MockSecurityEvaluator( final boolean loggedIn, final boolean create,
-			final boolean read, final boolean update, final boolean delete, 
+			final boolean read, final boolean update, final boolean delete,
 			final boolean forceTripleChecks )
 	{
 		this.loggedIn = loggedIn;
@@ -64,28 +62,6 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 		}
 	}
 
-	@Override
-	public boolean evaluate( final Action action, final SecNode uri )
-	{
-		return evaluate(action);
-	}
-
-	@Override
-	public boolean evaluate( final Action action, final SecNode graphIRI,
-			final SecTriple triple )
-	{
-		if (forceTripleChecks)
-		{
-			if (triple.getSubject().equals( SecNode.ANY ) ||
-					triple.getPredicate().equals(SecNode.ANY) ||
-					triple.getObject().equals(SecNode.ANY))
-			{
-				return false;
-			}
-		}
-		return evaluate(action);
-	}
-
 	/**
 	 * Answers the question. can the logged in user perform action on the
 	 * object.
@@ -102,6 +78,28 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 		return evaluate(action);
 	}
 
+	@Override
+	public boolean evaluate( final Action action, final SecNode uri )
+	{
+		return evaluate(action);
+	}
+
+	@Override
+	public boolean evaluate( final Action action, final SecNode graphIRI,
+			final SecTriple triple )
+	{
+		if (forceTripleChecks)
+		{
+			if (triple.getSubject().equals(SecNode.ANY)
+					|| triple.getPredicate().equals(SecNode.ANY)
+					|| triple.getObject().equals(SecNode.ANY))
+			{
+				return false;
+			}
+		}
+		return evaluate(action);
+	}
+
 	public boolean evaluate( final Action[] actions )
 	{
 		for (final Action a : actions)
@@ -115,6 +113,16 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	public boolean evaluate( final Set<Action> action )
+	{
+		boolean result = true;
+		for (final Action a : action)
+		{
+			result &= evaluate(a);
+		}
+		return result;
+	}
+
+	public boolean evaluate( final Set<Action> action, final Resource object )
 	{
 		boolean result = true;
 		for (final Action a : action)
@@ -144,16 +152,6 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 		return true;
 	}
 
-	public boolean evaluate( final Set<Action> action, final Resource object )
-	{
-		boolean result = true;
-		for (final Action a : action)
-		{
-			result &= evaluate(a);
-		}
-		return result;
-	}
-
 	@Override
 	public boolean evaluateAny( final Set<Action> action, final SecNode graphIRI )
 	{
@@ -168,25 +166,25 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	}
 
 	@Override
-	public boolean evaluateAny( final Set<Action> action, final SecNode graphIRI,
-			final SecTriple triple )
+	public boolean evaluateAny( final Set<Action> action,
+			final SecNode graphIRI, final SecTriple triple )
 	{
 		return evaluateAny(action, graphIRI);
 	}
 
 	@Override
-	public boolean evaluateUpdate( final SecNode graphIRI, final SecTriple from,
-			final SecTriple to )
+	public boolean evaluateUpdate( final SecNode graphIRI,
+			final SecTriple from, final SecTriple to )
 	{
 		return evaluate(Action.Update);
 	}
 
-	public Set<Action> getPermissions( final SecNode uri )
+	public Set<Action> getPermissions( final Resource resourceID )
 	{
 		return Collections.emptySet();
 	}
 
-	public Set<Action> getPermissions( final Resource resourceID )
+	public Set<Action> getPermissions( final SecNode uri )
 	{
 		return Collections.emptySet();
 	}
@@ -216,8 +214,8 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	@Override
 	public String toString()
 	{
-		return String.format("C:%s R:%s U:%s D:%s force:%s", create, read, update,
-				delete, forceTripleChecks);
+		return String.format("C:%s R:%s U:%s D:%s force:%s", create, read,
+				update, delete, forceTripleChecks);
 	}
 
 }

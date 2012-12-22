@@ -13,13 +13,12 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredContainer;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredContainerImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
-public class SecuredContainerTest extends SecuredResourceTest
+public abstract class SecuredContainerTest extends SecuredResourceTest
 {
 
 	public SecuredContainerTest( final MockSecurityEvaluator securityEvaluator )
@@ -39,7 +38,7 @@ public class SecuredContainerTest extends SecuredResourceTest
 		super.setup();
 		final Container container = baseModel
 				.getBag("http://example.com/testContainer");
-		container.add( "SomeDummyItem");
+		container.add("SomeDummyItem");
 		setSecuredRDFNode(
 				SecuredContainerImpl.getInstance(securedModel, container),
 				container);

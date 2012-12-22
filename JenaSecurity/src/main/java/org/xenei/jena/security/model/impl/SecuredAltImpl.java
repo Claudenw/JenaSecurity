@@ -17,24 +17,16 @@
  */
 package org.xenei.jena.security.model.impl;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
 import com.hp.hpl.jena.rdf.model.AltHasNoDefaultException;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFList;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceF;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Map1;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemInvoker;
-import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
@@ -49,6 +41,43 @@ import org.xenei.jena.security.model.SecuredSeq;
  */
 public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 {
+	/**
+	 * Get an instance of SecuredAlt.
+	 * 
+	 * @param securedItem
+	 *            the item providing the security context.
+	 * @param alt
+	 *            The Alt to be secured.
+	 * @return The secured Alt instance.
+	 */
+	public static SecuredAlt getInstance( final SecuredModel securedModel,
+			final Alt alt )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
+		}
+		if (alt == null)
+		{
+			throw new IllegalArgumentException("Alt may not be null");
+		}
+		final ItemHolder<Alt, SecuredAlt> holder = new ItemHolder<Alt, SecuredAlt>(
+				alt);
+		final SecuredAltImpl checker = new SecuredAltImpl(securedModel, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (alt instanceof SecuredAlt)
+		{
+			if (checker.isEquivalent((SecuredAlt) alt))
+			{
+				return (SecuredAlt) alt;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(alt.getClass(),
+				checker));
+	}
+
 	// The item holder holding this SecuredAlt
 	private final ItemHolder<? extends Alt, ? extends SecuredAlt> holder;
 
@@ -63,47 +92,34 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	 *            The item holder that will hold this SecuredAlt.
 	 */
 	protected SecuredAltImpl( final SecuredModel securedModel,
-			final ItemHolder<? extends Alt, ? extends SecuredAlt> holder)
+			final ItemHolder<? extends Alt, ? extends SecuredAlt> holder )
 	{
 		super(securedModel, holder);
 		this.holder = holder;
-	}
-	
-	private Statement getDefaultStatement()
-	{
-		checkRead();
-		ExtendedIterator<Statement> iter = getStatementIterator( Action.Read );
-		try {
-			if (iter.hasNext())
-			{
-				return iter.next();
-			}
-			throw new AltHasNoDefaultException( this );
-		}
-		finally {
-			iter.close();
-		}	
 	}
 
 	@Override
 	public SecuredRDFNode getDefault()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredRDFNodeImpl.getInstance(getModel(), getDefaultStatement().getObject() );
+		return SecuredRDFNodeImpl.getInstance(getModel(), getDefaultStatement()
+				.getObject());
 	}
 
 	@Override
 	public SecuredAlt getDefaultAlt()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredAltImpl.getInstance(getModel(), getDefaultStatement().getAlt() );
+		return SecuredAltImpl.getInstance(getModel(), getDefaultStatement()
+				.getAlt());
 	}
 
 	@Override
 	public SecuredBag getDefaultBag()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredBagImpl.getInstance(getModel(), getDefaultStatement().getBag());
+		return SecuredBagImpl.getInstance(getModel(), getDefaultStatement()
+				.getBag());
 	}
 
 	@Override
@@ -159,7 +175,8 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredLiteral getDefaultLiteral()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredLiteralImpl.getInstance( getModel(), getDefaultStatement().getLiteral());
+		return SecuredLiteralImpl.getInstance(getModel(), getDefaultStatement()
+				.getLiteral());
 	}
 
 	@Override
@@ -173,7 +190,8 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredResource getDefaultResource()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredResourceImpl.getInstance( getModel(), getDefaultStatement().getResource());
+		return SecuredResourceImpl.getInstance(getModel(),
+				getDefaultStatement().getResource());
 	}
 
 	@Override
@@ -181,14 +199,16 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredResource getDefaultResource( final ResourceF f )
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredResourceImpl.getInstance( getModel(), getDefaultStatement().getResource( f ));
+		return SecuredResourceImpl.getInstance(getModel(),
+				getDefaultStatement().getResource(f));
 	}
 
 	@Override
 	public SecuredSeq getDefaultSeq()
 	{
 		// getDefaultStatement() calls checkRead
-		return SecuredSeqImpl.getInstance( getModel(), getDefaultStatement().getSeq());
+		return SecuredSeqImpl.getInstance(getModel(), getDefaultStatement()
+				.getSeq());
 	}
 
 	@Override
@@ -199,6 +219,24 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 
 	}
 
+	private Statement getDefaultStatement()
+	{
+		checkRead();
+		final ExtendedIterator<Statement> iter = getStatementIterator(Action.Read);
+		try
+		{
+			if (iter.hasNext())
+			{
+				return iter.next();
+			}
+			throw new AltHasNoDefaultException(this);
+		}
+		finally
+		{
+			iter.close();
+		}
+	}
+
 	@Override
 	public String getDefaultString()
 	{
@@ -207,35 +245,38 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 
 	}
 
-	/*private SecTriple getDefaultTriple()
-	{
-		final StmtIterator iter = holder.getBaseItem().getModel()
-				.listStatements(this, RDF.li(1), (RDFNode) null);
-		try
-		{
-			return iter.hasNext() ? iter.nextStatement().asTriple() : null;
-		}
-		finally
-		{
-			iter.close();
-		}
-
-	}
-
-	private SecTriple getNewTriple( final SecTriple t, final Object o )
-	{
-		return new SecTriple(t.getSubject(), t.getPredicate(), SecNode.createLiteral(
-				String.valueOf(o), "", false));
-	}
-*/
+	/*
+	 * private SecTriple getDefaultTriple()
+	 * {
+	 * final StmtIterator iter = holder.getBaseItem().getModel()
+	 * .listStatements(this, RDF.li(1), (RDFNode) null);
+	 * try
+	 * {
+	 * return iter.hasNext() ? iter.nextStatement().asTriple() : null;
+	 * }
+	 * finally
+	 * {
+	 * iter.close();
+	 * }
+	 * 
+	 * }
+	 * 
+	 * private SecTriple getNewTriple( final SecTriple t, final Object o )
+	 * {
+	 * return new SecTriple(t.getSubject(), t.getPredicate(),
+	 * SecNode.createLiteral(
+	 * String.valueOf(o), "", false));
+	 * }
+	 */
 	@Override
 	public SecuredAlt setDefault( final boolean o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeLiteralObject(o);
 		return holder.getSecuredItem();
 	}
@@ -244,10 +285,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final char o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeLiteralObject(o);
 		return holder.getSecuredItem();
 	}
@@ -256,10 +298,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final double o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeLiteralObject(o);
 		return holder.getSecuredItem();
 	}
@@ -268,10 +311,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final float o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeLiteralObject(o);
 		return holder.getSecuredItem();
 	}
@@ -280,10 +324,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final long o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeLiteralObject(o);
 		return holder.getSecuredItem();
 	}
@@ -292,10 +337,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final Object o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeObject(stmt.getModel().createTypedLiteral(o));
 		return holder.getSecuredItem();
 	}
@@ -304,10 +350,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final RDFNode o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), o.asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(),
+				o.asNode());
+		checkUpdate(t, t2);
 		stmt.changeObject(o);
 		return holder.getSecuredItem();
 	}
@@ -316,10 +363,11 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final String o )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeObject(o);
 		return holder.getSecuredItem();
 	}
@@ -328,48 +376,12 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	public SecuredAlt setDefault( final String o, final String l )
 	{
 		checkUpdate();
-		Statement stmt = getDefaultStatement();
-		Triple t = stmt.asTriple();		
-		Triple t2 = new Triple( t.getSubject(), t.getPredicate(), holder.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate( t, t2 );
+		final Statement stmt = getDefaultStatement();
+		final Triple t = stmt.asTriple();
+		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
+				.getBaseItem().getModel().createTypedLiteral(o).asNode());
+		checkUpdate(t, t2);
 		stmt.changeObject(o);
 		return holder.getSecuredItem();
-	}
-
-	/**
-	 * Get an instance of SecuredAlt.
-	 * 
-	 * @param securedItem
-	 *            the item providing the security context.
-	 * @param alt
-	 *            The Alt to be secured.
-	 * @return The secured Alt instance.
-	 */
-	public static SecuredAlt getInstance( final SecuredModel securedModel, final Alt alt )
-	{
-		if (securedModel == null)
-		{
-			throw new IllegalArgumentException( "Secured model may not be null");
-		}
-		if (alt == null)
-		{
-			throw new IllegalArgumentException( "Alt may not be null");
-		}
-		final ItemHolder<Alt, SecuredAlt> holder = new ItemHolder<Alt, SecuredAlt>(
-				alt);
-		final SecuredAltImpl checker = new SecuredAltImpl(
-				securedModel,
-				holder);
-		// if we are going to create a duplicate proxy, just return this
-		// one.
-		if (alt instanceof SecuredAlt)
-		{
-			if (checker.isEquivalent((SecuredAlt) alt))
-			{
-				return (SecuredAlt) alt;
-			}
-		}
-		return holder.setSecuredItem(new SecuredItemInvoker(alt.getClass(),
-				checker));
 	}
 }

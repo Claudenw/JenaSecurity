@@ -17,7 +17,6 @@
  */
 package org.xenei.jena.security.model.impl;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredRDFNode;
 
@@ -38,7 +36,7 @@ import org.xenei.jena.security.model.SecuredRDFNode;
  */
 public class SecuredNodeIterator<T extends RDFNode> implements NodeIterator
 {
-   	 private class PermNodeMap<T extends RDFNode> implements Map1<T, RDFNode>
+	private class PermNodeMap<T extends RDFNode> implements Map1<T, RDFNode>
 	{
 		private final SecuredModel securedModel;
 

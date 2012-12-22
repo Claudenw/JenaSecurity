@@ -26,6 +26,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.ItemHolder;
 import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator.Action;
@@ -44,9 +45,11 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		@Override
 		public boolean accept( final Node o )
 		{
-			return canRead(new Triple(o, RDF.subject.asNode(), Node.ANY))
-					|| canRead(new Triple(o, RDF.predicate.asNode(), Node.ANY))
-					|| canRead(new Triple(o, RDF.object.asNode(), Node.ANY));
+			final Triple t = holder.getBaseItem().getTriple(o);
+			return canRead(new Triple(o, RDF.subject.asNode(), t.getSubject()))
+					|| canRead(new Triple(o, RDF.predicate.asNode(),
+							t.getPredicate()))
+					|| canRead(new Triple(o, RDF.object.asNode(), t.getObject()));
 		}
 	}
 
@@ -88,6 +91,32 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	}
 
 	// check that all entries for n associated with reified t can be read.
+	private boolean canRead( final Node n, final Triple t )
+	{
+		return canRead(t)
+				&& canRead(new Triple(n, RDF.subject.asNode(), t.getSubject()))
+				&& canRead(new Triple(n, RDF.predicate.asNode(),
+						t.getPredicate()))
+				&& canRead(new Triple(n, RDF.object.asNode(), t.getObject()));
+	}
+
+	private void checkDelete( final Node n, final Triple t )
+	{
+		final ExtendedIterator<Triple> iter = getTriples(n, t);
+		try
+		{
+			while (iter.hasNext())
+			{
+				checkDelete(iter.next());
+			}
+		}
+		finally
+		{
+			iter.close();
+		}
+	}
+
+	// check that all entries for n associated with reified t can be read.
 	private void checkRead( final Node n, final Triple t )
 	{
 		checkRead(t);
@@ -96,15 +125,33 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		checkRead(new Triple(n, RDF.object.asNode(), t.getObject()));
 	}
 
-	// check that all entries for n associated with reified t can be read.
-		private boolean canRead( final Node n, final Triple t )
+	// verify that we can read at least one of the triples
+	// that we would expect to reifiy the triple.
+	private void checkReadTriple( final Node n, final Triple t )
+	{
+		final ExtendedIterator<Triple> iter = getTriples(n, t);
+		boolean found = false;
+		try
 		{
-			return canRead(t) &&
-			canRead(new Triple(n, RDF.subject.asNode(), t.getSubject())) &&
-			canRead(new Triple(n, RDF.predicate.asNode(), t.getPredicate())) &&
-			canRead(new Triple(n, RDF.object.asNode(), t.getObject()));
+			if (iter.hasNext())
+			{ // only an error if there are elements to check.
+				while (iter.hasNext() && !found)
+				{
+					found = canRead(iter.next());
+				}
+				if (!found)
+				{
+					throw new AccessDeniedException(getModelNode(), null,
+							Action.Read);
+				}
+			}
 		}
-		
+		finally
+		{
+			iter.close();
+		}
+	}
+
 	@Override
 	public void close()
 	{
@@ -160,6 +207,22 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		return t;
 	}
 
+	private ExtendedIterator<Triple> getTriples( final Node n, final Triple t )
+	{
+		return holder
+				.getBaseItem()
+				.find(new Triple(n, RDF.subject.asNode(), t.getSubject()))
+				.andThen(
+						holder.getBaseItem().find(
+								new Triple(n, RDF.predicate.asNode(), t
+										.getPredicate())))
+				.andThen(
+						holder.getBaseItem().find(
+								new Triple(n, RDF.object.asNode(), t
+										.getObject())));
+
+	}
+
 	@Override
 	public boolean handledAdd( final Triple t )
 	{
@@ -175,39 +238,14 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		checkDelete(t);
 		return holder.getBaseItem().handledRemove(t);
 	}
-	
-	private ExtendedIterator<Triple> getTriples(Node n, Triple t)
-	{
-		return holder.getBaseItem().find(new Triple(n, RDF.subject.asNode(), t.getSubject()))
-		.andThen(holder.getBaseItem().find(new Triple(n, RDF.predicate.asNode(), t.getPredicate())))
-		.andThen(holder.getBaseItem().find(new Triple(n, RDF.object.asNode(), t.getObject())));
-		
-	}
 
-	private boolean hasTriple( Node n, Triple t)
-	{
-		ExtendedIterator<Triple> iter = getTriples( n, t );
-		try {
-			while (iter.hasNext())
-			{
-				if (canRead(iter.next()))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-		finally {
-			iter.close();
-		}
-	}
 	@Override
 	public boolean hasTriple( final Node n )
 	{
 		checkRead();
 		if (!canRead(n, Triple.ANY))
 		{
-			return hasTriple(n,Triple.ANY);
+			checkReadTriple(n, Triple.ANY);
 		}
 		return holder.getBaseItem().hasTriple(n);
 	}
@@ -218,7 +256,16 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		checkRead();
 		if (!canRead(Node.ANY, t))
 		{
-			return hasTriple(Node.ANY,t);
+			/*
+			 * ExtendedIterator<Triple>iter = find( t );
+			 * try {
+			 * return iter.hasNext();
+			 * }
+			 * finally {
+			 * iter.close();
+			 * }
+			 */
+			checkReadTriple(Node.ANY, t);
 		}
 		return holder.getBaseItem().hasTriple(t);
 	}
@@ -234,25 +281,11 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 		return holder.getBaseItem().reifyAs(n, t);
 	}
 
-	private void checkDelete( Node n, Triple t)
-	{
-		ExtendedIterator<Triple> iter = getTriples( n, t );
-		try {
-		while (iter.hasNext())
-		{
-			checkDelete( iter.next() );
-		}
-		}
-		finally {
-			iter.close();
-		}
-	}
-	
 	@Override
 	public void remove( final Node n, final Triple t )
 	{
 		checkUpdate();
-		checkDelete( n, t );
+		checkDelete(n, t);
 		holder.getBaseItem().remove(n, t);
 	}
 
@@ -260,7 +293,7 @@ public class SecuredReifierImpl extends SecuredItemImpl implements
 	public void remove( final Triple t )
 	{
 		checkUpdate();
-		checkDelete( Node.ANY, t);
+		checkDelete(Node.ANY, t);
 		holder.getBaseItem().remove(t);
 	}
 

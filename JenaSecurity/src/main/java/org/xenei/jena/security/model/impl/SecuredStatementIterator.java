@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredStatement;

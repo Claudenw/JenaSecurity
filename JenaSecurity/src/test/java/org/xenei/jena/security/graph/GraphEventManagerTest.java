@@ -19,9 +19,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.graph.SecuredGraph;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.utils.CollectionGraph;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -221,7 +220,8 @@ public class GraphEventManagerTest
 		g.delete(tripleArray[0]);
 		if (securityEvaluator.evaluateAny(DELETE, sg.getModelNode()))
 		{
-			Assert.assertTrue("Should have recorded delete", listener.isDelete());
+			Assert.assertTrue("Should have recorded delete",
+					listener.isDelete());
 		}
 		else
 		{
@@ -287,11 +287,12 @@ public class GraphEventManagerTest
 		g.getEventManager().notifyEvent(g, "Foo");
 		Assert.assertTrue("Should recorded delete", listener.isEvent());
 		listener.reset();
-		//final RecordingGraphListener listener2 = new RecordingGraphListener();
-		//g.getEventManager().register(listener2);
+		// final RecordingGraphListener listener2 = new
+		// RecordingGraphListener();
+		// g.getEventManager().register(listener2);
 		sg.getEventManager().notifyEvent(sg, "Foo");
 		Assert.assertTrue("Should recorded delete", listener.isEvent());
-		//Assert.assertTrue("Should recorded delete", listener2.isEvent());
+		// Assert.assertTrue("Should recorded delete", listener2.isEvent());
 		listener.reset();
 
 	}

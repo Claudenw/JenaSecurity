@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.xenei.jena.security.ItemHolder;
 import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
 
 /**

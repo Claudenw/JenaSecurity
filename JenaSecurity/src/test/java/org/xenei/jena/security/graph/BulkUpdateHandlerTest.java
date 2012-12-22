@@ -16,10 +16,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
-import org.xenei.jena.security.graph.SecuredGraph;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.utils.CollectionGraph;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -27,14 +25,14 @@ public class BulkUpdateHandlerTest
 {
 	protected SecuredBulkUpdateHandler handler;
 	private final SecurityEvaluator securityEvaluator;
-	private Triple[] tripleArray;
-	private Set<Action> deleteAndUpdate;
-	private Set<Action> createAndUpdate;
+	private final Triple[] tripleArray;
+	private final Set<Action> deleteAndUpdate;
+	private final Set<Action> createAndUpdate;
 
 	public BulkUpdateHandlerTest( final SecurityEvaluator securityEvaluator )
 	{
 		this.securityEvaluator = securityEvaluator;
-			
+
 		tripleArray = new Triple[] {
 				new Triple(Node.createURI("http://example.com/1"),
 						Node.createURI("http://example.com/v"),
@@ -50,7 +48,7 @@ public class BulkUpdateHandlerTest
 		deleteAndUpdate = SecurityEvaluator.Util.asSet(new Action[] {
 				Action.Delete, Action.Update });
 	}
-	
+
 	@Before
 	public void setup()
 	{
@@ -61,7 +59,6 @@ public class BulkUpdateHandlerTest
 		handler = sg.getBulkUpdateHandler();
 	}
 
-	
 	@Test
 	public void testAdd()
 	{

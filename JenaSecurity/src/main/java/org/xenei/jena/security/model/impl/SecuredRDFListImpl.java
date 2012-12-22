@@ -38,6 +38,19 @@ import org.xenei.jena.security.utils.RDFListSecFilter;
 public class SecuredRDFListImpl extends SecuredResourceImpl implements
 		SecuredRDFList
 {
+	// called plain node but still returns a secured node
+	private class PlainNodeMap implements Map1<RDFList, RDFNode>
+	{
+
+		@Override
+		public RDFNode map1( final RDFList o )
+		{
+			return SecuredRDFNodeImpl.getInstance(getModel(), o
+					.getRequiredProperty(listFirst()).getObject());
+		}
+
+	}
+
 	private class SecuredListMap implements Map1<RDFList, SecuredRDFList>
 	{
 
@@ -49,29 +62,22 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 
 	}
 
-	// called plain node but still returns a secured node
-	private class PlainNodeMap implements Map1<RDFList, RDFNode>
-	{
-	
-		@Override
-		public RDFNode map1( final RDFList o )
-		{
-			return SecuredRDFNodeImpl.getInstance(getModel(), o
-					.getRequiredProperty(listFirst()).getObject());
-		}
-	
-	}
-
 	private class SecuredNodeMap implements Map1<RDFList, SecuredRDFNode>
 	{
-	
+
+		private Property p;
+		public SecuredNodeMap(Property p)
+		{
+			this.p=p;
+		}
+		
 		@Override
 		public SecuredRDFNode map1( final RDFList o )
 		{
 			return SecuredRDFNodeImpl.getInstance(getModel(), o
-					.getRequiredProperty(listFirst()).getObject());
+					.getRequiredProperty(p).getObject());
 		}
-	
+
 	}
 
 	/*
@@ -169,19 +175,20 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	 *            The rdfList to secure
 	 * @return The SecuredProperty
 	 */
-	public static SecuredRDFList getInstance( final SecuredModel securedModel,
-			final RDFList rdfList )
+	public static <T extends RDFList> SecuredRDFList getInstance( final SecuredModel securedModel,
+			final T rdfList )
 	{
 		if (securedModel == null)
 		{
-			throw new IllegalArgumentException("Secured model may not be null");
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
 		}
 		if (rdfList == null)
 		{
 			throw new IllegalArgumentException("RDFList may not be null");
 		}
 
-		// check that property has a model.
+		// check that property has a securedModel.
 		RDFList goodList = rdfList;
 		if (goodList.getModel() == null)
 		{
@@ -241,12 +248,13 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	}
 
 	@Override
-	public RDFList append( final Iterator<? extends RDFNode> nodes )
+	public SecuredRDFList append( final Iterator<? extends RDFNode> nodes )
 	{
-		RDFList copy = copy();
+		SecuredRDFList copy = copy();
 		if (nodes.hasNext())
 		{
-			if (copy.size() > 0)
+			if (((RDFList)copy.getBaseItem()).size()>0)
+//			if (copy.size() > 0)
 			{
 				copy.concatenate(copy.getModel().createList(nodes));
 			}
@@ -363,10 +371,12 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 
 	private void checkCreateNewList( final RDFNode value, final Resource tail )
 	{
-		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listFirst().asNode()),
 				SecuredItemImpl.convert(value.asNode())));
-		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listRest().asNode()),
 				SecuredItemImpl.convert(tail.asNode())));
 	}
@@ -407,8 +417,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 					.convert(listFirst().asNode());
 			org.xenei.jena.security.SecurityEvaluator.SecTriple t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
 					org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
-					p,
-					org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
+					p, org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
 			if (!canCreate(t))
 			{
 				final List<RDFNode> list = new ArrayList<RDFNode>();
@@ -447,8 +456,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 					.convert(listFirst().asNode());
 			org.xenei.jena.security.SecurityEvaluator.SecTriple t = new org.xenei.jena.security.SecurityEvaluator.SecTriple(
 					org.xenei.jena.security.SecurityEvaluator.SecNode.FUTURE,
-					p,
-					org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
+					p, org.xenei.jena.security.SecurityEvaluator.SecNode.ANY);
 			if (!canCreate(t))
 			{
 				final ExtendedIterator<RDFNode> iter = list.iterator();
@@ -504,24 +512,34 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	}
 
 	@Override
-	public RDFList copy()
+	public SecuredRDFList copy()
 	{
-		RDFList retval = null;
+		SecuredRDFList retval = null;
 		if (canRead())
 		{
-			final ExtendedIterator<RDFList> iter = getSecuredRDFListIterator(Action.Read);
+			final ExtendedIterator<RDFNode> iter = getSecuredRDFListIterator(Action.Read)
+					.mapWith( new Map1<RDFList, RDFNode>()
+					{
+
+						@Override
+						public RDFNode map1( final RDFList o )
+						{
+							return  o.getRequiredProperty(listFirst()).getObject();
+						}
+
+					});
 			if (iter.hasNext())
 			{
-				retval = ModelFactory.createDefaultModel().createList(iter);
+				retval = getModel().createList(iter);
 			}
 			else
 			{
-				retval = ModelFactory.createDefaultModel().createList();
+				retval = getModel().createList();
 			}
 		}
 		else
 		{
-			retval = ModelFactory.createDefaultModel().createList();
+			retval = getModel().createList();
 		}
 		return retval;
 	}
@@ -531,7 +549,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	{
 		checkRead();
 		final ExtendedIterator<SecuredRDFNode> iter = getSecuredRDFListIterator(
-				Action.Read).mapWith(new SecuredNodeMap());
+				Action.Read).mapWith(new SecuredNodeMap(listFirst()));
 		int idx = 0;
 		try
 		{
@@ -560,20 +578,9 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	public SecuredRDFNode getHead()
 	{
 		checkRead();
-		final ExtendedIterator<SecuredRDFNode> iter = getSecuredRDFListIterator(
-				Action.Read).mapWith(new SecuredNodeMap());
-		try
-		{
-			if (iter.hasNext())
-			{
-				return iter.next();
-			}
-			throw new EmptyListException();
-		}
-		finally
-		{
-			iter.close();
-		}
+		Statement s = holder.getBaseItem().getRequiredProperty( listFirst() );
+		checkRead( s );
+		return SecuredRDFNodeImpl.getInstance(getModel(), s.getObject());
 	}
 
 	private ExtendedIterator<RDFList> getSecuredRDFListIterator(
@@ -602,19 +609,9 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	public SecuredRDFList getTail()
 	{
 		checkRead();
-		final Iterator<SecuredRDFList> iter = getSecuredRDFListIterator(
-				Action.Read).mapWith(new SecuredListMap());
-
-		if (!iter.hasNext())
-		{
-			throw new EmptyListException();
-		}
-		SecuredRDFList retval = iter.next();
-		while (iter.hasNext())
-		{
-			retval = iter.next();
-		}
-		return retval;
+		Statement s = holder.getBaseItem().getRequiredProperty( listRest() );
+		checkRead( s );
+		return SecuredRDFListImpl.getInstance(getModel(), s.getObject().as(RDFList.class));
 	}
 
 	@Override
@@ -629,7 +626,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	{
 		checkRead();
 		final ExtendedIterator<SecuredRDFNode> iter = getSecuredRDFListIterator(
-				Action.Read).mapWith(new SecuredNodeMap());
+				Action.Read).mapWith(new SecuredNodeMap(listFirst()));
 		try
 		{
 			int retval = 0;
@@ -657,11 +654,11 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	{
 		checkRead();
 		final ExtendedIterator<SecuredRDFNode> iter = getSecuredRDFListIterator(
-				Action.Read).mapWith(new SecuredNodeMap());
+				Action.Read).mapWith(new SecuredNodeMap(listFirst()));
 		try
 		{
 			int retval = 0;
-			while (iter.hasNext() && (retval <= start))
+			while (iter.hasNext() && (retval < start))
 			{
 				iter.next();
 				retval++;
@@ -796,13 +793,14 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 		if (!canDelete(new Triple(Node.ANY, listFirst().asNode(), val.asNode())))
 		{
 			// iterate over the deletable items
-			final ExtendedIterator<RDFList> iter = getSecuredRDFListIterator(
-					Action.Delete);//.mapWith(new SecuredListMap());
+			final ExtendedIterator<RDFList> iter = getSecuredRDFListIterator(Action.Delete);// .mapWith(new
+																							// SecuredListMap());
 			while (iter.hasNext())
 			{
 				cell = iter.next();
 
-				if (val.equals(cell.getRequiredProperty(listFirst()).getObject()))
+				if (val.equals(cell.getRequiredProperty(listFirst())
+						.getObject()))
 				{
 					if (canDelete(new Triple(cell.asNode(), listFirst()
 							.asNode(), val.asNode())))
@@ -846,19 +844,21 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 		checkUpdate();
 		final ExtendedIterator<SecuredRDFList> iter = getSecuredRDFListIterator(
 				Action.Read).mapWith(new SecuredListMap());
-		try {
+		try
+		{
 			if (!iter.hasNext())
 			{
 				throw new EmptyListException(
 						"Attempted to delete the head of a nil list");
 			}
-			SecuredRDFList cell = iter.next();
+			final SecuredRDFList cell = iter.next();
 			final Statement s = cell.getRequiredProperty(RDF.first);
 			checkDelete(s);
 			return SecuredRDFListImpl.getInstance(getModel(), baseRemove(cell));
-			
+
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -899,7 +899,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	public SecuredRDFNode replace( final int i, final RDFNode value )
 	{
 		checkUpdate();
-		final SecuredNodeMap map = new SecuredNodeMap();
+		final SecuredNodeMap map = new SecuredNodeMap(listFirst());
 		final ExtendedIterator<SecuredRDFList> iter = getSecuredRDFListIterator(
 				Action.Read).mapWith(new SecuredListMap());
 		int idx = 0;
@@ -917,7 +917,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 							.asNode(), value.asNode());
 					checkUpdate(t, t2);
 					final RDFList base = (RDFList) list.getBaseItem();
-					base.getRequiredProperty(listFirst()).changeObject( value );
+					base.getRequiredProperty(listFirst()).changeObject(value);
 					return retval;
 				}
 				else
@@ -1041,7 +1041,8 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	public SecuredRDFList with( final RDFNode value )
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(listFirst().asNode()),
 				SecuredItemImpl.convert(value.asNode())));
 		return SecuredRDFListImpl.getInstance(getModel(), holder.getBaseItem()

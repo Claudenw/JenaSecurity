@@ -15,10 +15,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.MockSecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredModel;
-import org.xenei.jena.security.model.SecuredRDFNode;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredRDFNodeImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -154,7 +152,8 @@ public class SecuredRDFNodeTest
 			}
 			Assert.assertFalse("RDFNode should not have been secured",
 					n2 instanceof SecuredRDFNode);
-			Assert.assertEquals("Wrong model returned", n2.getModel(), m2);
+			Assert.assertEquals("Wrong securedModel returned", n2.getModel(),
+					m2);
 		}
 		catch (final AccessDeniedException e)
 		{
@@ -179,7 +178,8 @@ public class SecuredRDFNodeTest
 			}
 			Assert.assertTrue("RDFNode should have been secured",
 					n2 instanceof SecuredRDFNode);
-			Assert.assertEquals("Wrong model returned", n2.getModel(), m3);
+			Assert.assertEquals("Wrong securedModel returned", n2.getModel(),
+					m3);
 		}
 		catch (final AccessDeniedException e)
 		{

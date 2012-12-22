@@ -28,8 +28,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
-import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 import org.xenei.jena.security.SecurityEvaluator.SecNode.Type;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
 public abstract class SecuredItemImpl implements SecuredItem
 {
@@ -137,10 +137,15 @@ public abstract class SecuredItemImpl implements SecuredItem
 		{
 			return new SecNode(Type.Anonymous, jenaNode.getBlankNodeLabel());
 		}
+		if (jenaNode.isVariable())
+		{
+			return SecNode.VARIABLE;
+		}
 		return new SecNode(Type.URI, jenaNode.getURI());
 	}
 
-	public static SecTriple convert( final com.hp.hpl.jena.graph.Triple jenaTriple )
+	public static SecTriple convert(
+			final com.hp.hpl.jena.graph.Triple jenaTriple )
 	{
 		return new SecTriple(SecuredItemImpl.convert(jenaTriple.getSubject()),
 				SecuredItemImpl.convert(jenaTriple.getPredicate()),
@@ -195,15 +200,16 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (securedItem == null)
 		{
-			throw new IllegalArgumentException( "Secured item may not be null");
+			throw new IllegalArgumentException("Secured item may not be null");
 		}
 		if (securedItem.getSecurityEvaluator() == null)
 		{
-			throw new IllegalArgumentException( "Security evaluator in secured item may not be null");
+			throw new IllegalArgumentException(
+					"Security evaluator in secured item may not be null");
 		}
 		if (holder == null)
 		{
-			throw new IllegalArgumentException( "ItemHolder may not be null");
+			throw new IllegalArgumentException("ItemHolder may not be null");
 		}
 		this.securityEvaluator = securedItem.getSecurityEvaluator();
 		this.modelNode = new SecurityEvaluator.SecNode(
@@ -216,15 +222,17 @@ public abstract class SecuredItemImpl implements SecuredItem
 	{
 		if (securityEvaluator == null)
 		{
-			throw new IllegalArgumentException( "Security evaluator may not be null");
+			throw new IllegalArgumentException(
+					"Security evaluator may not be null");
 		}
-		if (StringUtils.isEmpty( modelURI ))
+		if (StringUtils.isEmpty(modelURI))
 		{
-			throw new IllegalArgumentException( "ModelURI may not be empty or null");
+			throw new IllegalArgumentException(
+					"ModelURI may not be empty or null");
 		}
 		if (holder == null)
 		{
-			throw new IllegalArgumentException( "ItemHolder may not be null");
+			throw new IllegalArgumentException("ItemHolder may not be null");
 		}
 		this.securityEvaluator = securityEvaluator;
 		this.modelNode = new SecurityEvaluator.SecNode(
@@ -235,7 +243,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	private Boolean cacheGet( final CacheKey key )
 	{
 		final LRUMap cache = SecuredItemImpl.CACHE.get();
-		return (cache == null)?null:(Boolean) cache.get(key);
+		return (cache == null) ? null : (Boolean) cache.get(key);
 	}
 
 	void cachePut( final CacheKey key, final boolean value )
@@ -244,7 +252,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 		if (cache != null)
 		{
 			cache.put(key, value);
-			SecuredItemImpl.CACHE.set( cache );
+			SecuredItemImpl.CACHE.set(cache);
 		}
 	}
 
@@ -271,11 +279,6 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return canCreate(SecuredItemImpl.convert(t));
 	}
 
-	public boolean canCreate( final Statement s )
-	{
-		return canCreate(s.asTriple());
-	}
-
 	@Override
 	public boolean canCreate( final SecTriple t )
 	{
@@ -287,6 +290,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 			cachePut(key, retval);
 		}
 		return retval;
+	}
+
+	public boolean canCreate( final Statement s )
+	{
+		return canCreate(s.asTriple());
 	}
 
 	/*
@@ -312,11 +320,6 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return canDelete(SecuredItemImpl.convert(t));
 	}
 
-	public boolean canDelete( final Statement s )
-	{
-		return canDelete(s.asTriple());
-	}
-
 	@Override
 	public boolean canDelete( final SecTriple t )
 	{
@@ -328,6 +331,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 			cachePut(key, retval);
 		}
 		return retval;
+	}
+
+	public boolean canDelete( final Statement s )
+	{
+		return canDelete(s.asTriple());
 	}
 
 	/*
@@ -353,11 +361,6 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return canRead(SecuredItemImpl.convert(t));
 	}
 
-	public boolean canRead( final Statement s )
-	{
-		return canRead(s.asTriple());
-	}
-
 	@Override
 	public boolean canRead( final SecTriple t )
 	{
@@ -369,6 +372,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 			cachePut(key, retval);
 		}
 		return retval;
+	}
+
+	public boolean canRead( final Statement s )
+	{
+		return canRead(s.asTriple());
 	}
 
 	/*
@@ -396,11 +404,6 @@ public abstract class SecuredItemImpl implements SecuredItem
 				SecuredItemImpl.convert(to));
 	}
 
-	public boolean canUpdate( final Statement from, final Statement to )
-	{
-		return canUpdate(from.asTriple(), to.asTriple());
-	}
-
 	@Override
 	public boolean canUpdate( final SecTriple from, final SecTriple to )
 	{
@@ -414,8 +417,13 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return retval;
 	}
 
+	public boolean canUpdate( final Statement from, final Statement to )
+	{
+		return canUpdate(from.asTriple(), to.asTriple());
+	}
+
 	/**
-	 * check that create on the model is allowed,
+	 * check that create on the securedModel is allowed,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -433,13 +441,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 		checkCreate(SecuredItemImpl.convert(t));
 	}
 
-	protected void checkCreate( final Statement s )
-	{
-		checkCreate(s.asTriple());
-	}
-
 	/**
-	 * check that the triple can be created in the model.,
+	 * check that the triple can be created in the securedModel.,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -453,18 +456,22 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 	}
 
+	protected void checkCreate( final Statement s )
+	{
+		checkCreate(s.asTriple());
+	}
+
 	protected void checkCreateReified( final String uri, final SecTriple t )
 	{
 		checkUpdate();
-		final SecNode n = uri == null ? SecNode.FUTURE : new SecNode(
-				Type.URI, uri);
-		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.subject.asNode()),
-				t.getSubject()));
-		checkCreate(new SecTriple(n,
-				SecuredItemImpl.convert(RDF.predicate.asNode()),
-				t.getPredicate()));
-		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.object.asNode()),
-				t.getObject()));
+		final SecNode n = uri == null ? SecNode.FUTURE : new SecNode(Type.URI,
+				uri);
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.subject
+				.asNode()), t.getSubject()));
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.predicate
+				.asNode()), t.getPredicate()));
+		checkCreate(new SecTriple(n, SecuredItemImpl.convert(RDF.object
+				.asNode()), t.getObject()));
 	}
 
 	protected void checkCreateStatement( final ExtendedIterator<Statement> stmts )
@@ -505,7 +512,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	/**
-	 * check that delete on the model is allowed,
+	 * check that delete on the securedModel is allowed,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -523,13 +530,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 		checkDelete(SecuredItemImpl.convert(t));
 	}
 
-	protected void checkDelete( final Statement s )
-	{
-		checkDelete(s.asTriple());
-	}
-
 	/**
-	 * check that the triple can be deleted in the model.,
+	 * check that the triple can be deleted in the securedModel.,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -541,6 +543,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new AccessDeniedException(modelNode, t.toString(),
 					Action.Delete);
 		}
+	}
+
+	protected void checkDelete( final Statement s )
+	{
+		checkDelete(s.asTriple());
 	}
 
 	protected void checkDeleteStatements(
@@ -582,7 +589,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	/**
-	 * check that read on the model is allowed,
+	 * check that read on the securedModel is allowed,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -600,13 +607,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 		checkRead(SecuredItemImpl.convert(t));
 	}
 
-	protected void checkRead( final Statement s )
-	{
-		checkRead(s.asTriple());
-	}
-
 	/**
-	 * check that the triple can be read in the model.,
+	 * check that the triple can be read in the securedModel.,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -618,6 +620,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 			throw new AccessDeniedException(modelNode, t.toString(),
 					Action.Read);
 		}
+	}
+
+	protected void checkRead( final Statement s )
+	{
+		checkRead(s.asTriple());
 	}
 
 	protected void checkReadStatement( final ExtendedIterator<Statement> stmts )
@@ -652,7 +659,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	/**
-	 * check that update on the model is allowed,
+	 * check that update on the securedModel is allowed,
 	 * 
 	 * @throws AccessDeniedException
 	 *             on failure
@@ -672,7 +679,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	}
 
 	/**
-	 * check that the triple can be updated in the model.,
+	 * check that the triple can be updated in the securedModel.,
 	 * 
 	 * @param the
 	 *            starting triple
@@ -704,10 +711,19 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 		else
 		{
-			return super.equals(o);
+			if (o instanceof SecuredItemImpl)
+			{
+				return itemHolder.getBaseItem().equals( ((SecuredItemImpl)o).getBaseItem());
+			}
+			return false;
 		}
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return itemHolder.getBaseItem().hashCode();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

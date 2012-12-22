@@ -30,10 +30,8 @@ import java.util.List;
 
 import org.xenei.jena.security.ItemHolder;
 import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
 import org.xenei.jena.security.graph.SecuredGraph;
-import org.xenei.jena.security.utils.PermTripleFilter;
 
 /**
  * Implementation of SecuredBulkUpdateHandler to be used by a SecuredItemInvoker
@@ -57,7 +55,8 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	 * @param holder
 	 *            The item holder that will hold this SecuredBulkUpdateHandler.
 	 */
-	SecuredBulkUpdateHandlerImpl( final SecuredGraphImpl graph, final Graph baseGraph,
+	SecuredBulkUpdateHandlerImpl( final SecuredGraphImpl graph,
+			final Graph baseGraph,
 			final ItemHolder<BulkUpdateHandler, SecuredBulkUpdateHandler> holder )
 	{
 		super(graph, holder);
@@ -102,16 +101,16 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 		checkUpdate();
 		if (canCreate(Triple.ANY))
 		{
-			holder.getBaseItem().add( it );
+			holder.getBaseItem().add(it);
 		}
 		else
 		{
-			List<Triple> lst = WrappedIterator.create(it).toList();
-			for (Triple t : lst)
+			final List<Triple> lst = WrappedIterator.create(it).toList();
+			for (final Triple t : lst)
 			{
-				checkCreate( t );
+				checkCreate(t);
 			}
-			holder.getBaseItem().add( lst.iterator() );
+			holder.getBaseItem().add(lst.iterator());
 		}
 	}
 
@@ -138,6 +137,22 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 					.iterator()));
 		}
 		holder.getBaseItem().add(triples);
+	}
+
+	private void checkExtendedTripleDelete( final Triple t )
+	{
+		final ExtendedIterator<Triple> iter = baseGraph.find(t);
+		try
+		{
+			while (iter.hasNext())
+			{
+				checkDelete(iter.next());
+			}
+		}
+		finally
+		{
+			iter.close();
+		}
 	}
 
 	@Override
@@ -174,7 +189,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 	public void delete( final Iterator<Triple> it )
 	{
 		checkUpdate();
-		List<Triple> lst = WrappedIterator.create(it).toList();
+		final List<Triple> lst = WrappedIterator.create(it).toList();
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(WrappedIterator.create(lst.iterator()));
@@ -206,20 +221,6 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 		}
 		holder.getBaseItem().delete(triples);
 	}
-	
-	private void checkExtendedTripleDelete( Triple t )
-	{
-		ExtendedIterator<Triple> iter = baseGraph.find(t);
-		try {
-		while (iter.hasNext())
-		{
-			checkDelete( iter.next());
-		}
-		}
-		finally {
-			iter.close();
-		}
-	}
 
 	@Override
 	public void remove( final Node s, final Node p, final Node o )
@@ -228,7 +229,7 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 		if (!canDelete(Triple.ANY))
 		{
 			// the remove can be a pattern so expand it.
-			checkExtendedTripleDelete( new Triple( s,p,o ));
+			checkExtendedTripleDelete(new Triple(s, p, o));
 		}
 		holder.getBaseItem().remove(s, p, o);
 	}

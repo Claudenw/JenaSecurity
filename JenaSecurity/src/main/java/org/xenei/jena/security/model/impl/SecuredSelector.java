@@ -31,7 +31,8 @@ public class SecuredSelector implements Selector
 
 	private SecNode getNode( final RDFNode node )
 	{
-		return node == null ? SecNode.ANY : SecuredItemImpl.convert(node.asNode());
+		return node == null ? SecNode.ANY : SecuredItemImpl.convert(node
+				.asNode());
 	}
 
 	@Override

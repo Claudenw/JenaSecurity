@@ -27,10 +27,14 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/jena-core">
-		<accessrules>
-			<accessrule kind="accessible" pattern="testing"/>
-		</accessrules>
+	<classpathentry kind="lib" path="/home/claude/.m2/repository/junit/junit/4.10/junit-4.10.jar" sourcepath="/home/claude/.m2/repository/junit/junit/4.10/junit-4.10-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="junit"/>
+			<attribute name="maven.artifactId" value="junit"/>
+			<attribute name="maven.version" value="4.10"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

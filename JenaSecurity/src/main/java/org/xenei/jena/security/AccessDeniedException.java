@@ -34,7 +34,7 @@ public class AccessDeniedException extends RuntimeException
 
 	public AccessDeniedException( final SecNode uri, final Action action )
 	{
-		super(String.format("model sec. %s: %s", uri, action));
+		super(String.format("securedModel sec. %s: %s", uri, action));
 	}
 
 	public AccessDeniedException( final SecNode uri, final String triple,

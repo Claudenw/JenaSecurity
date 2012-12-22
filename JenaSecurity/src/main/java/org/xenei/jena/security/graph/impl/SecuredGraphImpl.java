@@ -70,17 +70,18 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	{
 		super(securedItem, holder);
 		this.holder = holder;
-		this.eventManager = new SecuredGraphEventManager(this, holder.getBaseItem(), holder
-				.getBaseItem().getEventManager());
+		this.eventManager = new SecuredGraphEventManager(this,
+				holder.getBaseItem(), holder.getBaseItem().getEventManager());
 	}
 
 	SecuredGraphImpl( final SecurityEvaluator securityEvaluator,
-			final String modelURI, final ItemHolder<Graph, SecuredGraphImpl> holder )
+			final String modelURI,
+			final ItemHolder<Graph, SecuredGraphImpl> holder )
 	{
 		super(securityEvaluator, modelURI, holder);
 		this.holder = holder;
-		this.eventManager = new SecuredGraphEventManager(this, holder.getBaseItem(), holder
-				.getBaseItem().getEventManager());
+		this.eventManager = new SecuredGraphEventManager(this,
+				holder.getBaseItem(), holder.getBaseItem().getEventManager());
 	}
 
 	@Override
@@ -111,8 +112,8 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		{
 			return holder.getBaseItem().contains(t);
 		}
-		ExtendedIterator<Triple> iter = holder.getBaseItem().find(t);
-		try 
+		final ExtendedIterator<Triple> iter = holder.getBaseItem().find(t);
+		try
 		{
 			while (iter.hasNext())
 			{
@@ -123,10 +124,11 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 			}
 			return false;
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
-			
+
 	}
 
 	private synchronized void createPrefixMapping()
@@ -142,8 +144,8 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	{
 		if (reifier == null)
 		{
-			reifier = org.xenei.jena.security.graph.impl.Factory
-					.getInstance(this, holder.getBaseItem().getReifier());
+			reifier = org.xenei.jena.security.graph.impl.Factory.getInstance(
+					this, holder.getBaseItem().getReifier());
 		}
 	}
 
@@ -194,8 +196,9 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	@Override
 	public SecuredBulkUpdateHandler getBulkUpdateHandler()
 	{
-		return org.xenei.jena.security.graph.impl.Factory.getInstance(
-				this, holder.getBaseItem(), holder.getBaseItem().getBulkUpdateHandler());
+		return org.xenei.jena.security.graph.impl.Factory.getInstance(this,
+				holder.getBaseItem(), holder.getBaseItem()
+						.getBulkUpdateHandler());
 	}
 
 	@Override

@@ -35,9 +35,9 @@ public class Factory
 	 * @param securityEvaluator
 	 *            The security evaluator to use
 	 * @param modelIRI
-	 *            The model IRI (graph IRI) to evaluate against.
-	 * @param model
-	 *            The model to secure.
+	 *            The securedModel IRI (graph IRI) to evaluate against.
+	 * @param securedModel
+	 *            The securedModel to secure.
 	 * @return the SecuredModel
 	 */
 	public static SecuredModel getInstance(

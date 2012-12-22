@@ -20,12 +20,9 @@ package org.xenei.jena.security.model.impl;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemInvoker;
-import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredProperty;
 
@@ -35,6 +32,62 @@ import org.xenei.jena.security.model.SecuredProperty;
 public class SecuredPropertyImpl extends SecuredResourceImpl implements
 		SecuredProperty
 {
+	/**
+	 * Get an instance of SecuredProperty
+	 * 
+	 * @param securedItem
+	 *            the item that provides the security context.
+	 * @param property
+	 *            The property to secure
+	 * @return The SecuredProperty
+	 */
+	public static SecuredProperty getInstance( final SecuredModel securedModel,
+			final Property property )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
+		}
+		if (property == null)
+		{
+			throw new IllegalArgumentException("Property may not be null");
+		}
+
+		// check that property has a securedModel.
+		Property goodProp = property;
+		if (goodProp.getModel() == null)
+		{
+			final Node n = property.asNode();
+			if (property.isAnon())
+			{
+				goodProp = securedModel.createProperty(n.getBlankNodeId()
+						.getLabelString());
+			}
+			else
+			{
+				goodProp = securedModel.createProperty(property.asNode()
+						.getURI());
+			}
+		}
+
+		final ItemHolder<Property, SecuredProperty> holder = new ItemHolder<Property, SecuredProperty>(
+				goodProp);
+		final SecuredPropertyImpl checker = new SecuredPropertyImpl(
+				securedModel, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (goodProp instanceof SecuredProperty)
+		{
+			if (checker.isEquivalent((SecuredProperty) goodProp))
+			{
+				return (SecuredProperty) goodProp;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(
+				property.getClass(), checker));
+	}
+
 	// the item holder that contains this SecuredProperty
 	private final ItemHolder<? extends Property, ? extends SecuredProperty> holder;
 
@@ -50,7 +103,7 @@ public class SecuredPropertyImpl extends SecuredResourceImpl implements
 	 */
 	private SecuredPropertyImpl(
 			final SecuredModel securedModel,
-			final ItemHolder<? extends Property, ? extends SecuredProperty> holder)
+			final ItemHolder<? extends Property, ? extends SecuredProperty> holder )
 	{
 		super(securedModel, holder);
 		this.holder = holder;
@@ -73,60 +126,5 @@ public class SecuredPropertyImpl extends SecuredResourceImpl implements
 	public boolean isProperty()
 	{
 		return true;
-	}
-
-	/**
-	 * Get an instance of SecuredProperty
-	 * 
-	 * @param securedItem
-	 *            the item that provides the security context.
-	 * @param property
-	 *            The property to secure
-	 * @return The SecuredProperty
-	 */
-	public static SecuredProperty getInstance( final SecuredModel securedModel,
-			final Property property )
-	{
-		if (securedModel == null)
-		{
-			throw new IllegalArgumentException( "Secured model may not be null");
-		}
-		if (property == null)
-		{
-			throw new IllegalArgumentException( "Property may not be null");
-		}
-		
-		// check that property has a model.
-		Property goodProp = property;
-		if (goodProp.getModel() == null)
-		{
-			final Node n = property.asNode();
-			if (property.isAnon())
-			{
-				goodProp = securedModel.createProperty(n.getBlankNodeId().getLabelString());
-			}
-			else
-			{
-				goodProp = securedModel.createProperty(property.asNode().getURI());
-			}
-		}
-
-		
-		final ItemHolder<Property, SecuredProperty> holder = new ItemHolder<Property, SecuredProperty>(
-				goodProp);
-		final SecuredPropertyImpl checker = new SecuredPropertyImpl(
-				securedModel,
-				holder);
-		// if we are going to create a duplicate proxy, just return this
-		// one.
-		if (goodProp instanceof SecuredProperty)
-		{
-			if (checker.isEquivalent((SecuredProperty) goodProp))
-			{
-				return (SecuredProperty) goodProp;
-			}
-		}
-		return holder.setSecuredItem(new SecuredItemInvoker(
-				property.getClass(), checker));
 	}
 }

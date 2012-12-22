@@ -1,6 +1,5 @@
 package org.xenei.jena.security.model.impl;
 
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -11,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredResource;
 
@@ -35,7 +33,6 @@ public class SecuredResIterator implements ResIterator
 	}
 
 	private final ExtendedIterator<Resource> iter;
-
 
 	public SecuredResIterator( final SecuredModel securedModel,
 			final ExtendedIterator<Resource> wrapped )

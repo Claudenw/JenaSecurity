@@ -35,15 +35,16 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 	@Override
 	public SecuredLiteral asLiteral();
 
-	//@Override
-	//public SecuredResource asResource();
+	// @Override
+	// public SecuredResource asResource();
 
 	/**
 	 * @secGraph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public boolean getBoolean() throws AccessDeniedException,DatatypeFormatException;
+	public boolean getBoolean() throws AccessDeniedException,
+			DatatypeFormatException;
 
 	/**
 	 * @secGraph Read
@@ -78,14 +79,16 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public double getDouble() throws AccessDeniedException, DatatypeFormatException;
+	public double getDouble() throws AccessDeniedException,
+			DatatypeFormatException;
 
 	/**
 	 * @secGraph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public float getFloat() throws AccessDeniedException, DatatypeFormatException;
+	public float getFloat() throws AccessDeniedException,
+			DatatypeFormatException;
 
 	/**
 	 * @secGraph Read
@@ -120,14 +123,16 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public short getShort() throws AccessDeniedException, DatatypeFormatException;
+	public short getShort() throws AccessDeniedException,
+			DatatypeFormatException;
 
 	/**
 	 * @secGraph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
-	public String getString() throws AccessDeniedException, DatatypeFormatException;
+	public String getString() throws AccessDeniedException,
+			DatatypeFormatException;
 
 	/**
 	 * @secGraph Read

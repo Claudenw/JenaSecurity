@@ -62,7 +62,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		if (securedModel == null)
 		{
-			throw new IllegalArgumentException("Secured model may not be null");
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
 		}
 		if (stmt == null)
 		{
@@ -481,12 +482,21 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	}
 
 	@Override
-	public String getString()
+	public String toString()
 	{
-		checkRead();
-		checkRead(holder.getBaseItem().asTriple());
-		return holder.getBaseItem().getString();
+		if (canRead() && canRead(holder.getBaseItem().asTriple()))
+		{
+			return holder.getBaseItem().toString();
+		}
+		else
+		{
+			return super.toString();
+		}
 	}
+	
+	@Override
+	public String getString()
+	{ return getLiteral().getLexicalForm(); }
 
 	@Override
 	public SecuredResource getSubject()

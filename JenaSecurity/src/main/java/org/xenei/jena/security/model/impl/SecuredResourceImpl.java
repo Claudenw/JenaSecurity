@@ -64,7 +64,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	{
 		if (securedModel == null)
 		{
-			throw new IllegalArgumentException("Secured model may not be null");
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
 		}
 		if (resource == null)
 		{
@@ -74,7 +75,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 		{
 			throw new IllegalArgumentException("Resource may not be a literal");
 		}
-		// check that resource has a model.
+		// check that resource has a securedModel.
 		Resource goodResource = resource;
 		if (goodResource.getModel() == null)
 		{
@@ -131,7 +132,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Abort the transaction in the associated model.
+	 * Abort the transaction in the associated securedModel.
 	 * 
 	 * @return This resource to permit cascading.
 	 */
@@ -145,128 +146,93 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
 	public SecuredResource addLiteral( final Property p, final boolean o )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(p, l);
-		return holder.getSecuredItem();
+		return addProperty( p, ResourceFactory.createTypedLiteral(o) );
 	}
 
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property p, final char o )
+	public SecuredResource addLiteral( final Property p, final char o )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(p, o);
-		return holder.getSecuredItem();
+		return addProperty( p, ResourceFactory.createTypedLiteral(o));
 	}
 
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property value, final double d )
+	public SecuredResource addLiteral( final Property value, final double d )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(d);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), value.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(value, l);
-		return holder.getSecuredItem();
-
+		return addProperty( value, ResourceFactory.createTypedLiteral(d));
 	}
 
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property value, final float d )
+	public SecuredResource addLiteral( final Property value, final float d )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(d);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), value.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(value, l);
-		return holder.getSecuredItem();
-
+		return addProperty( value, ResourceFactory.createTypedLiteral(d) );
 	}
 
 	/**
 	 * Add the property <code>p</code> with the pre-constructed Literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, o) to this's
-	 * model. Answer this resource. <b>NOTE</b> thjat this is distinct from the
+	 * securedModel. Answer this resource. <b>NOTE</b> thjat this is distinct
+	 * from the
 	 * other addLiteral methods in that the Literal is not turned into a
 	 * Literal.
 	 */
 	@Override
-	public Resource addLiteral( final Property p, final Literal o )
+	public SecuredResource addLiteral( final Property p, final Literal o )
 	{
-		checkUpdate();
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				o.asNode()));
-		holder.getBaseItem().addLiteral(p, o);
-		return holder.getSecuredItem();
+		return addProperty( p, o );
 	}
 
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property p, final long o )
+	public SecuredResource addLiteral( final Property p, final long o )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(p, l);
-		return holder.getSecuredItem();
+		return addProperty( p, ResourceFactory.createTypedLiteral(o));
 	}
 
 	/**
 	 * Add the property <code>p</code> with the typed-literal value
 	 * <code>o</code> to this resource, <i>ie</i> add (this, p, typed(o)) to
-	 * this's model. Answer
+	 * this's securedModel. Answer
 	 * this resource. The typed literal is equal to one constructed by using
 	 * <code>this.getModel().createTypedLiteral(o)</code>.
 	 */
 	@Override
-	public Resource addLiteral( final Property p, final Object o )
+	public SecuredResource addLiteral( final Property p, final Object o )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addLiteral(p, l);
-		return holder.getSecuredItem();
+		return addProperty( p, ResourceFactory.createTypedLiteral(o));
 	}
 
 	/**
@@ -274,7 +240,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * 
 	 * <p>
 	 * A statement with this resource as the subject, p as the predicate and o
-	 * as the object is added to the model associated with this resource.
+	 * as the object is added to the securedModel associated with this resource.
 	 * </p>
 	 * 
 	 * @param p
@@ -284,7 +250,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to allow cascading calls.
 	 */
 	@Override
-	public Resource addProperty( final Property p, final RDFNode o )
+	public SecuredResource addProperty( final Property p, final RDFNode o )
 	{
 		checkUpdate();
 		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
@@ -298,7 +264,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * 
 	 * <p>
 	 * A statement with this resource as the subject, p as the predicate and o
-	 * as the object is added to the model associated with this resource.
+	 * as the object is added to the securedModel associated with this resource.
 	 * </p>
 	 * 
 	 * @param p
@@ -308,14 +274,9 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to allow cascading calls.
 	 */
 	@Override
-	public Resource addProperty( final Property p, final String o )
+	public SecuredResource addProperty( final Property p, final String o )
 	{
-		checkUpdate();
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		checkCreate(new Triple(holder.getBaseItem().asNode(), p.asNode(),
-				l.asNode()));
-		holder.getBaseItem().addProperty(p, l);
-		return holder.getSecuredItem();
+		return addProperty( p, o, "");
 	}
 
 	/**
@@ -323,7 +284,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * 
 	 * <p>
 	 * A statement with this resource as the subject, p as the predicate and o
-	 * as the object is added to the model associated with this resource.
+	 * as the object is added to the securedModel associated with this resource.
 	 * </p>
 	 * 
 	 * @param p
@@ -335,7 +296,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to allow cascading calls.
 	 */
 	@Override
-	public Resource addProperty( final Property p, final String lexicalForm,
+	public SecuredResource addProperty( final Property p, final String lexicalForm,
 			final RDFDatatype datatype )
 	{
 		checkUpdate();
@@ -352,7 +313,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * 
 	 * <p>
 	 * A statement with this resource as the subject, p as the predicate and o
-	 * as the object is added to the model associated with this resource.
+	 * as the object is added to the securedModel associated with this resource.
 	 * </p>
 	 * 
 	 * @param p
@@ -364,7 +325,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * @return This resource to allow cascading calls.
 	 */
 	@Override
-	public Resource addProperty( final Property p, final String o,
+	public SecuredResource addProperty( final Property p, final String o,
 			final String l )
 	{
 		checkUpdate();
@@ -387,7 +348,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Begin a transaction in the associated model.
+	 * Begin a transaction in the associated securedModel.
 	 * 
 	 * @return This resource to permit cascading.
 	 */
@@ -415,7 +376,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Commit the transaction in the associated model.
+	 * Commit the transaction in the associated securedModel.
 	 * 
 	 * @return This resource to permit cascading.
 	 */
@@ -497,7 +458,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Answer some statement (this, p, O) in the associated model. If there are
+	 * Answer some statement (this, p, O) in the associated securedModel. If
+	 * there are
 	 * several
 	 * such statements, any one of them may be returned. If no such statements
 	 * exist,
@@ -564,7 +526,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * Get a property value of this resource.
 	 * 
 	 * <p>
-	 * The model associated with the resource instance is searched for
+	 * The securedModel associated with the resource instance is searched for
 	 * statements whose subject is this resource and whose predicate is p. If
 	 * such a statement is found, it is returned. If several such statements are
 	 * found, any one may be returned. If no such statements are found, an
@@ -831,9 +793,9 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * Return an iterator over all the properties of this resource.
 	 * 
 	 * <p>
-	 * The model associated with this resource is search and an iterator is
-	 * returned which iterates over all the statements which have this resource
-	 * as a subject.
+	 * The securedModel associated with this resource is search and an iterator
+	 * is returned which iterates over all the statements which have this
+	 * resource as a subject.
 	 * </p>
 	 * 
 	 * @return An iterator over all the statements about this object.
@@ -850,8 +812,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	 * List all the values of the property p.
 	 * 
 	 * <p>
-	 * Returns an iterator over all the statements in the associated model whose
-	 * subject is this resource and whose predicate is p.
+	 * Returns an iterator over all the statements in the associated
+	 * securedModel whose subject is this resource and whose predicate is p.
 	 * </p>
 	 * 
 	 * @param p
@@ -869,7 +831,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 
 	/**
 	 * Delete all the statements with predicate <code>p</code> for this resource
-	 * from its associated model.
+	 * from its associated securedModel.
 	 * 
 	 * @param p
 	 *            the property to remove
@@ -888,7 +850,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 				if (!iter.hasNext())
 				{
 					// thre arn't any to delete -- so return
-					return  holder.getSecuredItem();
+					return holder.getSecuredItem();
 				}
 				while (iter.hasNext())
 				{
@@ -905,7 +867,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Delete all the properties for this resource from the associated model.
+	 * Delete all the properties for this resource from the associated
+	 * securedModel.
 	 * 
 	 * @return This resource to permit cascading.
 	 */
@@ -922,7 +885,7 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 				if (!iter.hasNext())
 				{
 					// thre arn't any to delete -- so return
-					return  holder.getSecuredItem();
+					return holder.getSecuredItem();
 				}
 				while (iter.hasNext())
 				{

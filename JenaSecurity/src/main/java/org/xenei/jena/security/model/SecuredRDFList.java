@@ -27,20 +27,26 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 	public void add( final RDFNode value ) throws AccessDeniedException;
 
 	/**
-	 * Resulting list will contain the readable nodes from this list concatenated
-	 * with  nodes
+	 * Resulting list will contain the readable nodes from this list
+	 * concatenated with nodes
+	 * @graphSec Update
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, value )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.rest, this )
 	 */
 	@Override
 	public RDFList append( final Iterator<? extends RDFNode> nodes )
 			throws AccessDeniedException;
 
 	/**
-	 * Resulting list will contain the readable nodes from this list concatenated
+	 * Resulting list will contain the readable nodes from this list
+	 * concatenated
 	 * with the list argument
+	 * @graphSec Update
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, value )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.rest, this )
 	 */
 	@Override
-	public RDFList append( final RDFList list )
-			throws AccessDeniedException;
+	public RDFList append( final RDFList list ) throws AccessDeniedException;
 
 	/**
 	 * Uses the security settings for the application of the function calls.
@@ -85,7 +91,8 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each node in
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each
+	 *            node in
 	 *            nodes.
 	 * @throws AccessDeniedException
 	 */
@@ -95,7 +102,8 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 
 	/**
 	 * @graphSec Update
-	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each node in
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, node ) for each
+	 *            node in
 	 *            list.
 	 * @throws AccessDeniedException
 	 */
@@ -121,10 +129,15 @@ public interface SecuredRDFList extends RDFList, SecuredResource
 	public boolean contains( final RDFNode value ) throws AccessDeniedException;
 
 	/**
-	 * Creates a copy of this list comprising the readable elements of this list.
+	 * Creates a copy of this list comprising the readable elements of this
+	 * list.
+	 * @graphSec Read to read the items to copy
+	 * @tripleSec Read on each triple to be read.
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.first, value )
+	 * @tripleSec Create SecTriple( SecNode.FUTURE, RDF.rest, this )
 	 */
 	@Override
-	public RDFList copy();
+	public SecuredRDFList copy();
 
 	/**
 	 * Answer the node that is the i'th element of the list, assuming that the

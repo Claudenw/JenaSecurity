@@ -21,8 +21,6 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.graph.TripleMatch;
-import com.hp.hpl.jena.graph.impl.GraphBase;
 import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -46,7 +44,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.rdf.model.impl.RDFReaderFImpl;
 import com.hp.hpl.jena.rdf.model.impl.RDFWriterFImpl;
-import com.hp.hpl.jena.rdf.model.impl.ReifiedStatementImpl;
 import com.hp.hpl.jena.shared.Command;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.shared.Lock;
@@ -54,9 +51,6 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.shared.WrappedIOException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.util.iterator.Map1;
-import com.hp.hpl.jena.util.iterator.NiceIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -69,12 +63,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.ItemHolder;
@@ -95,89 +87,13 @@ import org.xenei.jena.security.model.SecuredRDFNode;
 import org.xenei.jena.security.model.SecuredResource;
 import org.xenei.jena.security.model.SecuredSeq;
 import org.xenei.jena.security.model.SecuredStatement;
+import org.xenei.jena.security.utils.CollectionGraph;
 
 /**
  * Implementation of SecuredModel to be used by a SecuredItemInvoker proxy.
  */
 public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 {
-	// A class that presents a list of Statements as a graph.
-	private class CollectionGraph extends GraphBase
-	{
-
-		private class MatchFilter extends Filter<Triple>
-		{
-			TripleMatch m;
-
-			public MatchFilter( final TripleMatch m )
-			{
-				if (m == null)
-				{
-					throw new IllegalArgumentException("Match must not be null");
-				}
-				this.m = m;
-			}
-
-			@Override
-			public boolean accept( final Triple t )
-			{
-				if (t == null)
-				{
-					throw new IllegalArgumentException(
-							"SecTriple must not be null");
-				}
-				return matches(t.getMatchSubject(), m.getMatchSubject())
-						&& matches(t.getMatchPredicate(), m.getMatchPredicate())
-						&& matches(t.getMatchObject(), m.getMatchObject());
-			}
-
-			private boolean isWild( final Node n )
-			{
-				return (n == null) || n.matches(Node.ANY);
-			}
-
-			private boolean matches( final Node t, final Node m )
-			{
-				return isWild(m) || isWild(t) || m.equals(t);
-			}
-
-		}
-
-		Collection<Statement> stmts;
-
-		private CollectionGraph( final Collection<Statement> stmts )
-		{
-			super();
-			this.stmts = stmts;
-		}
-
-		@Override
-		protected ExtendedIterator<Triple> graphBaseFind( final TripleMatch m )
-		{
-			return WrappedIterator.create(stmts.iterator())
-					.mapWith(new Map1<Statement, Triple>() {
-
-						@Override
-						public Triple map1( final Statement o )
-						{
-							return o.asTriple();
-						}
-					}).filterKeep(new MatchFilter(m));
-		}
-
-		@Override
-		public void performAdd( final Triple t )
-		{
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void performDelete( final Triple t )
-		{
-			stmts.remove(t);
-		}
-	}
-
 	// a class that implements ModelChangedListener
 	private class SecuredModelChangedListener implements ModelChangedListener
 	{
@@ -200,29 +116,85 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		@Override
 		public void addedStatements( final List<Statement> statements )
 		{
-			for (final Statement s : statements)
+			if (canRead(Triple.ANY))
 			{
-				addedStatement(s);
+				wrapped.addedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(),
+						WrappedIterator.create(statements.iterator()));
+				try
+				{
+					wrapped.addedStatements(iter.toList());
+				}
+				finally
+				{
+					iter.close();
+				}
 			}
 		}
 
 		@Override
 		public void addedStatements( final Model m )
 		{
-			addedStatements(m.listStatements(new SecuredSelector(
-					SecuredModelImpl.this)));
+			if (canRead(Triple.ANY))
+			{
+				wrapped.addedStatements(m);
+			}
+			else
+			{
+				wrapped.addedStatements(SecuredModelImpl.getInstance(
+						holder.getSecuredItem(), m));
+			}
 		}
 
 		@Override
 		public void addedStatements( final Statement[] statements )
 		{
-			addedStatements(Arrays.asList(statements));
+			if (canRead(Triple.ANY))
+			{
+				wrapped.addedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(), WrappedIterator.create(Arrays
+								.asList(statements).iterator()));
+				try
+				{
+					final List<Statement> stmts = iter.toList();
+					wrapped.addedStatements(stmts.toArray(new Statement[stmts
+							.size()]));
+				}
+				finally
+				{
+					iter.close();
+				}
+			}
 		}
 
 		@Override
 		public void addedStatements( final StmtIterator statements )
 		{
-			addedStatements(statements.toList());
+			if (canRead(Triple.ANY))
+			{
+				wrapped.addedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(), statements);
+				try
+				{
+					wrapped.addedStatements(iter);
+				}
+				finally
+				{
+					iter.close();
+				}
+			}
 		}
 
 		@Override
@@ -243,38 +215,146 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		@Override
 		public void removedStatements( final List<Statement> statements )
 		{
-			for (final Statement s : statements)
+
+			if (canRead(Triple.ANY))
 			{
-				removedStatement(s);
+				wrapped.removedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(),
+						WrappedIterator.create(statements.iterator()));
+				try
+				{
+					wrapped.removedStatements(iter.toList());
+				}
+				finally
+				{
+					iter.close();
+				}
 			}
 		}
 
 		@Override
 		public void removedStatements( final Model m )
 		{
-			removedStatements(m.listStatements(new SecuredSelector(
-					SecuredModelImpl.this)));
+			if (canRead(Triple.ANY))
+			{
+				wrapped.removedStatements(m);
+			}
+			else
+			{
+				wrapped.removedStatements(SecuredModelImpl.getInstance(
+						holder.getSecuredItem(), m));
+			}
 		}
 
 		@Override
 		public void removedStatements( final Statement[] statements )
 		{
-			removedStatements(Arrays.asList(statements));
+			if (canRead(Triple.ANY))
+			{
+				wrapped.removedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(), WrappedIterator.create(Arrays
+								.asList(statements).iterator()));
+				try
+				{
+					final List<Statement> stmts = iter.toList();
+					wrapped.removedStatements(stmts.toArray(new Statement[stmts
+							.size()]));
+				}
+				finally
+				{
+					iter.close();
+				}
+			}
 		}
 
 		@Override
 		public void removedStatements( final StmtIterator statements )
 		{
-			removedStatements(statements.toList());
+			if (canRead(Triple.ANY))
+			{
+				wrapped.removedStatements(statements);
+			}
+			else
+			{
+				final SecuredStatementIterator iter = new SecuredStatementIterator(
+						holder.getSecuredItem(), statements);
+				try
+				{
+					wrapped.removedStatements(iter);
+				}
+				finally
+				{
+					iter.close();
+				}
+			}
 		}
 	}
 
 	private static final RDFReaderF readerFactory = new RDFReaderFImpl();
 	private static final RDFWriterF writerFactory = new RDFWriterFImpl();
+
+	/**
+	 * Get an instance of SecuredModel
+	 * 
+	 * @param securedItem
+	 *            the item providing the security context.
+	 * @param securedModel
+	 *            the securedModel to secure.
+	 * @return The SecuredModel
+	 */
+	public static SecuredModel getInstance( final SecuredItem securedItem,
+			final Model model )
+	{
+		return org.xenei.jena.security.Factory.getInstance(
+				securedItem.getSecurityEvaluator(), securedItem.getModelIRI(),
+				model);
+	}
+
+	/**
+	 * Get an instance of SecuredModel
+	 * 
+	 * @param securityEvaluator
+	 *            The security evaluator to use
+	 * @param modelIRI
+	 *            The securedModel IRI (graph IRI) to evaluate against.
+	 * @param securedModel
+	 *            The securedModel to secure.
+	 * @return the SecuredModel
+	 */
+	public static SecuredModel getInstance(
+			final SecurityEvaluator securityEvaluator, final String modelURI,
+			final Model model )
+	{
+		final ItemHolder<Model, SecuredModel> holder = new ItemHolder<Model, SecuredModel>(
+				model);
+
+		final SecuredModelImpl checker = new SecuredModelImpl(
+				securityEvaluator, modelURI, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (model instanceof SecuredModel)
+		{
+			if (checker.isEquivalent((SecuredModel) model))
+			{
+				return (SecuredModel) model;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(model.getClass(),
+				checker));
+	}
+
 	// the item holder that contains this SecuredModel.
 	private final ItemHolder<Model, SecuredModel> holder;
 
-	// The secured graph that this model contains.
+	// The secured graph that this securedModel contains.
 	private final SecuredGraph graph;
 
 	//
@@ -286,18 +366,24 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	 * @param securityEvaluator
 	 *            The security evaluator to use
 	 * @param modelURI
-	 *            The model IRI to verify against.
+	 *            The securedModel IRI to verify against.
 	 * @param holder
-	 *            The item holder that will contina this SecuredModel.
+	 *            The item holder that will contain this SecuredModel.
 	 */
 	private SecuredModelImpl( final SecurityEvaluator securityEvaluator,
 			final String modelURI, final ItemHolder<Model, SecuredModel> holder )
 	{
 		super(securityEvaluator, modelURI, holder);
-		this.graph = org.xenei.jena.security.Factory
-				.getInstance(this.getSecurityEvaluator(), this.getModelIRI(), holder.getBaseItem().getGraph());
+		this.graph = org.xenei.jena.security.Factory.getInstance(this
+				.getSecurityEvaluator(), this.getModelIRI(), holder
+				.getBaseItem().getGraph());
 		this.holder = holder;
 	}
+	
+	 private RDFNode asObject( Object o )
+     { 
+		 return o instanceof RDFNode ? (RDFNode) o : ResourceFactory.createTypedLiteral( o ); 
+     }
 
 	@Override
 	public SecuredModel abort()
@@ -350,11 +436,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredModel add( final Resource s, final Property p, final String o )
 	{
-		checkUpdate();
-		checkCreate(new Triple(s.asNode(), p.asNode(), ResourceFactory
-				.createTypedLiteral(o).asNode()));
-		holder.getBaseItem().add(s, p, o);
-		return holder.getSecuredItem();
+		return add( s, p, o, false );
 	}
 
 	@Override
@@ -402,13 +484,48 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredModel add( final Statement[] statements )
 	{
-		return add(Arrays.asList(statements));
+		checkUpdate();
+		if (!canCreate(Triple.ANY))
+		{
+			for (final Statement s : statements)
+			{
+				checkCreate(s.asTriple());
+			}
+		}
+		holder.getBaseItem().add(statements);
+		return holder.getSecuredItem();
+
 	}
 
 	@Override
 	public SecuredModel add( final StmtIterator iter )
 	{
-		return add(iter.toList());
+		checkUpdate();
+		if (!canCreate(Triple.ANY))
+		{
+			final List<Triple> lst = new ArrayList<Triple>();
+			try
+			{
+				while (iter.hasNext())
+				{
+					final Statement s = iter.next();
+					checkCreate(s.asTriple());
+					lst.add(s.asTriple());
+				}
+				final Model m = ModelFactory
+						.createModelForGraph(new CollectionGraph(lst));
+				holder.getBaseItem().add(m.listStatements());
+			}
+			finally
+			{
+				iter.close();
+			}
+		}
+		else
+		{
+			holder.getBaseItem().add(iter);
+		}
+		return holder.getSecuredItem();
 	}
 
 	@Override
@@ -416,6 +533,10 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final boolean o )
 	{
 		final Literal l = ResourceFactory.createTypedLiteral(o);
+		if (l == null)
+		{
+			throw new IllegalArgumentException( "HOw did we get a null");
+		}
 		return add(s, p, l);
 	}
 
@@ -471,15 +592,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredModel addLiteral( final Resource s, final Property p,
 			final Object o )
 	{
-		final Literal l = ResourceFactory.createTypedLiteral(o);
-		return add(s, p, l);
+		return add(s, p, asObject(o));
 	}
 
 	@Override
 	public SecuredRDFNode asRDFNode( final Node n )
 	{
-		return SecuredRDFNodeImpl.getInstance(
-				this, holder.getBaseItem().asRDFNode(n));
+		return SecuredRDFNodeImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.asRDFNode(n));
 	}
 
 	@Override
@@ -499,8 +619,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			checkUpdate();
 			checkCreate(t);
 		}
-		return SecuredStatementImpl.getInstance(
-				this, holder.getBaseItem().asStatement(t));
+		return SecuredStatementImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.asStatement(t));
 	}
 
 	@Override
@@ -524,14 +644,16 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				SecuredItemImpl.convert(t.getObject())));
 	}
 
-	/*private void checkCreateAnonymousResource( final SecurityEvaluator.SecNode n )
-	{
-		checkUpdate();
-		final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(n,
-				SecurityEvaluator.SecNode.IGNORE, SecurityEvaluator.SecNode.IGNORE);
-		checkCreate(t);
-	}
-*/
+	/*
+	 * private void checkCreateAnonymousResource( final
+	 * SecurityEvaluator.SecNode n )
+	 * {
+	 * checkUpdate();
+	 * final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(n,
+	 * SecurityEvaluator.SecNode.IGNORE, SecurityEvaluator.SecNode.IGNORE);
+	 * checkCreate(t);
+	 * }
+	 */
 	@Override
 	public void close()
 	{
@@ -549,12 +671,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public boolean contains( final Resource s, final Property p )
 	{
 		checkRead();
-		SecuredStatementIterator iter = new SecuredStatementIterator( this, 
-				holder.getBaseItem().listStatements(s, p, (RDFNode)null) );
-		try {
+		final SecuredStatementIterator iter = new SecuredStatementIterator(
+				holder.getSecuredItem(), holder.getBaseItem().listStatements(s, p, (RDFNode) null));
+		try
+		{
 			return iter.hasNext();
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -563,12 +687,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public boolean contains( final Resource s, final Property p, final RDFNode o )
 	{
 		checkRead();
-		SecuredStatementIterator iter = new SecuredStatementIterator( this, 
-				holder.getBaseItem().listStatements(s, p, o) );
-		try {
+		final SecuredStatementIterator iter = new SecuredStatementIterator(
+				holder.getSecuredItem(), holder.getBaseItem().listStatements(s, p, o));
+		try
+		{
 			return iter.hasNext();
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -577,12 +703,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public boolean contains( final Resource s, final Property p, final String o )
 	{
 		checkRead();
-		SecuredStatementIterator iter = new SecuredStatementIterator( this, 
-				holder.getBaseItem().listStatements(s, p, o) );
-		try {
+		final SecuredStatementIterator iter = new SecuredStatementIterator(
+				holder.getSecuredItem(), holder.getBaseItem().listStatements(s, p, o));
+		try
+		{
 			return iter.hasNext();
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -592,12 +720,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String o, final String l )
 	{
 		checkRead();
-		SecuredStatementIterator iter = new SecuredStatementIterator( this, 
-				holder.getBaseItem().listStatements(s, p, o, l) );
-		try {
+		final SecuredStatementIterator iter = new SecuredStatementIterator(
+				holder.getSecuredItem(), holder.getBaseItem().listStatements(s, p, o, l));
+		try
+		{
 			return iter.hasNext();
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -606,28 +736,29 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public boolean contains( final Statement s )
 	{
 		checkRead();
-		checkRead( s );
-		return holder.getBaseItem().contains( s );
+		checkRead(s);
+		return holder.getBaseItem().contains(s);
 	}
 
 	@Override
 	public boolean containsAll( final Model model )
 	{
-		return containsAll( model.listStatements());
+		return containsAll(model.listStatements());
 	}
 
 	@Override
 	public boolean containsAll( final StmtIterator iter )
 	{
 		checkRead();
-		boolean doCheck = canRead( Triple.ANY );
-		try {
+		final boolean doCheck = canRead(Triple.ANY);
+		try
+		{
 			while (iter.hasNext())
 			{
-				Statement stmt = iter.next();
+				final Statement stmt = iter.next();
 				if (doCheck)
 				{
-					checkRead( stmt );
+					checkRead(stmt);
 				}
 				if (!holder.getBaseItem().contains(stmt))
 				{
@@ -636,7 +767,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			}
 			return true;
 		}
-		finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -644,28 +776,32 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public boolean containsAny( final Model model )
 	{
-		return containsAny( model.listStatements() );
-		
+		return containsAny(model.listStatements());
+
 	}
 
 	@Override
 	public boolean containsAny( final StmtIterator iter )
 	{
 		checkRead();
-		boolean skipCheck = canRead(Triple.ANY);
-		try {
-		while (iter.hasNext())
+		final boolean skipCheck = canRead(Triple.ANY);
+		try
 		{
-			Statement stmt = iter.next();
-			if (skipCheck || canRead( stmt )) {
-				if (holder.getBaseItem().contains(stmt))
+			while (iter.hasNext())
+			{
+				final Statement stmt = iter.next();
+				if (skipCheck || canRead(stmt))
 				{
-					return true;
+					if (holder.getBaseItem().contains(stmt))
+					{
+						return true;
+					}
 				}
 			}
+			return false;
 		}
-		return false;
-		} finally {
+		finally
+		{
 			iter.close();
 		}
 	}
@@ -716,28 +852,47 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public boolean containsLiteral( final Resource s, final Property p,
 			final Object o )
 	{
-		return contains(s, p, ResourceFactory.createTypedLiteral(o));
+		return contains(s, p, asObject(o));
 	}
 
 	@Override
 	public boolean containsResource( final RDFNode r )
 	{
 		checkRead();
-		if (canRead(new Triple(Node.ANY, Node.ANY, r.asNode())))
+		if (canRead(new Triple(Node.ANY, Node.ANY, Node.ANY)))
 		{
 			return holder.getBaseItem().containsResource(r);
 		}
 		else
 		{
-			for (final Statement stmt : holder.getBaseItem()
-					.listStatements(null, null, r).toSet())
+			ExtendedIterator<Statement> iter = listStatements(null, null, r);
+			if (r.isResource())
 			{
-				if (canRead(stmt.asTriple()))
+
+				if (r.isURIResource())
 				{
-					return true;
+					iter = iter
+							.andThen(listStatements(null, ResourceFactory
+									.createProperty(r.asNode().getURI()),
+									(RDFNode) null));
 				}
+				else
+				{
+					iter = iter.andThen(listStatements(null, ResourceFactory
+							.createProperty(r.asNode().getBlankNodeLabel()),
+							(RDFNode) null));
+				}
+				iter = iter.andThen(listStatements(r.asResource(), null,
+						(RDFNode) null));
 			}
-			return false;
+			try
+			{
+				return iter.hasNext();
+			}
+			finally
+			{
+				iter.close();
+			}
 		}
 	}
 
@@ -745,11 +900,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredAlt createAlt()
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
-				convert(RDF.type.asNode()), 
-				convert(RDF.Alt.asNode())));
-		return SecuredAltImpl.getInstance(
-				this, holder.getBaseItem().createAlt());
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
+				SecuredItemImpl.convert(RDF.type.asNode()),
+				SecuredItemImpl.convert(RDF.Alt.asNode())));
+		return SecuredAltImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createAlt());
 	}
 
 	@Override
@@ -758,19 +914,20 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		checkCreate(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Alt.asNode()));
-		return SecuredAltImpl.getInstance(
-				this, holder.getBaseItem().createAlt(uri));
+		return SecuredAltImpl.getInstance(holder.getSecuredItem(),
+				holder.getBaseItem().createAlt(uri));
 	}
 
 	@Override
 	public SecuredBag createBag()
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
-				convert(RDF.type.asNode()), 
-				convert(RDF.Bag.asNode())));
-		return SecuredBagImpl.getInstance(
-				this, holder.getBaseItem().createBag());
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
+				SecuredItemImpl.convert(RDF.type.asNode()),
+				SecuredItemImpl.convert(RDF.Bag.asNode())));
+		return SecuredBagImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createBag());
 	}
 
 	@Override
@@ -779,90 +936,92 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		checkCreate(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Bag.asNode()));
-		return SecuredBagImpl.getInstance(
-				this, holder.getBaseItem().createBag(uri));
+		return SecuredBagImpl.getInstance(holder.getSecuredItem(),
+				holder.getBaseItem().createBag(uri));
 	}
 
 	private Model createCopy()
 	{
-		return ModelFactory.createDefaultModel().add(this);
+		return ModelFactory.createDefaultModel().add(holder.getSecuredItem());
 	}
 
 	@Override
 	public SecuredRDFList createList()
 	{
 		checkUpdate();
-		return SecuredRDFListImpl.getInstance(
-				this, holder.getBaseItem().createList());
+		return SecuredRDFListImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createList());
 	}
 
 	@Override
 	public SecuredRDFList createList( final Iterator<? extends RDFNode> members )
 	{
 		checkUpdate();
-		checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
-				convert(RDF.rest.asNode()), 
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
+				SecuredItemImpl.convert(RDF.rest.asNode()),
 				SecurityEvaluator.SecNode.FUTURE));
-		if (! (canCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
-				convert(RDF.first.asNode()), 
-				convert(Node.ANY)))))
+		if (!(canCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
+				SecuredItemImpl.convert(RDF.first.asNode()),
+				SecuredItemImpl.convert(Node.ANY)))))
 		{
-			List<RDFNode> nodes = new ArrayList<RDFNode>();
+			final List<RDFNode> nodes = new ArrayList<RDFNode>();
 			while (members.hasNext())
 			{
-				
-				RDFNode n = members.next();
-				checkCreate( new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE, 
-						convert(RDF.first.asNode()), 
-						convert(n.asNode())));
+
+				final RDFNode n = members.next();
+				checkCreate(new SecurityEvaluator.SecTriple(
+						SecurityEvaluator.SecNode.FUTURE,
+						SecuredItemImpl.convert(RDF.first.asNode()),
+						SecuredItemImpl.convert(n.asNode())));
 				nodes.add(n);
 			}
-			return SecuredRDFListImpl
-					.getInstance(this,
-							holder.getBaseItem().createList(nodes.iterator()));
-		
+			return SecuredRDFListImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+					.createList(nodes.iterator()));
+
 		}
 		else
 		{
-			return SecuredRDFListImpl
-					.getInstance(this, holder.getBaseItem().createList(members));
+			return SecuredRDFListImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+					.createList(members));
 		}
 	}
 
 	@Override
 	public SecuredRDFList createList( final RDFNode[] members )
 	{
-		return createList( Arrays.asList(members).iterator());
+		return createList(Arrays.asList(members).iterator());
 	}
 
 	@Override
 	public SecuredLiteral createLiteral( final String v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createLiteral( final String v,
 			final boolean wellFormed )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createLiteral(v, wellFormed) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createLiteral(v, wellFormed));
 
 	}
 
 	@Override
 	public SecuredLiteral createLiteral( final String v, final String language )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createLiteral(v, language) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createLiteral(v, language));
 	}
 
 	@Override
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final boolean o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
 	}
 
@@ -870,7 +1029,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final char o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
 	}
 
@@ -878,7 +1037,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final double o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
 	}
 
@@ -886,7 +1045,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final float o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
 	}
 
@@ -894,24 +1053,15 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final int o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
-	}
-
-	private SecuredStatement createLiteralStatement( final Resource s,
-			final Property p, final Literal l )
-	{
-		checkUpdate();
-		checkCreate(new Triple(s.asNode(), p.asNode(), l.asNode()));
-		return SecuredStatementImpl.getInstance(
-				this, holder.getBaseItem().createStatement(s, p, l));
 	}
 
 	@Override
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final long o )
 	{
-		return createLiteralStatement(s, p,
+		return createStatement(s, p,
 				ResourceFactory.createTypedLiteral(o));
 	}
 
@@ -919,15 +1069,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatement createLiteralStatement( final Resource s,
 			final Property p, final Object o )
 	{
-		return createLiteralStatement(s, p,
-				ResourceFactory.createTypedLiteral(o));
+		return createStatement(s, p, asObject(o));
 	}
 
 	@Override
 	public SecuredProperty createProperty( final String uri )
 	{
-		return SecuredPropertyImpl.getInstance(
-				this, holder.getBaseItem().createProperty(uri));
+		return SecuredPropertyImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createProperty(uri));
 	}
 
 	@Override
@@ -935,11 +1084,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String localName )
 	{
 		checkUpdate();
-		return SecuredPropertyImpl
-				.getInstance(
-						this,
-						holder.getBaseItem().createProperty(nameSpace,
-								localName));
+		return SecuredPropertyImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createProperty(nameSpace, localName));
 	}
 
 	@Override
@@ -947,8 +1093,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkUpdate();
 		checkCreate(SecurityEvaluator.SecNode.FUTURE, s.asTriple());
-		return SecuredReifiedStatementImpl.getInstance(
-				this, holder.getBaseItem().createReifiedStatement(s));
+		return SecuredReifiedStatementImpl.getInstance(holder.getSecuredItem(), holder
+				.getBaseItem().createReifiedStatement(s));
 	}
 
 	@Override
@@ -956,27 +1102,27 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Statement s )
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.SecNode(SecurityEvaluator.SecNode.Type.URI,
-				uri), s.asTriple());
-		return SecuredReifiedStatementImpl.getInstance(
-				this, holder.getBaseItem().createReifiedStatement(uri, s));
+		checkCreate(new SecurityEvaluator.SecNode(
+				SecurityEvaluator.SecNode.Type.URI, uri), s.asTriple());
+		return SecuredReifiedStatementImpl.getInstance(holder.getSecuredItem(), holder
+				.getBaseItem().createReifiedStatement(uri, s));
 	}
 
 	@Override
 	public SecuredResource createResource()
 	{
-//		checkCreateAnonymousResource(SecurityEvaluator.SecNode.FUTURE);
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource());
+		// checkCreateAnonymousResource(SecurityEvaluator.SecNode.FUTURE);
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource());
 	}
 
 	@Override
 	public SecuredResource createResource( final AnonId id )
 	{
-//		checkCreateAnonymousResource(new SecurityEvaluator.SecNode(
-//				SecurityEvaluator.SecNode.Type.Anonymous, id.getLabelString()));
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource(id));
+		// checkCreateAnonymousResource(new SecurityEvaluator.SecNode(
+		// SecurityEvaluator.SecNode.Type.Anonymous, id.getLabelString()));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource(id));
 	}
 
 	@Override
@@ -984,12 +1130,13 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkUpdate();
 		final SecurityEvaluator.SecTriple t = new SecurityEvaluator.SecTriple(
-				SecurityEvaluator.SecNode.FUTURE, SecuredItemImpl.convert(RDF.type
-						.asNode()), SecuredItemImpl.convert(type.asNode()));
+				SecurityEvaluator.SecNode.FUTURE,
+				SecuredItemImpl.convert(RDF.type.asNode()),
+				SecuredItemImpl.convert(type.asNode()));
 		checkCreate(t);
 
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource(type));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource(type));
 	}
 
 	@Override
@@ -1002,8 +1149,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredResource createResource( final String uri )
 	{
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource(uri));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource(uri));
 
 	}
 
@@ -1025,8 +1172,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			checkUpdate();
 			checkCreate(t);
 		}
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource(uri, type));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource(uri, type));
 
 	}
 
@@ -1037,19 +1184,20 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		// Resource r = f.createResource( ResourceFactory.createResource( uri )
 		// );
 		// checkCreateResource( r );
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().createResource(uri, f));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createResource(uri, f));
 	}
 
 	@Override
 	public SecuredSeq createSeq()
 	{
 		checkUpdate();
-		checkCreate(new SecurityEvaluator.SecTriple(SecurityEvaluator.SecNode.FUTURE,
+		checkCreate(new SecurityEvaluator.SecTriple(
+				SecurityEvaluator.SecNode.FUTURE,
 				SecuredItemImpl.convert(RDF.type.asNode()),
 				SecuredItemImpl.convert(RDF.Alt.asNode())));
-		return SecuredSeqImpl.getInstance(
-				this, holder.getBaseItem().createSeq());
+		return SecuredSeqImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createSeq());
 	}
 
 	@Override
@@ -1058,8 +1206,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		checkCreate(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Alt.asNode()));
-		return SecuredSeqImpl.getInstance(
-				this, holder.getBaseItem().createSeq(uri));
+		return SecuredSeqImpl.getInstance(holder.getSecuredItem(),
+				holder.getBaseItem().createSeq(uri));
 	}
 
 	@Override
@@ -1068,8 +1216,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkUpdate();
 		checkCreate(new Triple(s.asNode(), p.asNode(), o.asNode()));
-		return SecuredStatementImpl.getInstance(
-				this, holder.getBaseItem().createStatement(s, p, o));
+		return SecuredStatementImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createStatement(s, p, o));
 	}
 
 	@Override
@@ -1078,8 +1226,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkUpdate();
 		checkCreate(new Triple(s.asNode(), p.asNode(), Node.createURI(o)));
-		return SecuredStatementImpl.getInstance(
-				this, holder.getBaseItem().createStatement(s, p, o));
+		return SecuredStatementImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createStatement(s, p, o));
 	}
 
 	@Override
@@ -1104,104 +1252,103 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		checkCreate(new Triple(s.asNode(), p.asNode(), Node.createLiteral(o, l,
 				wellFormed)));
-		return SecuredStatementImpl.getInstance(
-				this,
-				holder.getBaseItem().createStatement(s, p, o, l, wellFormed));
+		return SecuredStatementImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createStatement(s, p, o, l, wellFormed));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final boolean v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final Calendar d )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(d) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(d));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final char v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final double v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final float v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final int v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final long v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final Object value )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(value) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(value));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final Object value,
 			final RDFDatatype dtype )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(value, dtype) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(value, dtype));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final Object value,
 			final String typeURI )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(value, typeURI) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(value, typeURI));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final String v )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(v) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(v));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final String lex,
 			final RDFDatatype dtype )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(lex, dtype) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(lex, dtype));
 	}
 
 	@Override
 	public SecuredLiteral createTypedLiteral( final String lex,
 			final String typeURI )
 	{
-		return SecuredLiteralImpl.getInstance(
-				this, holder.getBaseItem().createTypedLiteral(lex, typeURI) );
+		return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.createTypedLiteral(lex, typeURI));
 	}
 
 	@Override
@@ -1250,8 +1397,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkRead();
 		checkRead(new Triple(r.asNode(), RDF.type.asNode(), RDF.Alt.asNode()));
-		return SecuredAltImpl.getInstance(
-				this, holder.getBaseItem().getAlt(r));
+		return SecuredAltImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem().getAlt(r));
 	}
 
 	@Override
@@ -1260,8 +1406,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkRead();
 		checkRead(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Alt.asNode()));
-		return SecuredAltImpl.getInstance(
-				this, holder.getBaseItem().getAlt(uri));
+		return SecuredAltImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.getAlt(uri));
 	}
 
 	@Override
@@ -1272,8 +1418,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		{
 			try
 			{
-				return SecuredReifiedStatementImpl
-						.getInstance(this, it.nextRS());
+				return SecuredReifiedStatementImpl.getInstance(holder.getSecuredItem(),
+						it.nextRS());
 			}
 			finally
 			{
@@ -1282,8 +1428,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			return SecuredReifiedStatementImpl
-					.getInstance(this, createReifiedStatement(s));
+			return SecuredReifiedStatementImpl.getInstance(holder.getSecuredItem(),
+					createReifiedStatement(s));
 		}
 	}
 
@@ -1292,8 +1438,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkRead();
 		checkRead(new Triple(r.asNode(), RDF.type.asNode(), RDF.Bag.asNode()));
-		return SecuredBagImpl.getInstance(
-				this, holder.getBaseItem().getBag(r));
+		return SecuredBagImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem().getBag(r));
 	}
 
 	@Override
@@ -1302,8 +1447,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkRead();
 		checkRead(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Bag.asNode()));
-		return SecuredBagImpl.getInstance(
-				this, holder.getBaseItem().getBag(uri));
+		return SecuredBagImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.getBag(uri));
 	}
 
 	@Override
@@ -1347,8 +1492,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		{
 			if (stmt.hasNext())
 			{
-				return SecuredStatementImpl
-						.getInstance(this, stmt.next());
+				return SecuredStatementImpl.getInstance(holder.getSecuredItem(), stmt.next());
 			}
 			return null;
 		}
@@ -1365,8 +1509,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredProperty getProperty( final String uri )
 	{
 		checkRead();
-		return SecuredPropertyImpl.getInstance(
-				this, holder.getBaseItem().getProperty(uri));
+		return SecuredPropertyImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.getProperty(uri));
 	}
 
 	@Override
@@ -1374,8 +1518,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String localName )
 	{
 		checkRead();
-		return SecuredPropertyImpl.getInstance(
-				this, holder.getBaseItem().getProperty(nameSpace, localName));
+		return SecuredPropertyImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.getProperty(nameSpace, localName));
 	}
 
 	@Override
@@ -1390,6 +1534,11 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		else if (n.isURI())
 		{
 			rdfNode = ResourceFactory.createProperty(n.getURI());
+		}
+		else if (n.isBlank())
+		{
+			rdfNode = ResourceFactory.createResource(n.getBlankNodeId()
+					.toString());
 		}
 		else
 		{
@@ -1406,15 +1555,13 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		if (n.isLiteral())
 		{
-			return SecuredLiteralImpl
-					.getInstance(this, holder.getBaseItem().getRDFNode(n)
-							.asLiteral());
+			return SecuredLiteralImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+					.getRDFNode(n).asLiteral());
 		}
 		else
 		{
-			return SecuredResourceImpl
-					.getInstance(this, holder.getBaseItem().getRDFNode(n)
-							.asResource());
+			return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+					.getRDFNode(n).asResource());
 		}
 	}
 
@@ -1443,9 +1590,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkRead();
 		if (canRead(Triple.ANY))
 		{
-			return SecuredStatementImpl
-					.getInstance(this, holder.getBaseItem()
-							.getRequiredProperty(s, p));
+			return SecuredStatementImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+					.getRequiredProperty(s, p));
 		}
 		else
 		{
@@ -1459,7 +1605,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				}
 				else
 				{
-					throw new AccessDeniedException(this.getModelNode(),
+					throw new AccessDeniedException(holder.getSecuredItem().getModelNode(),
 							"anytriple", Action.Read);
 				}
 			}
@@ -1488,8 +1634,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkRead();
 		checkRead(new Triple(r.asNode(), RDF.type.asNode(), RDF.Seq.asNode()));
-		return SecuredSeqImpl.getInstance(
-				this, holder.getBaseItem().getSeq(r));
+		return SecuredSeqImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem().getSeq(r));
 	}
 
 	@Override
@@ -1498,8 +1643,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkRead();
 		checkRead(new Triple(Node.createURI(uri), RDF.type.asNode(),
 				RDF.Seq.asNode()));
-		return SecuredSeqImpl.getInstance(
-				this, holder.getBaseItem().getSeq(uri));
+		return SecuredSeqImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.getSeq(uri));
 	}
 
 	@Override
@@ -1609,7 +1754,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final boolean object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listLiteralStatements(subject, predicate, object));
 	}
 
@@ -1618,7 +1763,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Resource subject, final Property predicate, final char object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listLiteralStatements(subject, predicate, object));
 	}
 
@@ -1628,7 +1773,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final double object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listLiteralStatements(subject, predicate, object));
 	}
 
@@ -1637,7 +1782,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Resource subject, final Property predicate, final float object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listLiteralStatements(subject, predicate, object));
 	}
 
@@ -1646,7 +1791,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Resource subject, final Property predicate, final long object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listLiteralStatements(subject, predicate, object));
 	}
 
@@ -1661,14 +1806,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredNodeIterator listObjects()
 	{
 		checkRead();
-		return new SecuredNodeIterator(this, holder.getBaseItem().listObjects());
+		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem().listObjects());
 	}
 
 	@Override
 	public SecuredNodeIterator listObjectsOfProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredNodeIterator(this, holder.getBaseItem()
+		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listObjectsOfProperty(p));
 	}
 
@@ -1677,7 +1822,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Property p )
 	{
 		checkRead();
-		return new SecuredNodeIterator(this, holder.getBaseItem()
+		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listObjectsOfProperty(s, p));
 	}
 
@@ -1685,7 +1830,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredRSIterator listReifiedStatements()
 	{
 		checkRead();
-		return new SecuredRSIterator(this, holder.getBaseItem()
+		return new SecuredRSIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listReifiedStatements());
 	}
 
@@ -1694,7 +1839,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkRead();
 		checkRead(st);
-		return new SecuredRSIterator(this, holder.getBaseItem()
+		return new SecuredRSIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listReifiedStatements(st));
 	}
 
@@ -1702,7 +1847,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResIterator listResourcesWithProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p));
 	}
 
@@ -1711,7 +1856,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final boolean o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1720,7 +1865,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final char o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1729,7 +1874,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final double o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1738,7 +1883,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final float o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1747,7 +1892,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final long o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1756,7 +1901,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Object o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1765,7 +1910,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final RDFNode o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listResourcesWithProperty(p, o));
 	}
 
@@ -1773,7 +1918,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatementIterator listStatements()
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listStatements());
 	}
 
@@ -1782,7 +1927,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Property p, final RDFNode o )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listStatements(s, p, o));
 	}
 
@@ -1791,7 +1936,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Property predicate, final String object )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listStatements(subject, predicate, object));
 	}
 
@@ -1800,7 +1945,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Property predicate, final String object, final String lang )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listStatements(subject, predicate, object, lang));
 	}
 
@@ -1808,7 +1953,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredStatementIterator listStatements( final Selector s )
 	{
 		checkRead();
-		return new SecuredStatementIterator(this, holder.getBaseItem()
+		return new SecuredStatementIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listStatements(s));
 	}
 
@@ -1816,14 +1961,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResIterator listSubjects()
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem().listSubjects());
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem().listSubjects());
 	}
 
 	@Override
 	public SecuredResIterator listSubjectsWithProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listSubjectsWithProperty(p));
 	}
 
@@ -1832,7 +1977,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final RDFNode o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listSubjectsWithProperty(p, o));
 	}
 
@@ -1841,7 +1986,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String o )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listSubjectsWithProperty(p, o));
 	}
 
@@ -1850,7 +1995,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String o, final String l )
 	{
 		checkRead();
-		return new SecuredResIterator(this, holder.getBaseItem()
+		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
 				.listSubjectsWithProperty(p, o));
 	}
 
@@ -1880,8 +2025,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredModel query( final Selector s )
 	{
 		checkRead();
-		return SecuredModelImpl.getInstance(
-				this, holder.getBaseItem().query(new SecuredSelector(this, s)));
+		return SecuredModelImpl.getInstance(holder.getSecuredItem(),
+				holder.getBaseItem().query(new SecuredSelector(holder.getSecuredItem(), s)));
 	}
 
 	@Override
@@ -1896,7 +2041,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader().read(this, in, base);
+			SecuredModelImpl.readerFactory.getReader().read(holder.getSecuredItem(), in, base);
 			return holder.getSecuredItem();
 		}
 		catch (final JenaException e)
@@ -1917,7 +2062,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader(lang).read(this, in, base);
+			SecuredModelImpl.readerFactory.getReader(lang).read(holder.getSecuredItem(), in, base);
 			return holder.getSecuredItem();
 		}
 		catch (final JenaException e)
@@ -1937,7 +2082,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader().read(this, reader, base);
+			SecuredModelImpl.readerFactory.getReader().read(holder.getSecuredItem(), reader, base);
 			return holder.getSecuredItem();
 		}
 		catch (final JenaException e)
@@ -1958,7 +2103,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader(lang).read(this, reader,
+			SecuredModelImpl.readerFactory.getReader(lang).read(holder.getSecuredItem(), reader,
 					base);
 			return holder.getSecuredItem();
 		}
@@ -1979,7 +2124,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader().read(this, url);
+			SecuredModelImpl.readerFactory.getReader().read(holder.getSecuredItem(), url);
 			return holder.getSecuredItem();
 		}
 		catch (final JenaException e)
@@ -1999,7 +2144,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		try
 		{
-			SecuredModelImpl.readerFactory.getReader(lang).read(this, url);
+			SecuredModelImpl.readerFactory.getReader(lang).read(holder.getSecuredItem(), url);
 			return holder.getSecuredItem();
 		}
 		catch (final JenaException e)
@@ -2057,17 +2202,14 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredModel remove( final List<Statement> statements )
 	{
 		checkUpdate();
-		if (canDelete(Triple.ANY))
-		{
-			holder.getBaseItem().remove(statements);
-		}
-		else
+		if (!canDelete(Triple.ANY))
 		{
 			for (final Statement s : statements)
 			{
-				remove(s);
+				checkDelete(s.asTriple());
 			}
 		}
+		holder.getBaseItem().remove(statements);
 		return holder.getSecuredItem();
 	}
 
@@ -2082,41 +2224,59 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final boolean suppressReifications )
 	{
 		checkUpdate();
-		if (canDelete(Triple.ANY))
-		{
-			holder.getBaseItem().remove(m);
-			if (!suppressReifications)
-			{
-				final RSIterator iter = m.listReifiedStatements();
-				try
-				{
-					while (iter.hasNext())
-					{
-						holder.getBaseItem().remove(
-								iter.next().listProperties());
-					}
-				}
-				finally
-				{
-					iter.close();
-				}
-			}
-		}
-		else
+		if (!canDelete(Triple.ANY))
 		{
 			final StmtIterator iter = m.listStatements();
 			try
 			{
 				while (iter.hasNext())
 				{
-					remove(iter.next());
-				}
-				if (!suppressReifications)
-				{
-					final RSIterator rIter = m.listReifiedStatements();
-					while (rIter.hasNext())
+					final Statement stmt = iter.next();
+					checkDelete(stmt);
+
+					if (suppressReifications)
 					{
-						remove(rIter.next().listProperties());
+						final RSIterator rIter = holder.getBaseItem()
+								.listReifiedStatements(stmt);
+						try
+						{
+							while (rIter.hasNext())
+							{
+								final ReifiedStatement rs = rIter.next();
+								final ExtendedIterator<Statement> tIter = holder
+										.getBaseItem()
+										.listStatements(rs, RDF.subject,
+												stmt.getSubject())
+										.andThen(
+												holder.getBaseItem()
+														.listStatements(
+																rs,
+																RDF.predicate,
+																stmt.getPredicate()))
+										.andThen(
+												holder.getBaseItem()
+														.listStatements(
+																rs,
+																RDF.object,
+																stmt.getObject()));
+
+								try
+								{
+									while (tIter.hasNext())
+									{
+										checkDelete(tIter.next().asTriple());
+									}
+								}
+								finally
+								{
+									tIter.close();
+								}
+							}
+						}
+						finally
+						{
+							rIter.close();
+						}
 					}
 				}
 			}
@@ -2125,8 +2285,9 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				iter.close();
 			}
 		}
-		return holder.getSecuredItem();
+		holder.getBaseItem().remove(m, suppressReifications);
 
+		return holder.getSecuredItem();
 	}
 
 	@Override
@@ -2151,15 +2312,45 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredModel remove( final Statement[] statements )
 	{
-		return remove(Arrays.asList(statements));
+		checkUpdate();
+		if (!canDelete(Triple.ANY))
+		{
+			for (final Statement s : statements)
+			{
+				checkDelete(s.asTriple());
+			}
+		}
+		holder.getBaseItem().remove(statements);
+		return holder.getSecuredItem();
 	}
 
 	@Override
 	public SecuredModel remove( final StmtIterator iter )
 	{
-		while (iter.hasNext())
+		checkUpdate();
+		if (!canDelete(Triple.ANY))
 		{
-			remove(iter.next());
+			final List<Triple> lst = new ArrayList<Triple>();
+			try
+			{
+				while (iter.hasNext())
+				{
+					final Statement s = iter.next();
+					checkDelete(s.asTriple());
+					lst.add(s.asTriple());
+				}
+				final Model m = ModelFactory
+						.createModelForGraph(new CollectionGraph(lst));
+				holder.getBaseItem().remove(m.listStatements());
+			}
+			finally
+			{
+				iter.close();
+			}
+		}
+		else
+		{
+			holder.getBaseItem().remove(iter);
 		}
 		return holder.getSecuredItem();
 	}
@@ -2170,14 +2361,16 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkUpdate();
 		if (!canDelete(Triple.ANY))
 		{
-			StmtIterator iter = holder.getBaseItem().listStatements();
-			try {
-			while (iter.hasNext())
+			final StmtIterator iter = holder.getBaseItem().listStatements();
+			try
 			{
-				checkDelete( iter.next() );
+				while (iter.hasNext())
+				{
+					checkDelete(iter.next());
+				}
 			}
-			}
-			finally {
+			finally
+			{
 				iter.close();
 			}
 		}
@@ -2190,8 +2383,23 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final RDFNode r )
 	{
 		checkUpdate();
-		checkDelete(new Triple(wildCardNode(s), wildCardNode(p),
-				wildCardNode(r)));
+		if (!canDelete(new Triple(wildCardNode(s), wildCardNode(p),
+				wildCardNode(r))))
+		{
+			final StmtIterator iter = holder.getBaseItem().listStatements(s, p,
+					r);
+			try
+			{
+				while (iter.hasNext())
+				{
+					checkDelete(iter.next());
+				}
+			}
+			finally
+			{
+				iter.close();
+			}
+		}
 		holder.getBaseItem().removeAll(s, p, r);
 		return holder.getSecuredItem();
 	}
@@ -2200,23 +2408,24 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public void removeAllReifications( final Statement s )
 	{
 		checkUpdate();
-		if (
-		canDelete(new Triple(Node.ANY, RDF.subject.asNode(),
-				wildCardNode(s.getSubject()))) &&
-		canDelete(new Triple(Node.ANY, RDF.predicate.asNode(),
-				wildCardNode(s.getPredicate()))) &&
-		canDelete(new Triple(Node.ANY, RDF.object.asNode(),
-				wildCardNode(s.getObject()))))
+		if (canDelete(new Triple(Node.ANY, RDF.subject.asNode(),
+				wildCardNode(s.getSubject())))
+				&& canDelete(new Triple(Node.ANY, RDF.predicate.asNode(),
+						wildCardNode(s.getPredicate())))
+				&& canDelete(new Triple(Node.ANY, RDF.object.asNode(),
+						wildCardNode(s.getObject()))))
 		{
 			holder.getBaseItem().removeAllReifications(s);
 		}
 		else
 		{
-			RSIterator iter = holder.getBaseItem().listReifiedStatements(s);
-			try {
+			final RSIterator iter = holder.getBaseItem().listReifiedStatements(
+					s);
+			try
+			{
 				while (iter.hasNext())
 				{
-					ReifiedStatement rs = iter.next();
+					final ReifiedStatement rs = iter.next();
 					checkDelete(new Triple(rs.asNode(), RDF.subject.asNode(),
 							wildCardNode(s.getSubject())));
 					checkDelete(new Triple(rs.asNode(), RDF.predicate.asNode(),
@@ -2226,10 +2435,11 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				}
 				holder.getBaseItem().removeAllReifications(s);
 			}
-			finally {
+			finally
+			{
 				iter.close();
 			}
-			
+
 		}
 	}
 
@@ -2383,8 +2593,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredResource wrapAsResource( final Node n )
 	{
-		return SecuredResourceImpl.getInstance(
-				this, holder.getBaseItem().wrapAsResource(n));
+		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
+				.wrapAsResource(n));
 	}
 
 	@Override
@@ -2397,7 +2607,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter().write(this, out, "");
+			getWriter().write(holder.getSecuredItem(), out, "");
 		}
 		return holder.getSecuredItem();
 
@@ -2413,7 +2623,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter(lang).write(this, out, "");
+			getWriter(lang).write(holder.getSecuredItem(), out, "");
 		}
 		return holder.getSecuredItem();
 	}
@@ -2429,7 +2639,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter(lang).write(this, out, base);
+			getWriter(lang).write(holder.getSecuredItem(), out, base);
 		}
 		return holder.getSecuredItem();
 
@@ -2445,7 +2655,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter().write(this, writer, "");
+			getWriter().write(holder.getSecuredItem(), writer, "");
 		}
 		return holder.getSecuredItem();
 	}
@@ -2460,7 +2670,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter(lang).write(this, writer, "");
+			getWriter(lang).write(holder.getSecuredItem(), writer, "");
 		}
 		return holder.getSecuredItem();
 	}
@@ -2476,59 +2686,9 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		else
 		{
-			getWriter(lang).write(this, writer, base);
+			getWriter(lang).write(holder.getSecuredItem(), writer, base);
 		}
 		return holder.getSecuredItem();
 
-	}
-
-	/**
-	 * Get an instance of SecuredModel
-	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use
-	 * @param modelIRI
-	 *            The model IRI (graph IRI) to evaluate against.
-	 * @param model
-	 *            The model to secure.
-	 * @return the SecuredModel
-	 */
-	public static SecuredModel getInstance(
-			final SecurityEvaluator securityEvaluator, final String modelURI,
-			final Model model )
-	{
-		final ItemHolder<Model, SecuredModel> holder = new ItemHolder<Model, SecuredModel>(
-				model);
-	
-		final SecuredModelImpl checker = new SecuredModelImpl(
-				securityEvaluator, modelURI, holder);
-		// if we are going to create a duplicate proxy, just return this
-		// one.
-		if (model instanceof SecuredModel)
-		{
-			if (checker.isEquivalent((SecuredModel) model))
-			{
-				return (SecuredModel) model;
-			}
-		}
-		return holder.setSecuredItem(new SecuredItemInvoker(model.getClass(),
-				checker));
-	}
-
-	/**
-	 * Get an instance of SecuredModel
-	 * 
-	 * @param securedItem
-	 *            the item providing the security context.
-	 * @param model
-	 *            the model to secure.
-	 * @return The SecuredModel
-	 */
-	public static SecuredModel getInstance( final SecuredItem securedItem,
-			final Model model )
-	{
-		return org.xenei.jena.security.Factory.getInstance(
-				securedItem.getSecurityEvaluator(), securedItem.getModelIRI(),
-				model);
 	}
 }

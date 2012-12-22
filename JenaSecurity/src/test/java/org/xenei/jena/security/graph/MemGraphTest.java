@@ -6,32 +6,22 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.Assert;
-
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runner.Runner;
-import org.junit.runners.ParentRunner;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.EqualityTester;
-import org.xenei.jena.security.MockPrefixMapping;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
-import org.xenei.jena.security.graph.SecuredGraph;
-import org.xenei.jena.security.graph.SecuredReifier;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class MemGraphTest
@@ -60,8 +50,9 @@ public class MemGraphTest
 	{
 		baseGraph = createGraph();
 		baseGraph.getBulkUpdateHandler().removeAll();
-		securedGraph = org.xenei.jena.security.Factory.getInstance(
-				securityEvaluator, "http://example.com/securedGraph", baseGraph);
+		securedGraph = org.xenei.jena.security.Factory
+				.getInstance(securityEvaluator,
+						"http://example.com/securedGraph", baseGraph);
 		s = Node.createURI("http://example.com/securedGraph/s");
 		p = Node.createURI("http://example.com/securedGraph/p");
 		o = Node.createURI("http://example.com/securedGraph/o");
@@ -69,29 +60,31 @@ public class MemGraphTest
 		baseGraph.add(t);
 	}
 
-	
 	@Test
 	public void testBulkUpdateHandler() throws Exception
 	{
 		final BulkUpdateHandler buh = securedGraph.getBulkUpdateHandler();
-		Assert.assertNotNull( "BulkUpdateHandler may not be null", buh );
-		Assert.assertTrue( "BulkUpdateHandler should be secured", buh instanceof SecuredBulkUpdateHandler );
-		BulkUpdateHandlerTest buhTest = new BulkUpdateHandlerTest( securityEvaluator ) {
+		Assert.assertNotNull("BulkUpdateHandler may not be null", buh);
+		Assert.assertTrue("BulkUpdateHandler should be secured",
+				buh instanceof SecuredBulkUpdateHandler);
+		final BulkUpdateHandlerTest buhTest = new BulkUpdateHandlerTest(
+				securityEvaluator) {
+			@Override
 			public void setup()
 			{
 				this.handler = (SecuredBulkUpdateHandler) buh;
 			}
 		};
-		for (Method m : buhTest.getClass().getMethods())
+		for (final Method m : buhTest.getClass().getMethods())
 		{
 			if (m.isAnnotationPresent(Test.class))
 			{
 				buhTest.setup();
-				m.invoke( buhTest ); 
+				m.invoke(buhTest);
 			}
 		}
 	}
-	
+
 	@Test
 	public void testContainsNodes() throws Exception
 	{
@@ -204,8 +197,6 @@ public class MemGraphTest
 		}
 	}
 
-	
-
 	@Test
 	public void testFindNodes() throws Exception
 	{
@@ -255,17 +246,48 @@ public class MemGraphTest
 	@Test
 	public void testGetPrefixMapping() throws Exception
 	{
-		SecuredPrefixMappingTest.runTests( securityEvaluator, securedGraph.getPrefixMapping() );
+		SecuredPrefixMappingTest.runTests(securityEvaluator,
+				securedGraph.getPrefixMapping());
+	}
+
+	@Test
+	public void testGetReifier() throws IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException
+	{
+		final Reifier reifier = securedGraph.getReifier();
+		Assert.assertNotNull("Reifier may not be null", reifier);
+		Assert.assertTrue("Reifier should be secured",
+				reifier instanceof SecuredReifier);
+		final SecuredReifierTest reifierTest = new SecuredReifierTest(
+				securityEvaluator) {
+			@Override
+			public void setup()
+			{
+				this.securedReifier = (SecuredReifier) reifier;
+				this.baseReifier = baseGraph.getReifier();
+			}
+		};
+
+		for (final Method m : reifierTest.getClass().getMethods())
+		{
+			if (m.isAnnotationPresent(Test.class))
+			{
+				reifierTest.setup();
+				m.invoke(reifierTest);
+			}
+		}
+
 	}
 
 	@Test
 	public void testInequality()
 	{
-		EqualityTester.testInequality("proxy and base", securedGraph, baseGraph);
+		EqualityTester
+				.testInequality("proxy and base", securedGraph, baseGraph);
 		final Graph g2 = org.xenei.jena.security.graph.impl.Factory
 				.getInstance(securityEvaluator,
 						"http://example.com/securedGraph", baseGraph);
-		EqualityTester.testInequality("proxy and proxy2", securedGraph, g2);
+		EqualityTester.testEquality("proxy and proxy2", securedGraph, g2);
 		EqualityTester.testInequality("base and proxy2", baseGraph, g2);
 	}
 
@@ -309,8 +331,6 @@ public class MemGraphTest
 		}
 	}
 
-	
-
 	@Test
 	public void testQueryHandler() throws Exception
 	{
@@ -331,30 +351,6 @@ public class MemGraphTest
 								e, e.getTriple()));
 			}
 		}
-	}
-
-	@Test
-	public void testGetReifier() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
-	{
-		final Reifier reifier = securedGraph.getReifier();
-		Assert.assertNotNull( "Reifier may not be null", reifier );
-		Assert.assertTrue( "Reifier should be secured", reifier instanceof SecuredReifier );
-		SecuredReifierTest reifierTest = new SecuredReifierTest( securityEvaluator ){
-			public void setup() {
-				this.securedReifier = (SecuredReifier) reifier; 
-				this.baseReifier = baseGraph.getReifier();
-			}
-		};
-		
-		for (Method m : reifierTest.getClass().getMethods())
-		{
-			if (m.isAnnotationPresent(Test.class))
-			{
-				reifierTest.setup();
-				m.invoke( reifierTest ); 
-			}
-		}
-		
 	}
 
 	@Test

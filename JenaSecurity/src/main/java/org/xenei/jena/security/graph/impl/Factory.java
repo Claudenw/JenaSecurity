@@ -42,14 +42,14 @@ public class Factory
 	 *            The unsecured handler from the base graph.
 	 * @return SecuredBulkUpdateHandler.
 	 */
-	static SecuredBulkUpdateHandler getInstance( final SecuredGraphImpl graph, final Graph baseGraph,
-			final BulkUpdateHandler handler )
+	static SecuredBulkUpdateHandler getInstance( final SecuredGraphImpl graph,
+			final Graph baseGraph, final BulkUpdateHandler handler )
 	{
 		final ItemHolder<BulkUpdateHandler, SecuredBulkUpdateHandler> holder = new ItemHolder<BulkUpdateHandler, SecuredBulkUpdateHandler>(
 				handler);
 
 		final SecuredBulkUpdateHandlerImpl checker = new SecuredBulkUpdateHandlerImpl(
-				graph, baseGraph, holder );
+				graph, baseGraph, holder);
 
 		// if we are going to create a duplicate proxy, just return this
 		// one.

@@ -17,12 +17,10 @@
  */
 package org.xenei.jena.security.model.impl;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
 import com.hp.hpl.jena.rdf.model.Bag;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceF;
@@ -34,9 +32,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItem;
 import org.xenei.jena.security.SecuredItemInvoker;
-import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredLiteral;
@@ -72,6 +68,43 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 
 	}
 
+	/**
+	 * get a SecuredSeq.
+	 * 
+	 * @param securedItem
+	 *            The secured item that provides the security context
+	 * @param seq
+	 *            The Seq to secure.
+	 * @return the SecuredSeq
+	 */
+	public static SecuredSeq getInstance( final SecuredModel securedModel,
+			final Seq seq )
+	{
+		if (securedModel == null)
+		{
+			throw new IllegalArgumentException(
+					"Secured securedModel may not be null");
+		}
+		if (seq == null)
+		{
+			throw new IllegalArgumentException("Seq may not be null");
+		}
+		final ItemHolder<Seq, SecuredSeq> holder = new ItemHolder<Seq, SecuredSeq>(
+				seq);
+		final SecuredSeqImpl checker = new SecuredSeqImpl(securedModel, holder);
+		// if we are going to create a duplicate proxy, just return this
+		// one.
+		if (seq instanceof SecuredSeq)
+		{
+			if (checker.isEquivalent((SecuredSeq) seq))
+			{
+				return (SecuredSeq) seq;
+			}
+		}
+		return holder.setSecuredItem(new SecuredItemInvoker(seq.getClass(),
+				checker));
+	}
+
 	// the item holder that contains this SecuredSeq.
 	private final ItemHolder<? extends Seq, ? extends SecuredSeq> holder;
 
@@ -86,7 +119,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	 *            The item holder that will contain this SecuredSeq.
 	 */
 	protected SecuredSeqImpl( final SecuredModel securedModel,
-			final ItemHolder<? extends Seq, ? extends SecuredSeq> holder)
+			final ItemHolder<? extends Seq, ? extends SecuredSeq> holder )
 	{
 		super(securedModel, holder);
 		this.holder = holder;
@@ -216,8 +249,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		final Alt a = holder.getBaseItem().getAlt(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
 				.asNode(), a.asNode()));
-		return SecuredAltImpl.getInstance(
-				getModel(), a);
+		return SecuredAltImpl.getInstance(getModel(), a);
 	}
 
 	@Override
@@ -227,15 +259,14 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		final Bag b = holder.getBaseItem().getBag(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
 				.asNode(), b.asNode()));
-		return SecuredBagImpl.getInstance(
-				getModel(), b);
+		return SecuredBagImpl.getInstance(getModel(), b);
 	}
 
 	@Override
 	public boolean getBoolean( final int index )
 	{
 		checkRead();
-		boolean retval = holder.getBaseItem().getBoolean(index);
+		final boolean retval = holder.getBaseItem().getBoolean(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
 				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
 		return retval;
@@ -245,9 +276,9 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	public byte getByte( final int index )
 	{
 		checkRead();
-		byte retval = holder.getBaseItem().getByte(index);
+		final byte retval = holder.getBaseItem().getByte(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
 		return retval;
 	}
 
@@ -255,9 +286,9 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	public char getChar( final int index )
 	{
 		checkRead();
-		char retval = holder.getBaseItem().getChar(index);
+		final char retval = holder.getBaseItem().getChar(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
 		return retval;
 
 	}
@@ -266,80 +297,80 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	public double getDouble( final int index )
 	{
 		checkRead();
-		double retval = holder.getBaseItem().getDouble(index);
+		final double retval = holder.getBaseItem().getDouble(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;		
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
 	}
 
 	@Override
 	public float getFloat( final int index )
 	{
 		checkRead();
-		float retval = holder.getBaseItem().getFloat(index);
+		final float retval = holder.getBaseItem().getFloat(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;	}
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
+	}
 
 	@Override
 	public int getInt( final int index )
 	{
 		checkRead();
-		int retval = holder.getBaseItem().getInt(index);
+		final int retval = holder.getBaseItem().getInt(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;	
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
 	}
 
 	@Override
 	public String getLanguage( final int index )
 	{
 		checkRead();
-		Literal literal = holder.getBaseItem().getLiteral(index);
+		final Literal literal = holder.getBaseItem().getLiteral(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  literal.asNode()));
-		return literal.getLanguage();	
+				.asNode(), literal.asNode()));
+		return literal.getLanguage();
 	}
 
 	@Override
 	public SecuredLiteral getLiteral( final int index )
 	{
 		checkRead();
-		Literal literal = holder.getBaseItem().getLiteral(index);
+		final Literal literal = holder.getBaseItem().getLiteral(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  literal.asNode()));
-		return SecuredLiteralImpl.getInstance(
-				getModel(), literal);
+				.asNode(), literal.asNode()));
+		return SecuredLiteralImpl.getInstance(getModel(), literal);
 	}
 
 	@Override
 	public long getLong( final int index )
 	{
 		checkRead();
-		long retval = holder.getBaseItem().getLong(index);
+		final long retval = holder.getBaseItem().getLong(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;	
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
 	}
 
 	@Override
 	public SecuredRDFNode getObject( final int index )
 	{
 		checkRead();
-		RDFNode retval = holder.getBaseItem().getObject(index);
+		final RDFNode retval = holder.getBaseItem().getObject(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  retval.asNode()));
-		return SecuredRDFNodeImpl.getInstance(getModel(), retval);			
+				.asNode(), retval.asNode()));
+		return SecuredRDFNodeImpl.getInstance(getModel(), retval);
 	}
 
 	@Override
 	public SecuredResource getResource( final int index )
 	{
 		checkRead();
-		Resource retval = holder.getBaseItem().getResource(index);
+		final Resource retval = holder.getBaseItem().getResource(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  retval.asNode()));
-		return SecuredResourceImpl.getInstance(getModel(), retval);			
+				.asNode(), retval.asNode()));
+		return SecuredResourceImpl.getInstance(getModel(), retval);
 	}
 
 	@Override
@@ -347,40 +378,40 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	public SecuredResource getResource( final int index, final ResourceF f )
 	{
 		checkRead();
-		Resource retval = holder.getBaseItem().getResource(index, f);
+		final Resource retval = holder.getBaseItem().getResource(index, f);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  retval.asNode()));
-		return SecuredResourceImpl.getInstance(getModel(), retval);			
+				.asNode(), retval.asNode()));
+		return SecuredResourceImpl.getInstance(getModel(), retval);
 	}
 
 	@Override
 	public SecuredSeq getSeq( final int index )
 	{
 		checkRead();
-		Seq retval = holder.getBaseItem().getSeq(index);
+		final Seq retval = holder.getBaseItem().getSeq(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  retval.asNode()));
-		return SecuredSeqImpl.getInstance(getModel(), retval);			
+				.asNode(), retval.asNode()));
+		return SecuredSeqImpl.getInstance(getModel(), retval);
 	}
 
 	@Override
 	public short getShort( final int index )
 	{
 		checkRead();
-		short retval = holder.getBaseItem().getShort(index);
+		final short retval = holder.getBaseItem().getShort(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;	
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
 	}
 
 	@Override
 	public String getString( final int index )
 	{
 		checkRead();
-		String retval = holder.getBaseItem().getString(index);
+		final String retval = holder.getBaseItem().getString(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(),  ResourceFactory.createTypedLiteral(retval).asNode()));
-		return retval;	
+				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+		return retval;
 	}
 
 	@Override
@@ -717,41 +748,5 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		}
 		holder.getBaseItem().set(index, o);
 		return holder.getSecuredItem();
-	}
-
-	/**
-	 * get a SecuredSeq.
-	 * 
-	 * @param securedItem
-	 *            The secured item that provides the security context
-	 * @param seq
-	 *            The Seq to secure.
-	 * @return the SecuredSeq
-	 */
-	public static SecuredSeq getInstance( final SecuredModel securedModel, final Seq seq )
-	{
-		if (securedModel == null)
-		{
-			throw new IllegalArgumentException( "Secured model may not be null");
-		}
-		if (seq == null)
-		{
-			throw new IllegalArgumentException( "Seq may not be null");
-		}
-		final ItemHolder<Seq, SecuredSeq> holder = new ItemHolder<Seq, SecuredSeq>(
-				seq);
-		final SecuredSeqImpl checker = new SecuredSeqImpl(securedModel,
-				holder);
-		// if we are going to create a duplicate proxy, just return this
-		// one.
-		if (seq instanceof SecuredSeq)
-		{
-			if (checker.isEquivalent((SecuredSeq) seq))
-			{
-				return (SecuredSeq) seq;
-			}
-		}
-		return holder.setSecuredItem(new SecuredItemInvoker(seq.getClass(),
-				checker));
 	}
 }

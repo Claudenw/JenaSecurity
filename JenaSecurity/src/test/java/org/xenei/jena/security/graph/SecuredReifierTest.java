@@ -16,10 +16,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.Factory;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.graph.SecuredGraph;
-import org.xenei.jena.security.graph.SecuredReifier;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
 public class SecuredReifierTest
@@ -32,9 +30,10 @@ public class SecuredReifierTest
 	{
 		this.securityEvaluator = securityEvaluator;
 	}
-	
+
 	@Before
-	public void setup() {
+	public void setup()
+	{
 		final Graph g = GraphFactory.createDefaultGraph();
 		baseReifier = g.getReifier();
 		final SecuredGraph sg = Factory.getInstance(securityEvaluator,
@@ -177,7 +176,7 @@ public class SecuredReifierTest
 	{
 		try
 		{
-			securedReifier.getTriple( Node.createAnon());
+			securedReifier.getTriple(Node.createAnon());
 			if (!securityEvaluator.evaluate(Action.Read,
 					securedReifier.getModelNode()))
 			{
@@ -199,11 +198,14 @@ public class SecuredReifierTest
 	@Test
 	public void testHandledAdd()
 	{
-		Set<Action> perms = SecurityEvaluator.Util.asSet( new Action[] {Action.Update, Action.Create });
-		Triple t = new Triple( Node.createAnon(), Node.createURI( "http://example.com/examplePred"), Node.createLiteral( "yee haw"));
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+		final Triple t = new Triple(Node.createAnon(),
+				Node.createURI("http://example.com/examplePred"),
+				Node.createLiteral("yee haw"));
 		try
 		{
-			securedReifier.handledAdd( t );
+			securedReifier.handledAdd(t);
 			if (!securityEvaluator.evaluate(perms,
 					securedReifier.getModelNode()))
 			{
@@ -212,8 +214,8 @@ public class SecuredReifierTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(perms,
-					securedReifier.getModelNode()))
+			if (securityEvaluator
+					.evaluate(perms, securedReifier.getModelNode()))
 			{
 				Assert.fail(String
 						.format("Should not have thrown AccessDenied Exception: %s - %s",
@@ -225,8 +227,11 @@ public class SecuredReifierTest
 	@Test
 	public void testHandledRemove()
 	{
-		Set<Action> perms = SecurityEvaluator.Util.asSet( new Action[] {Action.Update, Action.Delete });
-		Triple t = new Triple( Node.createAnon(), Node.createURI( "http://example.com/examplePred"), Node.createLiteral( "yee haw"));
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Delete });
+		final Triple t = new Triple(Node.createAnon(),
+				Node.createURI("http://example.com/examplePred"),
+				Node.createLiteral("yee haw"));
 
 		try
 		{
@@ -239,8 +244,8 @@ public class SecuredReifierTest
 		}
 		catch (final AccessDeniedException e)
 		{
-			if (securityEvaluator.evaluate(perms,
-					securedReifier.getModelNode()))
+			if (securityEvaluator
+					.evaluate(perms, securedReifier.getModelNode()))
 			{
 				Assert.fail(String
 						.format("Should not have thrown AccessDenied Exception: %s - %s",
@@ -300,11 +305,12 @@ public class SecuredReifierTest
 				Action.Create, Action.Read, Action.Update });
 		try
 		{
-			Triple t  = new Triple( Node.createURI("http://example.com/S" ),
-					Node.createURI("http://example.com/P" ),
-					Node.createURI("http://example.com/O" ));
-			
-			securedReifier.reifyAs(Node.createURI("http://example.com/Reified" ), t);
+			final Triple t = new Triple(Node.createURI("http://example.com/S"),
+					Node.createURI("http://example.com/P"),
+					Node.createURI("http://example.com/O"));
+
+			securedReifier.reifyAs(
+					Node.createURI("http://example.com/Reified"), t);
 			if (!securityEvaluator.evaluate(CRU, securedReifier.getModelNode()))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
@@ -326,9 +332,11 @@ public class SecuredReifierTest
 	{
 		final Set<Action> UD = SecurityEvaluator.Util.asSet(new Action[] {
 				Action.Update, Action.Delete });
-		Triple t = new Triple( Node.createAnon(), Node.createURI( "http://example.com/examplePred"), Node.createLiteral( "yee haw"));
-		Node n =Node.createAnon();
-		baseReifier.reifyAs( n,  t);
+		final Triple t = new Triple(Node.createAnon(),
+				Node.createURI("http://example.com/examplePred"),
+				Node.createLiteral("yee haw"));
+		final Node n = Node.createAnon();
+		baseReifier.reifyAs(n, t);
 		try
 		{
 			securedReifier.remove(n, t);

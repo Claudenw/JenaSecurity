@@ -90,11 +90,12 @@ public class SecurityEvaluatorParameters extends Suite
 				{
 					for (final boolean delete : bSet)
 					{
-						for(final boolean forceTripleCheck : bSet )
+						for (final boolean forceTripleCheck : bSet)
 						{
 							parametersList
-								.add(new Object[] { new MockSecurityEvaluator(
-										true, create, read, update, delete, forceTripleCheck) });
+									.add(new Object[] { new MockSecurityEvaluator(
+											true, create, read, update, delete,
+											forceTripleCheck) });
 						}
 					}
 				}

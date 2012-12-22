@@ -167,7 +167,8 @@ public interface SecuredContainer extends Container, SecuredResource
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read on each triple ( this, rdf:li_? node ) returned by iterator;
+	 * @tripleSec Read on each triple ( this, rdf:li_? node ) returned by
+	 *            iterator;
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -176,10 +177,13 @@ public interface SecuredContainer extends Container, SecuredResource
 	/**
 	 * @perms the Permissions required on each node returned
 	 * @graphSec Read
-	 * @tripleSec Read + perms on each triple ( this, rdf:li_? node ) returned by iterator;
+	 * @tripleSec Read + perms on each triple ( this, rdf:li_? node ) returned
+	 *            by iterator;
 	 * @throws AccessDeniedException
 	 */
-	public SecuredNodeIterator<RDFNode> iterator( Set<Action> perms )  throws AccessDeniedException;
+	public SecuredNodeIterator<RDFNode> iterator( Set<Action> perms )
+			throws AccessDeniedException;
+
 	/**
 	 * @graphSec Update
 	 * @tripleSec Delete s as triple;

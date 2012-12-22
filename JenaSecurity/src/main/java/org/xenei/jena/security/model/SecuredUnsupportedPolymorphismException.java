@@ -18,6 +18,7 @@
 package org.xenei.jena.security.model;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
+import com.hp.hpl.jena.enhanced.EnhNode;
 import com.hp.hpl.jena.enhanced.UnsupportedPolymorphismException;
 
 import org.xenei.jena.security.graph.impl.SecuredGraphImpl;
@@ -31,32 +32,10 @@ import org.xenei.jena.security.model.impl.SecuredRDFNodeImpl;
 public class SecuredUnsupportedPolymorphismException extends
 		UnsupportedPolymorphismException
 {
-	private final SecuredRDFNodeImpl node;
-
+	
 	public SecuredUnsupportedPolymorphismException(
 			final SecuredRDFNodeImpl node, final Class<?> type )
 	{
-		super(null, type);
-		this.node = node;
+		super( node, node.getModel() != null, type);
 	}
-
-	@Override
-	public EnhGraph getBadGraph()
-	{
-		final SecuredModelImpl model = (SecuredModelImpl) node.getModel();
-		final SecuredGraphImpl graph = (SecuredGraphImpl) model.getGraph();
-		final Object o = graph.getBaseItem();
-		if (o instanceof EnhGraph)
-		{
-			return (EnhGraph) o;
-		}
-		return null;
-	}
-
-	@Override
-	public Object getBadNode()
-	{
-		return node;
-	}
-
 }

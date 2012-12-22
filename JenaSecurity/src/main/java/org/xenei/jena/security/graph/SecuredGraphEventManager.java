@@ -28,6 +28,10 @@ import org.xenei.jena.security.graph.impl.SecuredGraphImpl;
 import org.xenei.jena.security.utils.CollectionGraph;
 import org.xenei.jena.security.utils.PermTripleFilter;
 
+/**
+ * Since we sit between the graph and other items we have  to determine when the message is 
+ * first seen and send it to the underlying graph if necessary.
+ */
 public class SecuredGraphEventManager implements GraphEventManager
 {
 	private class SecuredGraphListener implements GraphListener
@@ -46,7 +50,8 @@ public class SecuredGraphEventManager implements GraphEventManager
 			this.runAs = securedGraph.getSecurityEvaluator().getPrincipal();
 		}
 
-		private Triple[] getArray( Graph g, Triple[] triples, Set<Action> perms)
+		private Triple[] getArray( final Graph g, final Triple[] triples,
+				final Set<Action> perms )
 		{
 			Triple[] retval = triples;
 			if (g instanceof SecuredGraphImpl)
@@ -54,17 +59,18 @@ public class SecuredGraphEventManager implements GraphEventManager
 				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
 				final SecurityEvaluator evaluator = CachedSecurityEvaluator
 						.getInstance(sg.getSecurityEvaluator(), runAs);
-				if (evaluator.evaluateAny(perms,
-						sg.getModelNode()))
+				if (evaluator.evaluateAny(perms, sg.getModelNode()))
 				{
-					if (!evaluator.evaluateAny(perms,
-							sg.getModelNode(),
+					if (!evaluator.evaluateAny(perms, sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						List<Triple> list = wrapPermIterator( sg, Arrays.asList(triples).iterator(), perms ).toList();
-						retval = list.toArray( new Triple[list.size()]);
+						final List<Triple> list = wrapPermIterator(sg,
+								Arrays.asList(triples).iterator(), perms)
+								.toList();
+						retval = list.toArray(new Triple[list.size()]);
 					}
-					else {
+					else
+					{
 						retval = triples;
 					}
 				}
@@ -75,15 +81,16 @@ public class SecuredGraphEventManager implements GraphEventManager
 			}
 			return retval;
 		}
-		
+
 		@Override
 		public void notifyAddArray( final Graph g, final Triple[] triples )
 		{
-			Triple[] added = getArray( g, triples, SecuredGraphEventManager.ADD );
+			final Triple[] added = getArray(g, triples,
+					SecuredGraphEventManager.ADD);
 
 			if (added.length > 0)
 			{
-				wrapped.notifyAddArray(g, added );
+				wrapped.notifyAddArray(g, added);
 			}
 		}
 
@@ -103,8 +110,11 @@ public class SecuredGraphEventManager implements GraphEventManager
 							sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						List<Triple> lst = added.find(Triple.ANY).toList();
-					addGraph = new CollectionGraph( Arrays.asList( getArray( g, lst.toArray(new Triple[lst.size()]), SecuredGraphEventManager.ADD )));
+						final List<Triple> lst = added.find(Triple.ANY)
+								.toList();
+						addGraph = new CollectionGraph(Arrays.asList(getArray(
+								g, lst.toArray(new Triple[lst.size()]),
+								SecuredGraphEventManager.ADD)));
 					}
 					else
 					{
@@ -113,20 +123,21 @@ public class SecuredGraphEventManager implements GraphEventManager
 				}
 				else
 				{
-					addGraph = new CollectionGraph( Collections.<Triple> emptyList() );
+					addGraph = new CollectionGraph(
+							Collections.<Triple> emptyList());
 				}
-			}	
-				if (addGraph.size()>0)
-				{
-					wrapped.notifyAddGraph(g, addGraph);
-					
-				}		
+			}
+			if (addGraph.size() > 0)
+			{
+				wrapped.notifyAddGraph(g, addGraph);
+
+			}
 		}
 
 		@Override
 		public void notifyAddIterator( final Graph g, final Iterator<Triple> it )
 		{
-		
+
 			if (g instanceof SecuredGraphImpl)
 			{
 				final SecuredGraphImpl sg = (SecuredGraphImpl) g;
@@ -136,11 +147,14 @@ public class SecuredGraphEventManager implements GraphEventManager
 				if (evaluator.evaluateAny(SecuredGraphEventManager.ADD,
 						sg.getModelNode()))
 				{
-					ExtendedIterator<Triple> iter = wrapPermIterator( sg, it, SecuredGraphEventManager.ADD );
-					try {
+					final ExtendedIterator<Triple> iter = wrapPermIterator(sg,
+							it, SecuredGraphEventManager.ADD);
+					try
+					{
 						wrapped.notifyAddIterator(g, iter);
 					}
-					finally {
+					finally
+					{
 						iter.close();
 					}
 				}
@@ -168,9 +182,11 @@ public class SecuredGraphEventManager implements GraphEventManager
 							sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						list = wrapPermIterator( sg, triples.iterator(), SecuredGraphEventManager.ADD ).toList();
+						list = wrapPermIterator(sg, triples.iterator(),
+								SecuredGraphEventManager.ADD).toList();
 					}
-					else {
+					else
+					{
 						list = triples;
 					}
 				}
@@ -182,8 +198,8 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 			if (list.size() > 0)
 			{
-				
-				wrapped.notifyAddList(g, list );
+
+				wrapped.notifyAddList(g, list);
 			}
 		}
 
@@ -231,10 +247,13 @@ public class SecuredGraphEventManager implements GraphEventManager
 							sg.getModelNode(),
 							SecuredItemImpl.convert(Triple.ANY)))
 					{
-						List<Triple> list = wrapPermIterator( sg, Arrays.asList(triples).iterator(), SecuredGraphEventManager.DELETE ).toList();
-						deleted = list.toArray( new Triple[list.size()]);
+						final List<Triple> list = wrapPermIterator(sg,
+								Arrays.asList(triples).iterator(),
+								SecuredGraphEventManager.DELETE).toList();
+						deleted = list.toArray(new Triple[list.size()]);
 					}
-					else {
+					else
+					{
 						deleted = triples;
 					}
 				}
@@ -246,7 +265,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 
 			if (deleted.length > 0)
 			{
-				wrapped.notifyDeleteArray(g, deleted );
+				wrapped.notifyDeleteArray(g, deleted);
 			}
 		}
 
@@ -397,21 +416,20 @@ public class SecuredGraphEventManager implements GraphEventManager
 			wrapped.notifyEvent(source, value);
 		}
 
-		private ExtendedIterator<Triple> wrapPermIterator( SecuredGraphImpl sg, Iterator<Triple> it, Set<Action> perms )
+		private ExtendedIterator<Triple> wrapPermIterator(
+				final SecuredGraphImpl sg, final Iterator<Triple> it,
+				final Set<Action> perms )
 		{
 			final SecurityEvaluator evaluator = CachedSecurityEvaluator
 					.getInstance(sg.getSecurityEvaluator(), runAs);
-			if (!evaluator.evaluateAny(perms,
-						sg.getModelNode(),
-						SecuredItemImpl.convert(Triple.ANY)))
-				{
-					// nope so wrap the iterator with security iterator
-					return WrappedIterator.create(it).filterKeep(
-							new PermTripleFilter(
-									perms, sg,
-									evaluator));
-				}
-				return WrappedIterator.create(it);	
+			if (!evaluator.evaluateAny(perms, sg.getModelNode(),
+					SecuredItemImpl.convert(Triple.ANY)))
+			{
+				// nope so wrap the iterator with security iterator
+				return WrappedIterator.create(it).filterKeep(
+						new PermTripleFilter(perms, sg, evaluator));
+			}
+			return WrappedIterator.create(it);
 		}
 
 	}
@@ -432,8 +450,8 @@ public class SecuredGraphEventManager implements GraphEventManager
 				Arrays.asList(new Action[] { Action.Delete, Action.Read }));
 	}
 
-	public SecuredGraphEventManager( final SecuredGraph securedGraph, final Graph baseGraph,
-			final GraphEventManager manager )
+	public SecuredGraphEventManager( final SecuredGraph securedGraph,
+			final Graph baseGraph, final GraphEventManager manager )
 	{
 		this.securedGraph = securedGraph;
 		this.baseGraph = baseGraph;
@@ -653,20 +671,26 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyEvent( final Graph source, final Object value )
 	{
-		final boolean wrap = baseGraph.equals(source);
-
-		for (final SecuredGraphListener sgl : getListenerCollection())
+		if (securedGraph.equals(source))
 		{
-			if (wrap)
+			baseGraph.getEventManager().notifyEvent( baseGraph, value);
+		}
+		else {
+		
+			final boolean wrap = baseGraph.equals(source);
+
+			for (final SecuredGraphListener sgl : getListenerCollection())
 			{
-				sgl.notifyEvent(securedGraph, value);
-			}
-			else
-			{
-				sgl.notifyEvent(source, value);
+				if (wrap)
+				{
+					sgl.notifyEvent(securedGraph, value);
+				}
+				else
+				{
+					sgl.notifyEvent(source, value);
+				}
 			}
 		}
-		
 	}
 
 	@Override

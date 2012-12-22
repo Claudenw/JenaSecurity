@@ -96,7 +96,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	public Triple getTriple( final Node n ) throws AccessDeniedException;
 
 	/**
-	 * Permissions match the graph.add(t) method to avoid unauthorized insertion.
+	 * Permissions match the graph.add(t) method to avoid unauthorized
+	 * insertion.
+	 * 
 	 * @graphSec Update
 	 * @tripleSec Create
 	 * @throws AccessDeniedException
@@ -106,7 +108,9 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	public boolean handledAdd( final Triple t ) throws AccessDeniedException;
 
 	/**
-	 * permission match the graph.delete(t) method to avoid unauthorized deletion.
+	 * permission match the graph.delete(t) method to avoid unauthorized
+	 * deletion.
+	 * 
 	 * @graphSec Update
 	 * @tripleSec Delete
 	 * @throws AccessDeniedException
@@ -127,10 +131,12 @@ public interface SecuredReifier extends Reifier, SecuredItem
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read on one of Read SecTriple(SecNode.ANY, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Read on one of Read SecTriple(SecNode.ANY,
+	 *            RDF.subject.asNode(), t.getSubject())
 	 * @tripleSec Read SecTriple(SecNode.ANY, RDF.predicate.asNode(),
 	 *            t.getPredicate())
-	 * @tripleSec Read SecTriple(SecNode.ANY, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Read SecTriple(SecNode.ANY, RDF.object.asNode(),
+	 *            t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -163,10 +169,12 @@ public interface SecuredReifier extends Reifier, SecuredItem
 	/**
 	 * @graphSec Update
 	 * @tripleSec Read t,
-	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.subject.asNode(), t.getSubject())
+	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.subject.asNode(),
+	 *            t.getSubject())
 	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.predicate.asNode(),
 	 *            t.getPredicate())
-	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.object.asNode(), t.getObject())
+	 * @tripleSec Delete SecTriple(SecNode.ANY, RDF.object.asNode(),
+	 *            t.getObject())
 	 * @throws AccessDeniedException
 	 */
 	@Override

@@ -47,7 +47,6 @@ public interface SecuredRDFNode extends RDFNode, SecuredItem
 	public <T extends RDFNode> boolean canAs( final Class<T> view )
 			throws AccessDeniedException;
 
-	
 	@Override
 	public SecuredModel getModel();
 

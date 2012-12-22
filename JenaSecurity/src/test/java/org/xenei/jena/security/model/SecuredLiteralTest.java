@@ -11,9 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.MockSecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredLiteral;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredLiteralImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -58,7 +57,7 @@ public class SecuredLiteralTest extends SecuredRDFNodeTest
 	public void setup()
 	{
 		super.setup();
-		final Literal l = ResourceFactory.createTypedLiteral("literal");
+		Literal l = ResourceFactory.createTypedLiteral("literal");
 		setSecuredRDFNode(SecuredLiteralImpl.getInstance(securedModel, l), l);
 	}
 

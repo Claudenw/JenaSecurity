@@ -15,9 +15,8 @@ import org.junit.runner.RunWith;
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.SecurityEvaluator.Action;
-import org.xenei.jena.security.model.SecuredResource;
+import org.xenei.jena.security.SecurityEvaluatorParameters;
 import org.xenei.jena.security.model.impl.SecuredResourceImpl;
 
 @RunWith( value = SecurityEvaluatorParameters.class )
@@ -49,7 +48,7 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 	 * @throws AccessDeniedException
 	 */
 	@Test
-	public void testAddLiteral()
+	public void testAddLiteralBoolean()
 	{
 		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
 				Action.Update, Action.Create });
@@ -70,7 +69,12 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+	}
+	
+	public void testAddLiteralChar()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredResource().addLiteral(SecuredRDFNodeTest.p, 'c');
@@ -88,7 +92,13 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+}
+	
+	public void testAddLiteralDouble()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+	
 		try
 		{
 			getSecuredResource().addLiteral(SecuredRDFNodeTest.p, 3.14D);
@@ -106,7 +116,13 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+}
+	
+	public void testAddLiteralFloat()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+	
 		try
 		{
 			getSecuredResource().addLiteral(SecuredRDFNodeTest.p, 3.14F);
@@ -124,7 +140,13 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+}
+	
+	public void testAddLiteral()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+	
 		try
 		{
 			getSecuredResource().addLiteral(SecuredRDFNodeTest.p,
@@ -143,7 +165,13 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+}
+	
+	public void testAddLiteralLong()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+	
 		try
 		{
 			getSecuredResource().addLiteral(SecuredRDFNodeTest.p, 1L);
@@ -161,7 +189,13 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 								e, e.getTriple()));
 			}
 		}
-
+}
+	
+	public void testAddLiteralObject()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
+	
 		final Object o = Integer.valueOf("1234");
 		try
 		{
@@ -421,7 +455,7 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 		}
 		catch (final PropertyNotFoundException e)
 		{
-			// expected if (this, "p", ANY) is not in the base model.
+			// expected if (this, "p", ANY) is not in the base securedModel.
 			final StmtIterator iter = baseModel.listStatements(
 					getSecuredResource(), SecuredRDFNodeTest.p, (RDFNode) null);
 			try
