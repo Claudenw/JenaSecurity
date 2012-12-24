@@ -18,6 +18,7 @@
 package org.xenei.jena.security.model.impl;
 
 import com.hp.hpl.jena.enhanced.UnsupportedPolymorphismException;
+import com.hp.hpl.jena.graph.FrontsNode;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -221,4 +222,28 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 		return holder.getBaseItem().isURIResource();
 	}
 
+	/**
+     * An RDFNode is equal to another enhanced node n iff the underlying 
+     * nodes are equal. We generalise to allow the other object to be any class
+     * implementing asNode, because we allow other implemementations of
+     * Resource, at least in principle.
+     * This is deemed to be a complete and correct interpretation of RDFNode
+     * equality, which is why this method has been marked final.
+     * 
+     * @param o An object to test for equality with this node
+     * @return True if o is equal to this node.
+     */
+    @Override final public boolean equals( Object o )
+        { 
+    	checkRead();
+    	return o instanceof FrontsNode && asNode().equals(((FrontsNode) o).asNode()); 
+    	}
+    
+    /**
+     * The hash code of an RDFnode is defined to be the same as the underlying node.
+     * @return The hashcode as an int
+     */
+    @Override final public int hashCode() {
+     	return holder.getBaseItem().asNode().hashCode();
+    }
 }

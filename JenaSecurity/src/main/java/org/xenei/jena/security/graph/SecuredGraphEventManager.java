@@ -671,7 +671,7 @@ public class SecuredGraphEventManager implements GraphEventManager
 	@Override
 	public void notifyEvent( final Graph source, final Object value )
 	{
-		if (securedGraph.equals(source))
+		if (source instanceof SecuredGraph && securedGraph.equals(source))
 		{
 			baseGraph.getEventManager().notifyEvent( baseGraph, value);
 		}

@@ -1,3 +1,5 @@
+REQUIRES Jena 2.7.4 with patch from JENA-370 applied  https://issues.apache.org/jira/browse/JENA-370
+
 JenaSecurity is a SecurityEvaluator interface and a set of dynamic proxies that apply that interface to Jena Graphs, Models, and associated methods and classes.
 
 The SecurityEvaluator class must be implemented.  This class provides the interface to the authentication results (e.g. getPrincipal())) and the authorization system.

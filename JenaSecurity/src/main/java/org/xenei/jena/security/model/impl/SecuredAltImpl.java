@@ -20,10 +20,13 @@ package org.xenei.jena.security.model.impl;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
 import com.hp.hpl.jena.rdf.model.AltHasNoDefaultException;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceF;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import org.xenei.jena.security.ItemHolder;
 import org.xenei.jena.security.SecuredItemInvoker;
@@ -271,117 +274,76 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	@Override
 	public SecuredAlt setDefault( final boolean o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeLiteralObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final char o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeLiteralObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final double o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeLiteralObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final float o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeLiteralObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final long o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeLiteralObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final Object o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeObject(stmt.getModel().createTypedLiteral(o));
-		return holder.getSecuredItem();
+		return setDefault( asObject( o ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final RDFNode o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(),
-				o.asNode());
-		checkUpdate(t, t2);
-		stmt.changeObject(o);
-		return holder.getSecuredItem();
+		checkUpdate();			
+		final ExtendedIterator<Statement> iter = getStatementIterator(Action.Read);
+		try {
+			if (iter.hasNext())
+			{
+				final Statement stmt = iter.next();
+				final Triple t = stmt.asTriple();
+				final Triple t2 = new Triple(t.getSubject(), t.getPredicate(),
+						o.asNode());
+				checkUpdate(t, t2);
+				stmt.changeObject(o);
+				return holder.getSecuredItem();
+			}
+			else
+			{
+				add( o );
+				return holder.getSecuredItem();
+			}
+		}
+		finally {
+			iter.close();
+		}
+		
 	}
 
 	@Override
 	public SecuredAlt setDefault( final String o )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asLiteral( o, "" ));
 	}
 
 	@Override
 	public SecuredAlt setDefault( final String o, final String l )
 	{
-		checkUpdate();
-		final Statement stmt = getDefaultStatement();
-		final Triple t = stmt.asTriple();
-		final Triple t2 = new Triple(t.getSubject(), t.getPredicate(), holder
-				.getBaseItem().getModel().createTypedLiteral(o).asNode());
-		checkUpdate(t, t2);
-		stmt.changeObject(o);
-		return holder.getSecuredItem();
+		return setDefault( asLiteral( o, l) );
 	}
 }

@@ -172,6 +172,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -182,6 +183,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -191,6 +193,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -200,6 +203,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -209,6 +213,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -218,6 +223,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -227,6 +233,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -237,6 +244,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -246,6 +254,7 @@ public interface SecuredAlt extends Alt, SecuredContainer
 	 * @graphSec Update
 	 * @tripleSec Update SecTriple(this, RDF.li(1), existing ), SecTriple(this,
 	 *            RDF.li(1), o )
+	 * @tripleSec Create SecTriple(this, RDF.li(1), o ) if no current default
 	 * @throws AccessDeniedException
 	 */
 	@Override

@@ -535,6 +535,7 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	{
 		checkUpdate();
 		checkDelete(holder.getBaseItem());
+		holder.getBaseItem().remove();
 		return holder.getSecuredItem();
 	}
 

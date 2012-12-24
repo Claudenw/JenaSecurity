@@ -41,8 +41,9 @@ public class EqualityTester
 		{
 			return;
 		}
-		Assert.assertFalse(label, o1.equals(o2));
 		Assert.assertFalse(label, o2.equals(o1));
+		Assert.assertFalse(label, o1.equals(o2));
+
 	}
 
 }

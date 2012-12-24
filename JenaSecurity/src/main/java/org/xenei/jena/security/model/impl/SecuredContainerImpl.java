@@ -21,16 +21,27 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Container;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.util.iterator.Map1;
+import com.hp.hpl.jena.util.iterator.WrappedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.xenei.jena.security.ItemHolder;
 import org.xenei.jena.security.SecuredItemInvoker;
@@ -122,71 +133,57 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 		// holder.getBaseItem().getModel().register(listener);
 	}
 
+	protected RDFNode asObject( Object o )
+    { 
+		 return o instanceof RDFNode ? (RDFNode) o : ResourceFactory.createTypedLiteral( o ); 
+    }
+	
+	protected RDFNode asLiteral( String o, String l )
+	{
+		return holder.getBaseItem().getModel().createLiteral(o, l);
+	}
+	
 	@Override
 	public SecuredContainer add( final boolean o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, holder.getBaseItem().getModel().createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final char o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final double o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final float o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final long o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final Object o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asObject( o ));
 	}
 
 	@Override
 	public SecuredContainer add( final RDFNode o )
 	{
 		checkUpdate();
-		final int pos = getAddIndex();
+		final int pos = holder.getBaseItem().size();
 		checkAdd(pos, o.asNode());
 		holder.getBaseItem().add(o);
 		return holder.getSecuredItem();
@@ -195,21 +192,13 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	@Override
 	public SecuredContainer add( final String o )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, ResourceFactory.createTypedLiteral(o));
-		holder.getBaseItem().add(o);
-		return holder.getSecuredItem();
+		return add( asLiteral( o, "" ));
 	}
 
 	@Override
 	public SecuredContainer add( final String o, final String l )
 	{
-		checkUpdate();
-		final int pos = getAddIndex();
-		checkAdd(pos, Node.createLiteral(o, l, false));
-		holder.getBaseItem().add(o, l);
-		return holder.getSecuredItem();
+		return add( asLiteral( o, l));
 	}
 
 	protected void checkAdd( final int pos, final Literal literal )
@@ -226,97 +215,37 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	@Override
 	public boolean contains( final boolean o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
 	public boolean contains( final char o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
 	public boolean contains( final double o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
 	public boolean contains( final float o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
 	public boolean contains( final long o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
 	public boolean contains( final Object o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asObject( o ) );
 	}
 
 	@Override
@@ -337,36 +266,16 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	@Override
 	public boolean contains( final String o )
 	{
-		// iterator check reads
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(l.asNode()))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asLiteral( o, "" ));
 	}
 
 	@Override
 	public boolean contains( final String o, final String l )
 	{
-		// iterator check reads
-		final Node lit = Node.createLiteral(o, l, false);
-		final SecuredNodeIterator<RDFNode> iter = iterator();
-		while (iter.hasNext())
-		{
-			if (iter.next().asNode().equals(lit))
-			{
-				return true;
-			}
-		}
-		return false;
+		return contains( asLiteral( o, l ));
 	}
 
-	private int getAddIndex()
+	protected int getAddIndex()
 	{
 		int pos = -1;
 		final ExtendedIterator<Statement> iter = holder.getBaseItem()
@@ -385,7 +294,7 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 		return pos + 1;
 	}
 
-	protected int getIndex( final Property p )
+	protected static int getIndex( final Property p )
 	{
 		if (p.getNameSpace().equals(RDF.getURI())
 				&& p.getLocalName().startsWith("_"))
@@ -439,19 +348,22 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	@Override
 	public SecuredNodeIterator<RDFNode> iterator()
 	{
-		checkRead();
-
-		final ExtendedIterator<RDFNode> ni = getStatementIterator(Action.Read)
-				.mapWith(new Map1<Statement, RDFNode>() {
-
-					@Override
-					public RDFNode map1( final Statement o )
-					{
-						return o.getObject();
-					}
-				});
-		return new SecuredNodeIterator<RDFNode>(getModel(), ni);
-
+		// listProperties calls checkRead();
+        SecuredStatementIterator iter = listProperties(); 
+        try {
+	        SortedSet<Statement> result = new TreeSet<Statement>( new ContainerComparator() );
+	        while (iter.hasNext()) {
+	        	Statement stmt = iter.next();
+	        	if (stmt.getPredicate().getOrdinal() > 0)
+	        	{
+	        		result.add( stmt );
+	        	}
+	        }
+	        return new SecuredNodeIterator<RDFNode>(getModel(), new StatementRemovingIterator(result.iterator()).mapWith( new NodeMap() ) );
+        }
+        finally {
+        	iter.close();
+        }
 	}
 
 	@Override
@@ -629,4 +541,52 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	 * 
 	 * }
 	 */
+	
+	static class NodeMap implements Map1<Statement,RDFNode>
+	{
+
+		@Override
+		public RDFNode map1( Statement o )
+		{
+			return o.getObject();
+		}
+		
+	}
+	
+	static class ContainerComparator implements Comparator<Statement>
+	{
+
+		@Override
+		public int compare( Statement arg0, Statement arg1 )
+		{
+			return Integer.valueOf(arg0.getPredicate().getOrdinal()).compareTo( arg1.getPredicate().getOrdinal());
+		}
+		
+	}
+	
+	static class StatementRemovingIterator extends WrappedIterator<Statement>
+	{
+		private Statement stmt;
+		
+		public StatementRemovingIterator( Iterator<? extends Statement> base )
+		{
+			super(base);
+		}
+
+		@Override
+		public Statement next()
+		{
+			stmt = super.next();
+			return stmt;
+		}
+
+		@Override
+		public void remove()
+		{
+			stmt.remove();
+			super.remove();
+		}
+		
+		
+	}
 }

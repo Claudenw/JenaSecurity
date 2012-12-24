@@ -17,6 +17,7 @@
  */
 package org.xenei.jena.security.model.impl;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
 import com.hp.hpl.jena.rdf.model.Bag;
@@ -128,61 +129,37 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public SecuredSeq add( final int index, final boolean o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final char o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final double o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final float o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final long o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final Object o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, asObject( o ));
 	}
 
 	@Override
@@ -198,21 +175,13 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public SecuredSeq add( final int index, final String o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		checkCreate(index, l);
-		holder.getBaseItem().add(index, o);
-		return holder.getSecuredItem();
+		return add( index, o, "" );
 	}
 
 	@Override
 	public SecuredSeq add( final int index, final String o, final String l )
 	{
-		checkUpdate();
-		final Literal l2 = holder.getBaseItem().getModel().createLiteral(o, l);
-		checkCreate(index, l2);
-		holder.getBaseItem().add(index, o, l);
-		return holder.getSecuredItem();
+		return add( index, holder.getBaseItem().getModel().createLiteral(o, l));
 	}
 
 	private void checkCreate( final int index, final Literal l )
@@ -268,7 +237,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final boolean retval = holder.getBaseItem().getBoolean(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -278,7 +247,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final byte retval = holder.getBaseItem().getByte(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -288,7 +257,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final char retval = holder.getBaseItem().getChar(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 
 	}
@@ -299,7 +268,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final double retval = holder.getBaseItem().getDouble(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -309,7 +278,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final float retval = holder.getBaseItem().getFloat(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -319,7 +288,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final int retval = holder.getBaseItem().getInt(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -349,7 +318,7 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 		checkRead();
 		final long retval = holder.getBaseItem().getLong(index);
 		checkRead(new Triple(holder.getBaseItem().asNode(), RDF.li(index)
-				.asNode(), ResourceFactory.createTypedLiteral(retval).asNode()));
+				.asNode(), asObject(retval).asNode()));
 		return retval;
 	}
 
@@ -417,85 +386,37 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public int indexOf( final boolean o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
 	public int indexOf( final char o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
 	public int indexOf( final double o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
 	public int indexOf( final float o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
 	public int indexOf( final long o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
 	public int indexOf( final Object o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asObject( o ));
 	}
 
 	@Override
@@ -514,29 +435,13 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public int indexOf( final String o )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createTypedLiteral(o));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asLiteral( o, "" ));
 	}
 
 	@Override
 	public int indexOf( final String o, final String l )
 	{
-		checkRead();
-		final Statement stmt = containerIndexOf(holder.getBaseItem().getModel()
-				.createLiteral(o, l));
-		if (stmt == null)
-		{
-			return 0;
-		}
-		checkRead(stmt);
-		return stmt.getPredicate().getOrdinal();
+		return indexOf( asLiteral( o, l));
 	}
 
 	@Override
@@ -556,133 +461,37 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public SecuredSeq set( final int index, final boolean o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final char o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final double o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final float o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final long o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final Object o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asObject( o ));
 	}
 
 	@Override
@@ -709,44 +518,12 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	@Override
 	public SecuredSeq set( final int index, final String o )
 	{
-		checkUpdate();
-		final Literal l = holder.getBaseItem().getModel().createTypedLiteral(o);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asLiteral( o, "" ));
 	}
 
 	@Override
 	public SecuredSeq set( final int index, final String o, final String l )
 	{
-		checkUpdate();
-		final Literal l2 = holder.getBaseItem().getModel().createLiteral(o, l);
-		final Triple t2 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-				index).asNode(), l2.asNode());
-		final RDFNode rdfNode = holder.getBaseItem().getObject(index);
-		if (rdfNode != null)
-		{
-			final Triple t1 = new Triple(holder.getBaseItem().asNode(), RDF.li(
-					index).asNode(), rdfNode.asNode());
-			checkUpdate(t1, t2);
-		}
-		else
-		{
-			checkCreate(t2);
-		}
-		holder.getBaseItem().set(index, o);
-		return holder.getSecuredItem();
+		return set( index, asLiteral(o, l));
 	}
 }

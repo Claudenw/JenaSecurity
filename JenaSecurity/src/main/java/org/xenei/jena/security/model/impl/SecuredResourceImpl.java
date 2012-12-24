@@ -388,28 +388,6 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	}
 
 	/**
-	 * Determine whether two objects represent the same resource.
-	 * 
-	 * <p>
-	 * A resource can only be equal to another resource. If both resources are
-	 * not anonymous, then they are equal if the URI's are equal. If both
-	 * resources are anonymous, they are equal only if there Id's are the same.
-	 * If one resource is anonymous and the other is not, then they are not
-	 * equal.
-	 * </p>
-	 * 
-	 * @param o
-	 *            The object to be compared.
-	 * @return true if and only if both objects are equal
-	 */
-	@Override
-	public boolean equals( final Object o )
-	{
-		checkRead();
-		return holder.getBaseItem().equals(o);
-	}
-
-	/**
 	 * Returns an a unique identifier for anonymous resources.
 	 * 
 	 * <p>

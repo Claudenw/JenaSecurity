@@ -419,14 +419,14 @@ public class SecuredAltTest extends SecuredContainerTest
 	}
 
 	@Test
-	public void testSetDefault()
+	public void testSetDefaultBoolean()
 	{
 		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
-				Action.Read, Action.Update });
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault(true);
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -440,10 +440,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
+
+	@Test
+	public void testSetDefaultChar()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault('c');
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -457,11 +464,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultDouble()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault(3.14d);
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -475,11 +488,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultFloat()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault(3.14f);
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -493,11 +512,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultLong()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault(2L);
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -511,12 +536,18 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultObject()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			final Object o = Integer.valueOf(2);
 			getSecuredAlt().setDefault(o);
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -530,13 +561,19 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultResource()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault(
 					ResourceFactory
 							.createResource("http://example.com/resource"));
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -550,11 +587,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
 
+	@Test
+	public void testSetDefaultString()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault("test");
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}
@@ -568,10 +611,17 @@ public class SecuredAltTest extends SecuredContainerTest
 								e, e.getTriple()));
 			}
 		}
+	}
+
+	@Test
+	public void testSetDefaultStringAndLang()
+	{
+		final Set<Action> perms = SecurityEvaluator.Util.asSet(new Action[] {
+				Action.Update, Action.Create });
 		try
 		{
 			getSecuredAlt().setDefault("dos", "es");
-			if (!securityEvaluator.evaluate(perms))
+			if (!securityEvaluator.evaluate(Action.Update) || (!securityEvaluator.evaluate(Action.Create) && !getSecuredAlt().iterator().hasNext() ))
 			{
 				Assert.fail("Should have thrown AccessDenied Exception");
 			}

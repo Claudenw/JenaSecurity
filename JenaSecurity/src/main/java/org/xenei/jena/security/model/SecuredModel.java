@@ -405,7 +405,7 @@ public interface SecuredModel extends Model, SecuredPrefixMapping// ,
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read SecTriple( s, p, r) where SecTriple(s,p,r) is in the
+	 * @tripleSec Read SecTriple( s, p, resource) where SecTriple(s,p,resource) is in the
 	 *            securedModel.
 	 * @throws AccessDeniedException
 	 */
@@ -774,7 +774,7 @@ public interface SecuredModel extends Model, SecuredPrefixMapping// ,
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read SecTriple( r, RDF.type, RDF.alt )
+	 * @tripleSec Read SecTriple( resource, RDF.type, RDF.alt )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -812,7 +812,7 @@ public interface SecuredModel extends Model, SecuredPrefixMapping// ,
 
 	/**
 	 * @graphSec Read
-	 * @tripleSec Read SecTriple( r, RDF.type, RDF.Bag )
+	 * @tripleSec Read SecTriple( resource, RDF.type, RDF.Bag )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -893,7 +893,7 @@ public interface SecuredModel extends Model, SecuredPrefixMapping// ,
 	/**
 	 * 
 	 * @graphSec Read
-	 * @tripleSec Read on SecTriple(r, RDF.type, RDF.Seq)
+	 * @tripleSec Read on SecTriple(resource, RDF.type, RDF.Seq)
 	 * @throws AccessDeniedException
 	 */
 	@Override

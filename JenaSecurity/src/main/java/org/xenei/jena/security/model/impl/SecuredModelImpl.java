@@ -48,6 +48,7 @@ import com.hp.hpl.jena.shared.Command;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.shared.PropertyNotFoundException;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.shared.WrappedIOException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -1181,9 +1182,9 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Deprecated
 	public SecuredResource createResource( final String uri, final ResourceF f )
 	{
-		// Resource r = f.createResource( ResourceFactory.createResource( uri )
+		// Resource resource = f.createResource( ResourceFactory.createResource( uri )
 		// );
-		// checkCreateResource( r );
+		// checkCreateResource( resource );
 		return SecuredResourceImpl.getInstance(holder.getSecuredItem(), holder.getBaseItem()
 				.createResource(uri, f));
 	}
@@ -1605,8 +1606,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 				}
 				else
 				{
-					throw new AccessDeniedException(holder.getSecuredItem().getModelNode(),
-							"anytriple", Action.Read);
+					throw new PropertyNotFoundException(p);
 				}
 			}
 			finally
@@ -1996,7 +1996,7 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	{
 		checkRead();
 		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listSubjectsWithProperty(p, o));
+				.listSubjectsWithProperty(p, o, l));
 	}
 
 	@Override
