@@ -10,14 +10,12 @@ import org.xenei.jena.security.SecurityEvaluator;
 
 public class SecuredGraphListenerTest extends TestGraphListener
 {
-	private ReificationStyle style;
 	private final SecurityEvaluator eval;
 
 	public SecuredGraphListenerTest( final Class<? extends Graph> graphClass,
-			final String name, final ReificationStyle style )
+			final String name )
 	{
-		super(graphClass, name, style);
-		this.style = style;
+		super(graphClass, name);
 		eval = new MockSecurityEvaluator(true, true, true, true, true, true);
 	}
 
@@ -30,12 +28,9 @@ public class SecuredGraphListenerTest extends TestGraphListener
 	@Override
 	public Graph getGraph()
 	{
-
-		final Graph graph = style == null ? Factory.createDefaultGraph()
-				: Factory.createDefaultGraph(style);
-		final Graph g = org.xenei.jena.security.Factory.getInstance(eval,
-				getName(), graph);
-		g.getEventManager().register(new CheckChanges("simple tracking", g));
-		return g;
+		final Graph graph = org.xenei.jena.security.Factory.getInstance(eval,
+				getName(), Factory.createDefaultGraph());
+		graph.getEventManager().register(new CheckChanges("simple tracking", graph));
+		return graph;
 	}
 }

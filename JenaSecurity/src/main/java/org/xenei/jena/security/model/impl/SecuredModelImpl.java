@@ -19,9 +19,7 @@ package org.xenei.jena.security.model.impl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -405,24 +403,19 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	@Override
 	public SecuredModel add( final Model m )
 	{
-		return add(m, false);
+		checkUpdate();
+		if (!canCreate(Triple.ANY))
+		{
+			checkCreateStatement(m.listStatements());
+		}
+		holder.getBaseItem().add(m);
+		return holder.getSecuredItem();
 	}
 
 	@Override
 	public SecuredModel add( final Model m, final boolean suppressReifications )
 	{
-		checkUpdate();
-		if (!canCreate(Triple.ANY))
-		{
-			checkCreateStatement(m.listStatements());
-			if (!suppressReifications)
-			{
-				final Reifier r = m.getGraph().getReifier();
-				checkCreateTriples(r.find(Triple.ANY));
-			}
-		}
-		holder.getBaseItem().add(m, suppressReifications);
-		return holder.getSecuredItem();
+		return add( m );
 	}
 
 	@Override
@@ -2027,12 +2020,6 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		checkRead();
 		return SecuredModelImpl.getInstance(holder.getSecuredItem(),
 				holder.getBaseItem().query(new SecuredSelector(holder.getSecuredItem(), s)));
-	}
-
-	@Override
-	public QueryHandler queryHandler()
-	{
-		return graph.queryHandler();
 	}
 
 	@Override

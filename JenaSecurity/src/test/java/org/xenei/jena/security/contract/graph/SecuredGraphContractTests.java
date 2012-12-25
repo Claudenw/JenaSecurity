@@ -12,13 +12,11 @@ public class SecuredGraphContractTests extends MetaTestGraph
 {
 
 	private final SecurityEvaluator eval;
-	private ReificationStyle style;
 
 	public SecuredGraphContractTests( final Class<? extends Graph> graphClass,
-			final String name, final ReificationStyle style )
+			final String name )
 	{
-		super(graphClass, name, style);
-		this.style = style;
+		super(graphClass, name);
 		eval = new MockSecurityEvaluator(true, true, true, true, true, true);
 	}
 
@@ -31,11 +29,8 @@ public class SecuredGraphContractTests extends MetaTestGraph
 	@Override
 	public Graph getGraph()
 	{
-		final Graph graph = (style != null) ? Factory.createDefaultGraph(style)
-				: Factory.createDefaultGraph();
-
 		return org.xenei.jena.security.Factory.getInstance(eval, getName(),
-				graph);
+				Factory.createDefaultGraph());
 	}
 
 }

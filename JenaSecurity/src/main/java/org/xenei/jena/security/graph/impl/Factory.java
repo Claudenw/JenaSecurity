@@ -19,7 +19,6 @@ package org.xenei.jena.security.graph.impl;
 
 import com.hp.hpl.jena.graph.BulkUpdateHandler;
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 import org.xenei.jena.security.ItemHolder;
@@ -28,7 +27,6 @@ import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
-import org.xenei.jena.security.graph.SecuredReifier;
 
 public class Factory
 {
@@ -93,34 +91,6 @@ public class Factory
 
 		return holder.setSecuredItem(new SecuredItemInvoker(prefixMapping
 				.getClass(), checker));
-	}
-
-	/**
-	 * Create the SecuredReifier.
-	 * 
-	 * @param graph
-	 *            The SecuredGraph that contains the base reifier.
-	 * @param reifier
-	 *            The base reifier from the base graph.
-	 * @return
-	 */
-	static SecuredReifier getInstance( final SecuredGraphImpl graph,
-			final Reifier reifier )
-	{
-
-		final ItemHolder<Reifier, SecuredReifier> holder = new ItemHolder<Reifier, SecuredReifier>(
-				reifier);
-		final SecuredReifierImpl checker = new SecuredReifierImpl(graph, holder);
-		// if we are going to create a duplicate proxy return this one.
-		if (reifier instanceof SecuredReifier)
-		{
-			if (checker.isEquivalent((SecuredReifier) reifier))
-			{
-				return (SecuredReifier) reifier;
-			}
-		}
-		return holder.setSecuredItem(new SecuredItemInvoker(reifier.getClass(),
-				checker));
 	}
 
 	/**

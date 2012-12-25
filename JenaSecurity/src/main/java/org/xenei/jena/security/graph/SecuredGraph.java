@@ -22,7 +22,6 @@ import com.hp.hpl.jena.graph.GraphStatisticsHandler;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
-import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -115,9 +114,6 @@ public interface SecuredGraph extends Graph
 	@Override
 	public SecuredPrefixMapping getPrefixMapping();
 
-	@Override
-	public SecuredReifier getReifier();
-
 	public SecurityEvaluator getSecurityEvaluator();
 
 	/**
@@ -144,12 +140,6 @@ public interface SecuredGraph extends Graph
 	public boolean isIsomorphicWith( final Graph g )
 			throws AccessDeniedException;
 
-	/**
-	 * @graphSec Read
-	 * @throws AccessDeniedException
-	 */
-	@Override
-	public QueryHandler queryHandler() throws AccessDeniedException;
 
 	/**
 	 * @graphSec Read
@@ -157,4 +147,21 @@ public interface SecuredGraph extends Graph
 	 */
 	@Override
 	public int size() throws AccessDeniedException;
+	
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete for every triple
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void clear();
+
+	/**
+	 * @graphSec Update
+	 * @tripleSec Delete (s, p, o )
+	 * @throws AccessDeniedException
+	 */
+	@Override
+	public void remove( Node s, Node p, Node o );
+
 }

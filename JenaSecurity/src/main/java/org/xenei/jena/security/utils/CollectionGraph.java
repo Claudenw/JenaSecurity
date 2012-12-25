@@ -104,22 +104,6 @@ public class CollectionGraph extends GraphBase
 		this.triples = triples;
 	}
 
-	/**
-	 * Construct a graph from a collection and with a specific reification
-	 * style.
-	 * 
-	 * @param style
-	 *            The style
-	 * @param triples
-	 *            The collection of triples
-	 */
-	public CollectionGraph( final ReificationStyle style,
-			final Collection<Triple> triples )
-	{
-		super(style);
-		this.triples = triples;
-	}
-
 	@Override
 	protected ExtendedIterator<Triple> graphBaseFind( final TripleMatch m )
 	{

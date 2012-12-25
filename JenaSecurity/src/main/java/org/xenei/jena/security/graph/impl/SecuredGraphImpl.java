@@ -23,7 +23,6 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.TransactionHandler;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
-import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -38,7 +37,6 @@ import org.xenei.jena.security.graph.SecuredCapabilities;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredGraphEventManager;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
-import org.xenei.jena.security.graph.SecuredReifier;
 import org.xenei.jena.security.utils.PermTripleFilter;
 
 /**
@@ -46,8 +44,7 @@ import org.xenei.jena.security.utils.PermTripleFilter;
  */
 public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 {
-	// the reifier for this secured graph.
-	private SecuredReifier reifier;
+
 	// the prefixMapping for this graph.
 	private SecuredPrefixMapping prefixMapping;
 	// the item holder that contains this SecuredGraph
@@ -140,15 +137,6 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 		}
 	}
 
-	private synchronized void createReifier()
-	{
-		if (reifier == null)
-		{
-			reifier = org.xenei.jena.security.graph.impl.Factory.getInstance(
-					this, holder.getBaseItem().getReifier());
-		}
-	}
-
 	@Override
 	public void delete( final Triple t ) throws DeleteDeniedException
 	{
@@ -225,16 +213,6 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	}
 
 	@Override
-	public SecuredReifier getReifier()
-	{
-		if (reifier == null)
-		{
-			createReifier();
-		}
-		return reifier;
-	}
-
-	@Override
 	public GraphStatisticsHandler getStatisticsHandler()
 	{
 		checkRead();
@@ -281,17 +259,45 @@ public class SecuredGraphImpl extends SecuredItemImpl implements SecuredGraph
 	}
 
 	@Override
-	public QueryHandler queryHandler()
-	{
-		checkRead();
-		return holder.getBaseItem().queryHandler();
-	}
-
-	@Override
 	public int size()
 	{
 		checkRead();
 		return holder.getBaseItem().size();
+	}
+
+	@Override
+	public void clear()
+	{
+		checkUpdate();
+		if (! canDelete( Triple.ANY ))
+		{
+			ExtendedIterator<Triple> iter = holder.getBaseItem().find( Triple.ANY );
+			while (iter.hasNext())
+			{
+				checkDelete( iter.next() );
+			}
+		}
+		holder.getBaseItem().clear();
+	}
+
+	@Override
+	public void remove( Node s, Node p, Node o )
+	{
+		checkUpdate();
+		Triple t = new Triple( s, p, o );
+		if (t.isConcrete())
+		{
+			checkDelete( t );
+		}
+		else
+		{
+			ExtendedIterator<Triple> iter = holder.getBaseItem().find( Triple.ANY );
+			while (iter.hasNext())
+			{
+				checkDelete( iter.next() );
+			}
+		}
+		holder.getBaseItem().remove(s, p, o);
 	}
 
 }

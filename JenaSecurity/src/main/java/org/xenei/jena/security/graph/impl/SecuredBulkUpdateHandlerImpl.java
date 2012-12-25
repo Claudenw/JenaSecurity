@@ -86,10 +86,6 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 		if (!canCreate(Triple.ANY))
 		{
 			checkCreateTriples(g.find(Triple.ANY));
-			if (withReifications)
-			{
-				checkCreateTriples(g.getReifier().find(Triple.ANY));
-			}
 		}
 		holder.getBaseItem().add(g, withReifications);
 	}
@@ -175,10 +171,6 @@ public class SecuredBulkUpdateHandlerImpl extends SecuredItemImpl implements
 		if (!canDelete(Triple.ANY))
 		{
 			checkDeleteTriples(g.find(Triple.ANY));
-			if (withReifications)
-			{
-				checkDeleteTriples(g.getReifier().find(Triple.ANY));
-			}
 		}
 		holder.getBaseItem().delete(g, withReifications);
 

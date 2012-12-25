@@ -3,7 +3,6 @@ package org.xenei.jena.security.graph;
 import com.hp.hpl.jena.graph.BulkUpdateHandler;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
@@ -251,35 +250,6 @@ public class MemGraphTest
 	}
 
 	@Test
-	public void testGetReifier() throws IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException
-	{
-		final Reifier reifier = securedGraph.getReifier();
-		Assert.assertNotNull("Reifier may not be null", reifier);
-		Assert.assertTrue("Reifier should be secured",
-				reifier instanceof SecuredReifier);
-		final SecuredReifierTest reifierTest = new SecuredReifierTest(
-				securityEvaluator) {
-			@Override
-			public void setup()
-			{
-				this.securedReifier = (SecuredReifier) reifier;
-				this.baseReifier = baseGraph.getReifier();
-			}
-		};
-
-		for (final Method m : reifierTest.getClass().getMethods())
-		{
-			if (m.isAnnotationPresent(Test.class))
-			{
-				reifierTest.setup();
-				m.invoke(reifierTest);
-			}
-		}
-
-	}
-
-	@Test
 	public void testInequality()
 	{
 		EqualityTester
@@ -329,43 +299,6 @@ public class MemGraphTest
 								e, e.getTriple()));
 			}
 		}
-	}
-
-	@Test
-	public void testQueryHandler() throws Exception
-	{
-		try
-		{
-			securedGraph.queryHandler();
-			if (!securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail("Should have thrown AccessDenied Exception");
-			}
-		}
-		catch (final AccessDeniedException e)
-		{
-			if (securityEvaluator.evaluate(Action.Read))
-			{
-				Assert.fail(String
-						.format("Should not have thrown AccessDenied Exception: %s - %s",
-								e, e.getTriple()));
-			}
-		}
-	}
-
-	@Test
-	public void testReifierEquality()
-	{
-		final Reifier r1 = securedGraph.getReifier();
-		final Reifier r2 = securedGraph.getReifier();
-		EqualityTester.testEquality("Reifier test", r1, r2);
-	}
-
-	@Test
-	public void testReifierGetParentGraph()
-	{
-		final Graph g2 = securedGraph.getReifier().getParentGraph();
-		EqualityTester.testEquality("getParentGraph", securedGraph, g2);
 	}
 
 	@Test
