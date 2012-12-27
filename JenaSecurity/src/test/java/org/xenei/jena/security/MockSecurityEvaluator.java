@@ -32,6 +32,12 @@ public class MockSecurityEvaluator implements SecurityEvaluator
 	private final boolean update;
 	private final boolean delete;
 	private final boolean forceTripleChecks;
+	
+	public static MockSecurityEvaluator getInstance()
+	{
+		return new MockSecurityEvaluator( true, true, true, true, true, true );
+	}
+
 
 	public MockSecurityEvaluator( final boolean loggedIn, final boolean create,
 			final boolean read, final boolean update, final boolean delete,
