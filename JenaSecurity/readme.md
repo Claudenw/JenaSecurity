@@ -1,4 +1,7 @@
-REQUIRES Jena 2.7.4 with patch from JENA-370 applied  https://issues.apache.org/jira/browse/JENA-370
+REQUIRES Jena 2.10.0 with patchs
+JENA-370-core-2.10-attempt2.patch (https://issues.apache.org/jira/browse/JENA-370) and
+JENA-372.patch (https://issues.apache.org/jira/browse/JENA-372)
+applied  https://issues.apache.org/jira/browse/JENA-370
 
 JenaSecurity is a SecurityEvaluator interface and a set of dynamic proxies that apply that interface to Jena Graphs, Models, and associated methods and classes.
 
