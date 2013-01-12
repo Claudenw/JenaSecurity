@@ -1900,7 +1900,6 @@ public class SecuredModelTest
 	}
 
 	@Test
-	@Ignore
 	public void testVariableInModel()
 	{
 		try

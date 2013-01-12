@@ -47,14 +47,6 @@ public class TestPackage extends AbstractTestPackage
 			return org.xenei.jena.security.Factory.getInstance(eval, "testModel",
 					model);
 		}
-
-		@Override
-		public Model createModel( final ReificationStyle style )
-		{
-			final Model model = ModelFactory.createDefaultModel(style);
-			return org.xenei.jena.security.Factory.getInstance(eval, "testModel",
-					model);
-		}
 		
 		@Override
 		public PrefixMapping getPrefixMapping()
