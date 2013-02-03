@@ -43,9 +43,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredContainer;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.utils.ContainerFilter;
@@ -57,16 +57,13 @@ import org.xenei.jena.security.utils.PermStatementFilter;
 public class SecuredContainerImpl extends SecuredResourceImpl implements
 		SecuredContainer
 {
-	// private ModelChangedListener listener;
-	// private List<Integer> indexes = new ArrayList<Integer>();
-
 	/**
-	 * Get a SecuredResource.
+	 * Constructor
 	 * 
 	 * @param securedModel
-	 *            the securedItem that provides the security context.
-	 * @param resource
-	 *            The resource to secure.
+	 *            the Secured Model to use.
+	 * @param container
+	 *            The container to secure.
 	 * @return The SecuredResource
 	 */
 	public static SecuredContainer getInstance(
@@ -116,10 +113,8 @@ public class SecuredContainerImpl extends SecuredResourceImpl implements
 	/**
 	 * Constructor
 	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use
-	 * @param graphIRI
-	 *            the graph IRI to validate against.
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param holder
 	 *            The item holder that will contain this SecuredContainer
 	 */

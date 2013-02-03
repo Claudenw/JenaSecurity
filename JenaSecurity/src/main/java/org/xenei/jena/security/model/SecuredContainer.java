@@ -20,72 +20,72 @@ public interface SecuredContainer extends Container, SecuredResource
 {
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final boolean o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final char o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final double o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final float o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final long o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final Object o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final RDFNode o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredContainer add( final String o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -93,72 +93,72 @@ public interface SecuredContainer extends Container, SecuredResource
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final boolean o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final char o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final double o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final float o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final long o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final Object o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final RDFNode o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final String o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple( this, RDF.li, o );
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -166,8 +166,8 @@ public interface SecuredContainer extends Container, SecuredResource
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read on each triple ( this, rdf:li_? node ) returned by
+	 * @sec.graph Read
+	 * @sec.triple Read on each triple ( this, rdf:li_? node ) returned by
 	 *            iterator;
 	 * @throws AccessDeniedException
 	 */
@@ -175,9 +175,9 @@ public interface SecuredContainer extends Container, SecuredResource
 	public SecuredNodeIterator<RDFNode> iterator() throws AccessDeniedException;
 
 	/**
-	 * @perms the Permissions required on each node returned
-	 * @graphSec Read
-	 * @tripleSec Read + perms on each triple ( this, rdf:li_? node ) returned
+	 * @param perms the Permissions required on each node returned
+	 * @sec.graph Read
+	 * @sec.triple Read + perms on each triple ( this, rdf:li_? node ) returned
 	 *            by iterator;
 	 * @throws AccessDeniedException
 	 */
@@ -185,8 +185,8 @@ public interface SecuredContainer extends Container, SecuredResource
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete s as triple;
+	 * @sec.graph Update
+	 * @sec.triple Delete s as triple;
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -194,7 +194,7 @@ public interface SecuredContainer extends Container, SecuredResource
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override

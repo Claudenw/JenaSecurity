@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.xenei.jena</groupId>
@@ -11,8 +12,16 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>Apache Snapshots</id>
+			<id>apache-snapshots-repo</id>
 			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>apache-staging-repo</id>
+			<url>https://repository.apache.org/content/repositories/staging/</url>
+		</repository>
+		<repository>
+			<id>apache-releases-repo</id>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 	<build>
@@ -32,28 +41,44 @@
 				<configuration>
 					<tags>
 						<tag>
-							<name>graphSec</name>
-							<!-- todo tag for all places -->
+							<name>sec.graph</name>
+							<!-- tag for all places -->
 							<placement>a</placement>
 							<head>Required graph permissions:</head>
 						</tag>
 						<tag>
-							<name>tripleSec</name>
-							<!-- todo tag for all places -->
+							<name>sec.triple</name>
+							<!-- tag for all places -->
 							<placement>a</placement>
 							<head>Required triple permissions:</head>
 						</tag>
 					</tags>
+					<overview>${basedir}/src/main/overview.html</overview>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
@@ -61,9 +86,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+			<version>2.10.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+			<version>2.10.0-SNAPSHOT</version>
+			<classifier>tests</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-tdb</artifactId>
 			<version>0.10.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -74,5 +117,7 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 		</dependency>
+
+		
 	</dependencies>
 </project>

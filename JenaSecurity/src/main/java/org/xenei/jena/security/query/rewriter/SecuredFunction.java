@@ -25,11 +25,11 @@ import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import java.util.List;
 import java.util.Map;
 
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.SecurityEvaluator.SecTriple;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 public class SecuredFunction extends ExprFunctionN
 {

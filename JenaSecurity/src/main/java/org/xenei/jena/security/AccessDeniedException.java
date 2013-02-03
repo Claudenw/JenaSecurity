@@ -30,13 +30,24 @@ public class AccessDeniedException extends RuntimeException
 {
 	private static final long serialVersionUID = 2789332975364811725L;
 
-	String triple;
+	private String triple;
 
+	/**
+	 * Constructor.
+	 * @param uri The SecNode that identifies graph with the security.
+	 * @param action The action that was prohibited.
+	 */
 	public AccessDeniedException( final SecNode uri, final Action action )
 	{
 		super(String.format("securedModel sec. %s: %s", uri, action));
 	}
 
+	/**
+	 * Constructor.
+	 * @param uri The SecNode that identifies graph with the security.
+	 * @param triple The triple The triple on which the action was prohibited.
+	 * @param action The action that was prohibited.
+	 */
 	public AccessDeniedException( final SecNode uri, final String triple,
 			final Action action )
 	{
@@ -44,6 +55,9 @@ public class AccessDeniedException extends RuntimeException
 		this.triple = triple;
 	}
 
+	/**
+	 * @return The triple on which the action was prohibited.  May be null.
+	 */
 	public String getTriple()
 	{
 		return triple;

@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.xenei.jena.security.CachedSecurityEvaluator;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.graph.impl.SecuredGraphImpl;
+import org.xenei.jena.security.impl.CachedSecurityEvaluator;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 import org.xenei.jena.security.utils.CollectionGraph;
 import org.xenei.jena.security.utils.PermTripleFilter;
 

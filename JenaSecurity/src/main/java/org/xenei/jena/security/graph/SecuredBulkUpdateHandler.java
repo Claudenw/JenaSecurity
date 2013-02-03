@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItem;
 
 /**
  * The interface for secured BulkUpdateHanlder instances.
@@ -38,16 +38,16 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 {
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public void add( final Graph g ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -56,8 +56,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -65,8 +65,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 	public void add( final Iterator<Triple> it ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -74,8 +74,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 	public void add( final List<Triple> triples ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -83,16 +83,16 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 	public void add( final Triple[] triples ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public void delete( final Graph g ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -101,8 +101,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -111,8 +111,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -121,8 +121,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -130,8 +130,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 	public void delete( final Triple[] triples ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -139,8 +139,8 @@ public interface SecuredBulkUpdateHandler extends BulkUpdateHandler,
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override

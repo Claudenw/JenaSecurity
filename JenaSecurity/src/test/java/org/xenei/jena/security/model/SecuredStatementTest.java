@@ -59,8 +59,8 @@ public class SecuredStatementTest
 	}
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Test

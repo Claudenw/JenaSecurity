@@ -8,6 +8,10 @@
 
 <>	ja:loadClass	"org.xenei.jena.security.SecuredAssembler" .
 
+sec:Model 
+	rdfs:subClassOf ja:NamedModel ;
+	 .
+
 my:baseModel 
 	a ja:MemoryModel;
 	.
@@ -19,6 +23,3 @@ my:secModel
 	sec:evaluatorFactory "org.xenei.jena.security.MockSecurityEvaluator" ;
 	.
 		
-#sec:Model 
-#	rdfs:subClassOf ja:NamedModel ;
-#	 .

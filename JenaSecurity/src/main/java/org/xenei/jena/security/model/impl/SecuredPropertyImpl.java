@@ -21,8 +21,8 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredProperty;
 
@@ -35,8 +35,8 @@ public class SecuredPropertyImpl extends SecuredResourceImpl implements
 	/**
 	 * Get an instance of SecuredProperty
 	 * 
-	 * @param securedItem
-	 *            the item that provides the security context.
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param property
 	 *            The property to secure
 	 * @return The SecuredProperty

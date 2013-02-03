@@ -22,7 +22,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import java.util.Map;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItem;
 
 /**
  * The interface for secured PrefixMapping instances.
@@ -32,7 +32,7 @@ import org.xenei.jena.security.SecuredItem;
 public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 {
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -40,14 +40,14 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Map<String, String> getNsPrefixMap() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -55,7 +55,7 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -63,21 +63,21 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredPrefixMapping lock() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String qnameFor( final String uri ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -85,7 +85,7 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -93,7 +93,7 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -101,7 +101,7 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			final String uri ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -109,7 +109,7 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -117,14 +117,14 @@ public interface SecuredPrefixMapping extends PrefixMapping, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String shortForm( final String uri ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 * @throws AccessDeniedException
 	 */
 	@Override

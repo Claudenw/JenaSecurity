@@ -28,9 +28,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.PropertyNotFoundException;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecuredItemInvoker;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemImpl;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredLiteral;
@@ -51,8 +51,8 @@ public class SecuredStatementImpl extends SecuredItemImpl implements
 	/**
 	 * get a SecuredStatement
 	 * 
-	 * @param securedItem
-	 *            the secured item that provides the security context.
+	 * @param securedModel
+	 *            The secured model that provides the security context
 	 * @param stmt
 	 *            The statement to secure.
 	 * @return the SecuredStatement

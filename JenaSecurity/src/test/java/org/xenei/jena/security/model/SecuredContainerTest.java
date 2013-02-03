@@ -67,8 +67,8 @@ public abstract class SecuredContainerTest extends SecuredResourceTest
 	}
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create SecTriple( this, RDF.li, o );
+	 * @sec.graph Update
+	 * @sec.triple Create SecTriple( this, RDF.li, o );
 	 * @throws AccessDeniedException
 	 */
 	@Test

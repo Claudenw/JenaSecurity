@@ -22,7 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItem;
 
 /**
  * The interface for secured RDFNode instances.
@@ -33,14 +33,14 @@ public interface SecuredRDFNode extends RDFNode, SecuredItem
 {
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Node asNode() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -51,7 +51,7 @@ public interface SecuredRDFNode extends RDFNode, SecuredItem
 	public SecuredModel getModel();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override

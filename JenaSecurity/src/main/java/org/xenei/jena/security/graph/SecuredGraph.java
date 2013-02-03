@@ -39,8 +39,8 @@ public interface SecuredGraph extends Graph
 {
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create
+	 * @sec.graph Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 * @throws AddDeniedException
 	 */
@@ -49,8 +49,8 @@ public interface SecuredGraph extends Graph
 			AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -58,16 +58,16 @@ public interface SecuredGraph extends Graph
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean contains( final Triple t ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 * @throws DeleteDeniedException
 	 */
@@ -76,15 +76,15 @@ public interface SecuredGraph extends Graph
 			AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean dependsOn( final Graph other ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read, otherwise filtered from iterator.
+	 * @sec.graph Read
+	 * @sec.triple Read, otherwise filtered from iterator.
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -92,8 +92,8 @@ public interface SecuredGraph extends Graph
 			final Node o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read, otherwise filtered from iterator.
+	 * @sec.graph Read
+	 * @sec.triple Read, otherwise filtered from iterator.
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -117,7 +117,7 @@ public interface SecuredGraph extends Graph
 	public SecurityEvaluator getSecurityEvaluator();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -125,15 +125,15 @@ public interface SecuredGraph extends Graph
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean isEmpty() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -142,23 +142,23 @@ public interface SecuredGraph extends Graph
 
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public int size() throws AccessDeniedException;
 	
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete for every triple
+	 * @sec.graph Update
+	 * @sec.triple Delete for every triple
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public void clear();
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete (s, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Delete (s, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override

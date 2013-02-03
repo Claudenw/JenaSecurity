@@ -19,8 +19,8 @@ package org.xenei.jena.security.model.impl;
 
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredReifiedStatement;
 import org.xenei.jena.security.model.SecuredStatement;
@@ -35,8 +35,8 @@ public class SecuredReifiedStatementImpl extends SecuredResourceImpl implements
 	/**
 	 * Get an instance of SecuredReifiedStatement
 	 * 
-	 * @param securedItem
-	 *            The securedItem that provides the security context
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param stmt
 	 *            The ReifiedStatement to secure.
 	 * @return SecuredReifiedStatement
@@ -76,10 +76,8 @@ public class SecuredReifiedStatementImpl extends SecuredResourceImpl implements
 	/**
 	 * Constructor
 	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use
-	 * @param graphIRI
-	 *            the graph IRI to verify against.
+	 * @param securedModel
+	 *            The secured model to use
 	 * @param holder
 	 *            the item holder that will contain this SecuredReifiedStatement
 	 */

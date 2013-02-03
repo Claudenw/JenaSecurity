@@ -7,10 +7,10 @@ import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-import org.xenei.jena.security.SecuredItem;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.SecurityEvaluator.SecTriple;
+import org.xenei.jena.security.impl.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 public class SecuredSelector implements Selector
 {

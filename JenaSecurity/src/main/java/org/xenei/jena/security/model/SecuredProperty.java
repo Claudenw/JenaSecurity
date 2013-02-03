@@ -30,7 +30,7 @@ public interface SecuredProperty extends SecuredResource, Property
 {
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override

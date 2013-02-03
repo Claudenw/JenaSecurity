@@ -43,8 +43,8 @@ public class SecuredResourceTest extends SecuredRDFNodeTest
 	}
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Test

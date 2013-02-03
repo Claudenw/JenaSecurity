@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.xenei.jena.security;
+package org.xenei.jena.security.impl;
 
+import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
@@ -28,6 +29,9 @@ import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 public interface SecuredItem
 {
 
+	/**
+	 * Utilities for SecuredItem implementations.
+	 */
 	public static class Util
 	{
 		/**

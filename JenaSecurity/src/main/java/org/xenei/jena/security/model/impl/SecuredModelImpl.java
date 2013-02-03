@@ -68,14 +68,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItem;
-import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItemImpl;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredLiteral;
@@ -305,8 +305,8 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	 * 
 	 * @param securedItem
 	 *            the item providing the security context.
-	 * @param securedModel
-	 *            the securedModel to secure.
+	 * @param model
+	 *            the Model to secure.
 	 * @return The SecuredModel
 	 */
 	public static SecuredModel getInstance( final SecuredItem securedItem,
@@ -323,20 +323,20 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	 * @param securityEvaluator
 	 *            The security evaluator to use
 	 * @param modelIRI
-	 *            The securedModel IRI (graph IRI) to evaluate against.
-	 * @param securedModel
-	 *            The securedModel to secure.
+	 *            The IRI (graph IRI) to name this model.
+	 * @param model
+	 *            The Model to secure.
 	 * @return the SecuredModel
 	 */
 	public static SecuredModel getInstance(
-			final SecurityEvaluator securityEvaluator, final String modelURI,
+			final SecurityEvaluator securityEvaluator, final String modelIRI,
 			final Model model )
 	{
 		final ItemHolder<Model, SecuredModel> holder = new ItemHolder<Model, SecuredModel>(
 				model);
 
 		final SecuredModelImpl checker = new SecuredModelImpl(
-				securityEvaluator, modelURI, holder);
+				securityEvaluator, modelIRI, holder);
 		// if we are going to create a duplicate proxy, just return this
 		// one.
 		if (model instanceof SecuredModel)

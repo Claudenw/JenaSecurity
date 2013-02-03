@@ -21,9 +21,9 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 
 import java.util.Map;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 /**
  * Implementation of SecuredPrefixMapping to be used by a SecuredItemInvoker

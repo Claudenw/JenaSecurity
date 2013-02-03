@@ -40,7 +40,7 @@ public class SecuredReifiedStatementTest extends SecuredResourceTest
 	}
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Test

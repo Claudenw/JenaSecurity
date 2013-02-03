@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.xenei.jena.security;
+package org.xenei.jena.security.impl;
 
 import java.lang.reflect.Proxy;
 import java.util.LinkedHashSet;

@@ -24,7 +24,7 @@ import com.hp.hpl.jena.rdf.model.ResourceF;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItem;
 
 /**
  * The interface for secured Statement instances.
@@ -34,8 +34,8 @@ import org.xenei.jena.security.SecuredItem;
 public interface SecuredStatement extends Statement, SecuredItem
 {
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -43,8 +43,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -52,8 +52,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -61,8 +61,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -70,8 +70,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -79,8 +79,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -88,8 +88,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec update
+	 * @sec.graph Update
+	 * @sec.triple update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -97,8 +97,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -106,8 +106,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -115,8 +115,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -124,8 +124,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Update
+	 * @sec.graph Update
+	 * @sec.triple Update
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -133,8 +133,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read, Update
-	 * @secTriple Create
+	 * @sec.graph Read, Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -142,8 +142,8 @@ public interface SecuredStatement extends Statement, SecuredItem
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read, Update
-	 * @secTriple Create
+	 * @sec.graph Read, Update
+	 * @sec.triple Create
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -157,49 +157,49 @@ public interface SecuredStatement extends Statement, SecuredItem
 	public SecuredBag getBag();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean getBoolean() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public byte getByte() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public char getChar() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public double getDouble() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public float getFloat() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public int getInt() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -209,7 +209,7 @@ public interface SecuredStatement extends Statement, SecuredItem
 	public SecuredLiteral getLiteral();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -238,7 +238,7 @@ public interface SecuredStatement extends Statement, SecuredItem
 	public SecuredSeq getSeq();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -248,7 +248,7 @@ public interface SecuredStatement extends Statement, SecuredItem
 	public SecuredStatement getStatementProperty( Property p );
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -258,40 +258,40 @@ public interface SecuredStatement extends Statement, SecuredItem
 	public SecuredResource getSubject();
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasWellFormedXML() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @secTriple Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean isReified() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @secTriple Read
+	 * @sec.graph Read
+	 * @sec.triple Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public RSIterator listReifiedStatements() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @secTriple Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public SecuredStatement remove() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @secTriple Delete
+	 * @sec.graph Update
+	 * @sec.triple Delete
 	 * @throws AccessDeniedException
 	 */
 	@Override

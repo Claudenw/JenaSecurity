@@ -41,8 +41,8 @@ public class SecuredAltTest extends SecuredContainerTest
 	}
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this, RDF.li(1), o )
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this, RDF.li(1), o )
 	 * @throws AccessDeniedException
 	 */
 	@Test

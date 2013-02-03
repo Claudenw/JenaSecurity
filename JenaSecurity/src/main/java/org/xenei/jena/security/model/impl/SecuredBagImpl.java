@@ -19,8 +19,8 @@ package org.xenei.jena.security.model.impl;
 
 import com.hp.hpl.jena.rdf.model.Bag;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredModel;
 
@@ -32,8 +32,8 @@ public class SecuredBagImpl extends SecuredContainerImpl implements SecuredBag
 	/**
 	 * Get an instance of SecuredBag
 	 * 
-	 * @param securedItem
-	 *            The secureity context.
+	 * @param securedModel
+	 *            The Secured Model to use.
 	 * @param bag
 	 *            The bag to secure
 	 * @return The SecuredBag
@@ -69,10 +69,8 @@ public class SecuredBagImpl extends SecuredContainerImpl implements SecuredBag
 	/**
 	 * Constructor.
 	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use.
-	 * @param graphIRI
-	 *            the graph IRI to validate against
+	 * @param securedModel
+	 *            The Secured Model to use.
 	 * @param holder
 	 *            The holder that will contain this SecuredBag.
 	 */

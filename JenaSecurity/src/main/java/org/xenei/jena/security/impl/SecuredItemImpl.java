@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.xenei.jena.security;
+package org.xenei.jena.security.impl;
 
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -26,13 +26,24 @@ import java.lang.reflect.Proxy;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.xenei.jena.security.AccessDeniedException;
+import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.SecurityEvaluator.SecNode.Type;
 import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 
+/**
+ * An abstract implementation of SecuredItem that caches security checks.
+ * <p>
+ * Security checks are performed at multiple locations.  This implementation ensures that 
+ * during a single operation the specific check is only evaluated once by caching the result.
+ * </p>
+ * 
+ */
 public abstract class SecuredItemImpl implements SecuredItem
 {
+	// a key for the secured item.
 	private class CacheKey implements Comparable<CacheKey>
 	{
 		private final Action action;
@@ -118,11 +129,18 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 	}
 
+	// the maximum size of the cache
 	public static int MAX_CACHE = 100;
+	// the cache for this thread.
 	public static final ThreadLocal<LRUMap> CACHE = new ThreadLocal<LRUMap>();
-
+	// the number of times this thread has recursively called the constructor.
 	public static final ThreadLocal<Integer> COUNT = new ThreadLocal<Integer>();
 
+	/**
+	 * Convert a Jena Node object into a SecNode object.
+	 * @param jenaNode The Jena node to convert.
+	 * @return The SecNode that represents the jenaNode.
+	 */
 	public static SecNode convert( final com.hp.hpl.jena.graph.Node jenaNode )
 	{
 		if (com.hp.hpl.jena.graph.Node.ANY.equals(jenaNode))
@@ -144,6 +162,11 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return new SecNode(Type.URI, jenaNode.getURI());
 	}
 
+	/**
+	 * Convert a Jena Triple into a SecTriple.
+	 * @param jenaTriple The Jena Triple to convert.
+	 * @return The SecTriple that represents the jenaTriple.
+	 */
 	public static SecTriple convert(
 			final com.hp.hpl.jena.graph.Triple jenaTriple )
 	{
@@ -152,6 +175,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 				SecuredItemImpl.convert(jenaTriple.getObject()));
 	}
 
+	/**
+	 * Decrement the number of instances of SecuredItem.
+	 */
 	public static void decrementUse()
 	{
 		final Integer i = SecuredItemImpl.COUNT.get();
@@ -174,6 +200,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 	}
 
+	/**
+	 * Increment the number of instances of SecuredItem.
+	 */
 	public static void incrementUse()
 	{
 		final Integer i = SecuredItemImpl.COUNT.get();
@@ -189,12 +218,22 @@ public abstract class SecuredItemImpl implements SecuredItem
 		}
 	}
 
+	// the evaluator we are using 
 	private final SecurityEvaluator securityEvaluator;
 
-	private final SecurityEvaluator.SecNode modelNode;
+	// the secured node for that names the graph.
+	private final SecNode modelNode;
 
+	// the item holder that we are evaluating.
 	private final ItemHolder<?, ?> itemHolder;
 
+	/**
+	 * Create the SecuredItemImpl.
+	 * @param securedItem The securedItem.
+	 * @param holder The Item holder for the securedItem.
+	 * @throws IllegalArgumentException if securedItem is null or securedItem.getSecurityEvaluator() 
+	 * returns null, or the holder is null.
+	 */
 	protected SecuredItemImpl( final SecuredItem securedItem,
 			final ItemHolder<?, ?> holder )
 	{
@@ -217,6 +256,14 @@ public abstract class SecuredItemImpl implements SecuredItem
 		this.itemHolder = holder;
 	}
 
+	/**
+	 * Create the SecuredItemImpl.
+	 * @param securityEvaluator the secured evaluator to use.
+	 * @param modelURI the URI for the model.
+	 * @param holder The holder to use.
+	 * @throws IllegalArgumentException if security evaluator is null, modelURI is null or empty,
+	 * or holder is null.
+	 */
 	protected SecuredItemImpl( final SecurityEvaluator securityEvaluator,
 			final String modelURI, final ItemHolder<?, ?> holder )
 	{
@@ -240,12 +287,22 @@ public abstract class SecuredItemImpl implements SecuredItem
 		this.itemHolder = holder;
 	}
 
+	/**
+	 * get the cached value.
+	 * @param key The key to look for.
+	 * @return the value of the security check or <code>null</code> if the value has not been cached.
+	 */
 	private Boolean cacheGet( final CacheKey key )
 	{
 		final LRUMap cache = SecuredItemImpl.CACHE.get();
 		return (cache == null) ? null : (Boolean) cache.get(key);
 	}
 
+	/**
+	 * set teh cache value.
+	 * @param key The key to set the value for.
+	 * @param value The value to set.
+	 */
 	void cachePut( final CacheKey key, final boolean value )
 	{
 		final LRUMap cache = SecuredItemImpl.CACHE.get();
@@ -681,10 +738,8 @@ public abstract class SecuredItemImpl implements SecuredItem
 	/**
 	 * check that the triple can be updated in the securedModel.,
 	 * 
-	 * @param the
-	 *            starting triple
-	 * @param the
-	 *            final triple.
+	 * @param from the starting triple
+	 * @param to the final triple.
 	 * @throws AccessDeniedException
 	 *             on failure
 	 */
@@ -746,6 +801,9 @@ public abstract class SecuredItemImpl implements SecuredItem
 		return modelNode.getValue();
 	}
 
+	/**
+	 * get the name of the model.
+	 */
 	@Override
 	public SecNode getModelNode()
 	{

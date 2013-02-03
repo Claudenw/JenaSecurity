@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemImpl;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredRDFList;
 import org.xenei.jena.security.model.SecuredRDFNode;
@@ -169,8 +169,8 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	/**
 	 * Get an instance of SecuredProperty
 	 * 
-	 * @param securedItem
-	 *            the item that provides the security context.
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param rdfList
 	 *            The rdfList to secure
 	 * @return The SecuredProperty
@@ -332,7 +332,7 @@ public class SecuredRDFListImpl extends SecuredResourceImpl implements
 	 * Removes val from underlying list.
 	 * 
 	 * @param val
-	 * @return
+	 * @return the modified RDFList.
 	 */
 	private RDFList baseRemove( final RDFList val )
 	{

@@ -28,8 +28,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemImpl;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredRDFNode;
 import org.xenei.jena.security.model.SecuredUnsupportedPolymorphismException;
@@ -40,6 +40,13 @@ import org.xenei.jena.security.model.SecuredUnsupportedPolymorphismException;
 public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 		SecuredRDFNode
 {
+	/**
+	 * 
+	 * @param securedModel
+	 *            the Secured Model to use.
+	 * @param rdfNode the node to secure.
+	 * @return the secured RDFNode
+	 */
 	public static SecuredRDFNode getInstance( final SecuredModel securedModel,
 			final RDFNode rdfNode )
 	{
@@ -64,10 +71,8 @@ public abstract class SecuredRDFNodeImpl extends SecuredItemImpl implements
 	/**
 	 * Constructor
 	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use
-	 * @param graphIRI
-	 *            the graphIRI to validate against.
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param holder
 	 *            the item holder that will contain this SecuredRDFNode.
 	 */

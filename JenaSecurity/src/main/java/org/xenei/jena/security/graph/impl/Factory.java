@@ -21,12 +21,12 @@ import com.hp.hpl.jena.graph.BulkUpdateHandler;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 
 public class Factory
 {
@@ -102,7 +102,7 @@ public class Factory
 	 *            The IRI for the graph.
 	 * @param graph
 	 *            The graph that we are wrapping.
-	 * @return
+	 * @return the secured graph
 	 */
 	public static SecuredGraph getInstance(
 			final SecurityEvaluator securityEvaluator, final String graphIRI,

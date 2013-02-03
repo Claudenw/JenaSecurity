@@ -28,9 +28,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredLiteral;
@@ -47,8 +47,8 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	/**
 	 * Get an instance of SecuredAlt.
 	 * 
-	 * @param securedItem
-	 *            the item providing the security context.
+	 * @param securedModel
+	 *            the Secured Model to use.
 	 * @param alt
 	 *            The Alt to be secured.
 	 * @return The secured Alt instance.
@@ -87,10 +87,8 @@ public class SecuredAltImpl extends SecuredContainerImpl implements SecuredAlt
 	/**
 	 * Constructor.
 	 * 
-	 * @param securityEvaluator
-	 *            the evaluator to use.
-	 * @param graphIRI
-	 *            the graph to verify against.
+	 * @param securedModel
+	 *            the securedModel to use.
 	 * @param holder
 	 *            The item holder that will hold this SecuredAlt.
 	 */

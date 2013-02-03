@@ -1,7 +1,4 @@
-REQUIRES Jena 2.10.0 with patchs
-JENA-370-core-2.10-attempt2.patch (https://issues.apache.org/jira/browse/JENA-370) and
-JENA-372.patch (https://issues.apache.org/jira/browse/JENA-372)
-applied  https://issues.apache.org/jira/browse/JENA-370
+REQUIRES Jena 2.10.0
 
 JenaSecurity is a SecurityEvaluator interface and a set of dynamic proxies that apply that interface to Jena Graphs, Models, and associated methods and classes.
 
@@ -22,5 +19,14 @@ There are several other cases where the difference in the layer can trip up the 
 security definition than was requested.  For simplicity sake we recommend that the wrapped secured graph only be used in cases where access to the
 graph as a whole is granted/denied.  In these cases the user either has all CRUD capabilities or none.
  
-
+[] a ja:Model ;
+   sec:baseModel jena:model ;
+   ja:modelName "modelName";
+   sec:evaluatorFactory "javaclass";
+   .
+   
+jena:model  A model defined in the assembler file.
+"modelName" The name of the model as identified in the security manager
+"javaclass" The name of a java class that implements a Evaluator Factory.  The Factory must have static method getInstance() that
+returns a SecurityEvaluator.
 

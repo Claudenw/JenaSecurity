@@ -32,8 +32,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemInvoker;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredAlt;
 import org.xenei.jena.security.model.SecuredBag;
 import org.xenei.jena.security.model.SecuredLiteral;
@@ -72,8 +72,8 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	/**
 	 * get a SecuredSeq.
 	 * 
-	 * @param securedItem
-	 *            The secured item that provides the security context
+	 * @param securedModel
+	 *            The secured model that provides the security context
 	 * @param seq
 	 *            The Seq to secure.
 	 * @return the SecuredSeq
@@ -112,10 +112,8 @@ public class SecuredSeqImpl extends SecuredContainerImpl implements SecuredSeq
 	/**
 	 * Constructor.
 	 * 
-	 * @param securityEvaluator
-	 *            The security evaluator to use.
-	 * @param graphIRI
-	 *            The graph IRI to be verified against.
+	 * @param securedModel
+	 *            The secured model that provides the security context
 	 * @param holder
 	 *            The item holder that will contain this SecuredSeq.
 	 */

@@ -35,10 +35,10 @@ import com.hp.hpl.jena.shared.PropertyNotFoundException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItemImpl;
-import org.xenei.jena.security.SecuredItemInvoker;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItemImpl;
+import org.xenei.jena.security.impl.SecuredItemInvoker;
 import org.xenei.jena.security.model.SecuredModel;
 import org.xenei.jena.security.model.SecuredResource;
 import org.xenei.jena.security.model.SecuredStatement;
@@ -116,10 +116,8 @@ public class SecuredResourceImpl extends SecuredRDFNodeImpl implements
 	/**
 	 * Constructor.
 	 * 
-	 * @param securityEvaluator
-	 *            the security evaluator to use.
-	 * @param graphIRI
-	 *            the graph IRI to verify against.
+	 * @param securedModel
+	 *            The secured model to use
 	 * @param holder
 	 *            the item holder that will contain this SecuredResource.
 	 */

@@ -7,10 +7,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItem;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.impl.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 public class RDFListSecFilter<T extends RDFList> extends Filter<T>
 {

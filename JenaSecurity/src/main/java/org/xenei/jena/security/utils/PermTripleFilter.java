@@ -23,11 +23,11 @@ import com.hp.hpl.jena.util.iterator.Filter;
 import java.util.Collection;
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItem;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.impl.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 /**
  * A filter for to filter ExtendedIterators on Triples.

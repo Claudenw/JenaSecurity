@@ -27,10 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 import org.xenei.jena.security.model.SecuredModel;
 
 /**
@@ -83,8 +83,8 @@ public class SecuredRSIterator implements RSIterator
 	/**
 	 * Constructor
 	 * 
-	 * @param securedItem
-	 *            the Item providing the security context.
+	 * @param securedModel
+	 *            The secured model that provides the security context
 	 * @param wrapped
 	 *            The wrapped iterator.
 	 */

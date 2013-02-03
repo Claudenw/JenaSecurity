@@ -57,7 +57,7 @@ public class SecuredCapabilities implements Capabilities
 	}
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 */
 	@Override
 	public boolean addAllowed()
@@ -67,8 +67,8 @@ public class SecuredCapabilities implements Capabilities
 	}
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (if everyTriple is true)
+	 * @sec.graph Update
+	 * @sec.triple Create (if everyTriple is true)
 	 */
 	@Override
 	public boolean addAllowed( final boolean everyTriple )
@@ -91,7 +91,7 @@ public class SecuredCapabilities implements Capabilities
 	}
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 */
 	@Override
 	public boolean deleteAllowed()
@@ -101,8 +101,8 @@ public class SecuredCapabilities implements Capabilities
 	}
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete (if everyTriple is true)
+	 * @sec.graph Update
+	 * @sec.triple Delete (if everyTriple is true)
 	 */
 	@Override
 	public boolean deleteAllowed( final boolean everyTriple )
@@ -131,7 +131,7 @@ public class SecuredCapabilities implements Capabilities
 	}
 
 	/**
-	 * @graphSec Update
+	 * @sec.graph Update
 	 */
 	@Override
 	public boolean iteratorRemoveAllowed()

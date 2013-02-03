@@ -39,7 +39,7 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 	// public SecuredResource asResource();
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -47,35 +47,35 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 			DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public byte getByte() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public char getChar() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public RDFDatatype getDatatype() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getDatatypeURI() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -83,7 +83,7 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 			DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -91,35 +91,35 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 			DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public int getInt() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getLanguage() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getLexicalForm() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public long getLong() throws AccessDeniedException, DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -127,7 +127,7 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 			DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -135,28 +135,28 @@ public interface SecuredLiteral extends Literal, SecuredRDFNode
 			DatatypeFormatException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Object getValue() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public Literal inModel( final Model m ) throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean isWellFormedXML() throws AccessDeniedException;
 
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override

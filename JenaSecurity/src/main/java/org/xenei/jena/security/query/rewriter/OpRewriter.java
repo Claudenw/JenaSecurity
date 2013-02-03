@@ -55,30 +55,18 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xenei.jena.security.AccessDeniedException;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.SecurityEvaluator.SecNode;
 import org.xenei.jena.security.SecurityEvaluator.SecTriple;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 
 /**
  * This class rewrites the query by examining each operation in the algebra
  * returned by the Jena SPARQL parser.
- * 
- * The operations are placed in the start sequence, end sequence or distributed
- * via the ops object.
- * 
- * Some operations (e.g. Slice which implements limit) are passed both to the
- * endpoints and then applied on the
- * result of the union of the endpoint operators. This is handled by placing
- * those operations on the revisitStack.
- * getResult() then pops the operations off the revisit stack and uses the
- * Revisitor class to apply the operation.
- * 
- * 
- * 
- * @author claude
- * 
+ * <p>
+ * This implementation inserts security evaluator checks where necessary.
+ * </p>
  */
 public class OpRewriter implements OpVisitor
 {
@@ -86,8 +74,15 @@ public class OpRewriter implements OpVisitor
 	private OpSequence result;
 	private final SecNode graphIRI;
 	private final SecurityEvaluator securityEvaluator;
+	// if true the restricted data are silently ignored.
+	// default false
 	private final boolean silentFail;
 
+	/**
+	 * Constructor
+	 * @param securityEvaluator The security evaluator to use
+	 * @param graphIRI The IRI for the default graph.
+	 */
 	public OpRewriter( final SecurityEvaluator securityEvaluator,
 			final SecNode graphIRI )
 	{
@@ -97,17 +92,30 @@ public class OpRewriter implements OpVisitor
 		reset();
 	}
 
+	/**
+	 * Constructor
+	 * @param securityEvaluator The security evaluator to use
+	 * @param graphIRI The IRI for the default graph.
+	 */
 	public OpRewriter( final SecurityEvaluator securityEvaluator,
 			final String graphIRI )
 	{
 		this(securityEvaluator, new SecNode(SecNode.Type.URI, graphIRI));
 	}
 
+	/**
+	 * Add the operation to the result.
+	 * @param op the operation to add.
+	 */
 	private void addOp( final Op op )
 	{
 		result.add(op);
 	}
 
+	/**
+	 * Get the result of the rewrite.
+	 * @return the resulting operator
+	 */
 	public Op getResult()
 	{
 		if (result.size() == 0)
@@ -123,12 +131,15 @@ public class OpRewriter implements OpVisitor
 	}
 
 	/**
-	 * Record variables and create variable names for blank nodes.
+	 * Register variables.
+	 *
+	 * Registers n as a variable if it is one.
 	 * 
-	 * @param n
-	 * @param variables
+	 * @param n the node to check
+	 * @param variables the list of variable nodes
+	 * @Return n for chaining.
 	 */
-	private Node processBGPNode( final Node n, final List<Node> variables )
+	private Node registerVariables( final Node n, final List<Node> variables )
 	{
 		if (n.isVariable() && !variables.contains(n))
 		{
@@ -137,26 +148,36 @@ public class OpRewriter implements OpVisitor
 		return n;
 	}
 
+	/**
+	 * Reset the rewriter to the initial state.
+	 * @return this rewriter for chaining.
+	 */
 	public OpRewriter reset()
 	{
 		result = OpSequence.create();
 		return this;
 	}
 
-	private Triple rewriteBGPTriple( final Triple t,
+	/**
+	 * Register all the variables in the triple.
+	 * @param t the triple to register.
+	 * @param variables The list of variables.
+	 * @return t for chaining
+	 */
+	private Triple registerBGPTriple( final Triple t,
 			final List<Node> variables )
 	{
-		final Node s = processBGPNode(t.getSubject(), variables);
-		final Node p = processBGPNode(t.getPredicate(), variables);
-		final Node o = processBGPNode(t.getObject(), variables);
-		return new Triple(s, p, o);
+		registerVariables(t.getSubject(), variables);
+		registerVariables(t.getPredicate(), variables);
+		registerVariables(t.getObject(), variables);
+		return t;
 	}
 
 	/**
 	 * Rewrites the subop of op1 and returns the result.
 	 * 
 	 * @param op1
-	 * @return
+	 * @return the rewritten op.
 	 */
 	private Op rewriteOp1( final Op1 op1 )
 	{
@@ -171,7 +192,7 @@ public class OpRewriter implements OpVisitor
 	 * 
 	 * @param op2
 	 * @param rewriter
-	 * @return
+	 * @return the rewritten op.
 	 */
 	private Op rewriteOp2( final Op2 op2, final OpRewriter rewriter )
 	{
@@ -186,7 +207,7 @@ public class OpRewriter implements OpVisitor
 	 * 
 	 * @param source
 	 * @param dest
-	 * @return
+	 * @return the rewritten op.
 	 */
 	private OpN rewriteOpN( final OpN source, final OpN dest )
 	{
@@ -223,27 +244,28 @@ public class OpRewriter implements OpVisitor
 			}
 		}
 
+		// if the user can read any triple just add the opBGP
 		if (securityEvaluator.evaluate(Action.Read, graphIRI, SecTriple.ANY))
 		{
 			addOp(opBGP);
 		}
 		else
 		{
-
+			// add security filtering to the resulting triples
 			final List<Triple> newBGP = new ArrayList<Triple>();
 			final List<Node> variables = new ArrayList<Node>();
 			// register all variables
 			for (final Triple t : opBGP.getPattern().getList())
 			{
-				newBGP.add(rewriteBGPTriple(t, variables));
+				newBGP.add(registerBGPTriple(t, variables));
 			}
-
+			// create the security function.
 			final SecuredFunction secFunc = new SecuredFunction(graphIRI,
 					securityEvaluator, variables, newBGP);
+			// create the filter
 			Op filter = OpFilter.filter(secFunc, new OpBGP(BasicPattern.wrap(newBGP)));
-	
+			// add the filter 
 			addOp(filter);
-			//addOp( new OpBGP(BasicPattern.wrap(newBGP)) );
 		}
 	}
 

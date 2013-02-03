@@ -30,7 +30,7 @@ public interface SecuredReifiedStatement extends ReifiedStatement,
 		SecuredResource
 {
 	/**
-	 * @secGraph Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override

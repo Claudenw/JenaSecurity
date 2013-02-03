@@ -27,9 +27,6 @@ import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
-import org.xenei.jena.security.ItemHolder;
-import org.xenei.jena.security.SecuredItem;
-import org.xenei.jena.security.SecuredItemImpl;
 import org.xenei.jena.security.SecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.graph.SecuredBulkUpdateHandler;
@@ -37,6 +34,9 @@ import org.xenei.jena.security.graph.SecuredCapabilities;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredGraphEventManager;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
+import org.xenei.jena.security.impl.ItemHolder;
+import org.xenei.jena.security.impl.SecuredItem;
+import org.xenei.jena.security.impl.SecuredItemImpl;
 import org.xenei.jena.security.utils.PermTripleFilter;
 
 /**

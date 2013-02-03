@@ -6,24 +6,24 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.test.AbstractTestPackage;
 import com.hp.hpl.jena.rdf.model.test.helpers.TestingModelFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.shared.ReificationStyle;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 
-import junit.framework.TestSuite;
+import junit.framework.Test;
 
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
 
 /**
  * Test package to test Model implementation.
  */
+@RunWith(ModelTestSuite.class)
 public class TestPackage extends AbstractTestPackage
 {
-	
-	static public TestSuite suite() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		return new TestPackage();
-    }
 
 	public TestPackage() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
 	{

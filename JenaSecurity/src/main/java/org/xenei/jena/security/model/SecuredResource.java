@@ -39,8 +39,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 	public SecuredResource abort();
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -48,8 +48,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -57,8 +57,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, value, d )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, value, d )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -66,8 +66,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, value, d )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, value, d )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -75,8 +75,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -84,8 +84,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -93,8 +93,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -102,8 +102,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -111,8 +111,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -120,8 +120,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, literal(lexicalForm,datatype) )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, literal(lexicalForm,datatype) )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -129,8 +129,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			final RDFDatatype datatype ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Create (this, p, o )
+	 * @sec.graph Update
+	 * @sec.triple Create (this, p, o )
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -147,35 +147,35 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 	public SecuredResource commit();
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean equals( final Object o ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public AnonId getId() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getLocalName() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getNameSpace() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -183,7 +183,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -191,7 +191,7 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -199,15 +199,15 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public String getURI() throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -215,8 +215,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -224,8 +224,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -233,8 +233,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -242,8 +242,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -251,8 +251,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -260,16 +260,16 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasProperty( final Property p ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -277,8 +277,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,o)
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,o)
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -286,8 +286,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read SecTriple(this,p,literal(o,l))
+	 * @sec.graph Read
+	 * @sec.triple Read SecTriple(this,p,literal(o,l))
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -295,15 +295,15 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
+	 * @sec.graph Read
 	 * @throws AccessDeniedException
 	 */
 	@Override
 	public boolean hasURI( final String uri ) throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read on returned Statements
+	 * @sec.graph Read
+	 * @sec.triple Read on returned Statements
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -311,8 +311,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Read
-	 * @tripleSec Read on returned Statements
+	 * @sec.graph Read
+	 * @sec.triple Read on returned Statements
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -320,8 +320,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete on associated Statements
+	 * @sec.graph Update
+	 * @sec.triple Delete on associated Statements
 	 * @throws AccessDeniedException
 	 */
 	@Override
@@ -329,8 +329,8 @@ public interface SecuredResource extends Resource, SecuredRDFNode
 			throws AccessDeniedException;
 
 	/**
-	 * @graphSec Update
-	 * @tripleSec Delete on all Statements
+	 * @sec.graph Update
+	 * @sec.triple Delete on all Statements
 	 * @throws AccessDeniedException
 	 */
 	@Override
