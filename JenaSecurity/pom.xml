@@ -10,6 +10,28 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+	<name>Jena Security</name>
+	<description>Security (Permissions) wrapper around Jena RDF implementation.</description>
+	<url>https://github.com/Claudenw/JenaSecurity</url>
+	<inceptionYear>2012</inceptionYear>
+	<organization>
+		<name>XENEI.com</name>
+	</organization>
+	<scm>
+		<url>https://github.com/Claudenw/JenaSecurity</url>
+		<connection>scm:git:https://github.com/Claudenw/JenaSecurity.git</connection>
+		<developerConnection>scm:git:git@github.com:Claudenw/JenaSecurity.git</developerConnection>
+		<tag>Jena2.10</tag>
+	</scm>
+	<issueManagement>
+		<url>https://sourceforge.net/p/pa4rdf/tickets/</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 	<repositories>
 		<repository>
 			<id>apache-snapshots-repo</id>
@@ -72,6 +94,22 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					<execution>
 						<goals>
 							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<configuration>
+					<keyname>Xenei.com</keyname>
+				</configuration>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
 						</goals>
 					</execution>
 				</executions>
