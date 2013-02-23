@@ -11,3 +11,9 @@ Two implementations are available based on Jena 2.7.4 and another on the upcomin
 Documentation is most complete for the 2.10.0 version, however most of that documentation will
 also apply to 2.7.4.
 
+Maven Info:
+<pre>
+Group Id: org.xenei.jena
+Artifact Id: Security
+</pre>
+
