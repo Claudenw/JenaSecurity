@@ -18,8 +18,10 @@
 package org.xenei.jena.security.graph.impl;
 
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.shared.impl.PrefixMappingImpl;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
 import org.xenei.jena.security.impl.ItemHolder;
@@ -143,8 +145,23 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 	@Override
 	public SecuredPrefixMapping withDefaultMappings( final PrefixMapping map )
 	{
-		checkUpdate();
-		holder.getBaseItem().withDefaultMappings(map);
+		// mapping only updates if there are map entries to add.  Since this gets called
+		// when we are doing deep triple checks while writing we need to attempt the 
+		// update only if there are new updates to add.
+		PrefixMapping m = holder.getBaseItem();
+		PrefixMappingImpl pm = new PrefixMappingImpl();
+		for ( Entry<String, String> e : map.getNsPrefixMap().entrySet())
+		{
+			if (m.getNsPrefixURI(e.getKey()) == null && m.getNsURIPrefix(e.getValue()) == null )
+			{
+				pm.setNsPrefix( e.getKey(), e.getValue() );
+			}
+		}
+		if ( !pm.getNsPrefixMap().isEmpty())
+		{
+			checkUpdate();
+			holder.getBaseItem().withDefaultMappings(pm);
+		}
 		return holder.getSecuredItem();
 	}
 }

@@ -2,6 +2,7 @@ package org.xenei.jena.security.graph;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.shared.impl.PrefixMappingImpl;
 import com.hp.hpl.jena.sparql.graph.GraphFactory;
 
 import java.lang.reflect.Method;
@@ -369,10 +370,12 @@ public class SecuredPrefixMappingTest
 	@Test
 	public void testWithDefaultMappings()
 	{
+		PrefixMapping pm = new PrefixMappingImpl();
+		pm.setNsPrefix( "example", "http://example.com");
 		try
 		{
-			securedMapping.withDefaultMappings(GraphFactory
-					.createDefaultGraph().getPrefixMapping());
+			// make sure that it must update
+			securedMapping.withDefaultMappings(pm);
 			if (!securityEvaluator.evaluate(Action.Update,
 					securedMapping.getModelNode()))
 			{
@@ -390,5 +393,30 @@ public class SecuredPrefixMappingTest
 			}
 		}
 	}
-
+	
+	@Test
+	public void testWithDefaultMappingsNoAdd()
+	{
+		PrefixMapping pm = new PrefixMappingImpl();
+		try
+		{
+			// make sure that it must update
+			securedMapping.withDefaultMappings(pm);
+//			if (!securityEvaluator.evaluate(Action.Update,
+//					securedMapping.getModelNode()))
+//			{
+//				Assert.fail("Should have thrown AccessDenied Exception");
+//			}
+		}
+		catch (final AccessDeniedException e)
+		{
+			if (securityEvaluator.evaluate(Action.Update,
+					securedMapping.getModelNode()))
+			{
+				Assert.fail(String
+						.format("Should not have thrown AccessDenied Exception: %s - %s",
+								e, e.getTriple()));
+			}
+		}
+	}
 }

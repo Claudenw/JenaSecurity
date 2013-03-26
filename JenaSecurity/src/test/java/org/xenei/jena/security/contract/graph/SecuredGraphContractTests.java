@@ -3,7 +3,6 @@ package org.xenei.jena.security.contract.graph;
 import com.hp.hpl.jena.graph.Factory;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.test.MetaTestGraph;
-import com.hp.hpl.jena.shared.ReificationStyle;
 
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
