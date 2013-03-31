@@ -148,6 +148,7 @@ public class SecuredPrefixMappingImpl extends SecuredItemImpl implements
 		// mapping only updates if there are map entries to add.  Since this gets called
 		// when we are doing deep triple checks while writing we need to attempt the 
 		// update only if there are new updates to add.
+		
 		PrefixMapping m = holder.getBaseItem();
 		PrefixMappingImpl pm = new PrefixMappingImpl();
 		for ( Entry<String, String> e : map.getNsPrefixMap().entrySet())
