@@ -10,18 +10,19 @@ import junit.framework.Test;
 
 
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
 
 
 public class ModelTestSuite extends ParentRunner<Test>
 {
-	private TestPackage pkg;
+	private SecTestPackage pkg;
 	
 	public ModelTestSuite( Class<?> testClass ) throws Exception
 	{
 		super( Test.class );
-		pkg = new TestPackage();
+		pkg = new SecTestPackage();
 	}
 
 	@Override
@@ -54,6 +55,7 @@ public class ModelTestSuite extends ParentRunner<Test>
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			throw new RuntimeException( e1 );
 		}
 		catch (NoSuchMethodException e1)
 		{
@@ -67,6 +69,7 @@ public class ModelTestSuite extends ParentRunner<Test>
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			throw new RuntimeException( e1 );
 		}
 		catch (NoSuchMethodException e1)
 		{
@@ -88,24 +91,23 @@ public class ModelTestSuite extends ParentRunner<Test>
 					{
 						tearDown.invoke( child );
 					}
+					notifier.fireTestFinished( desc );
 				}
 				catch (IllegalArgumentException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					notifier.fireTestFailure( new Failure(desc, e));
 				}
 				catch (IllegalAccessException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					notifier.fireTestFailure( new Failure(desc, e));
 				}
 				catch (InvocationTargetException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					notifier.fireTestFailure( new Failure(desc, e.getTargetException()));
 				}
-				finally {
-					notifier.fireTestFinished( desc );
+				catch (RuntimeException e) {
+					notifier.fireTestFailure( new Failure(desc, e));
+					throw e;
 				}
 			}
 		}

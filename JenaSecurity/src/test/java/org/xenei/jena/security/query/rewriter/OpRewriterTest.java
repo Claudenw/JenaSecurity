@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluator.SecNode;
 
 public class OpRewriterTest
 {

@@ -50,6 +50,7 @@ import com.hp.hpl.jena.shared.PropertyNotFoundException;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.shared.WrappedIOException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -69,7 +70,7 @@ import java.util.Map;
 
 import org.xenei.jena.security.AccessDeniedException;
 import org.xenei.jena.security.SecurityEvaluator;
-import org.xenei.jena.security.SecurityEvaluator.Action;
+import org.xenei.jena.security.SecurityEvaluator.SecTriple;
 import org.xenei.jena.security.graph.SecuredGraph;
 import org.xenei.jena.security.graph.SecuredPrefixMapping;
 import org.xenei.jena.security.impl.ItemHolder;
@@ -297,8 +298,24 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 	}
 
+	/*private class  ReadFilter extends Filter<Resource> {
+		private SecuredItem si;
+		private SecuredResource r;
+		private Property p;
+		ReadFilter( SecuredItem si, SecuredResource r, Property p )
+		{
+			this.si = si;
+			this.r = r;
+			this.p = p;
+		}
+		@Override
+		public boolean accept(Resource o) {
+			Triple t = new Triple( r.asNode(), p.asNode(), o.asNode());
+			return si.canRead( SecuredItemImpl.convert( t ) );
+		}};
+*/
 	private static final RDFReaderF readerFactory = new RDFReaderFImpl();
-	private static final RDFWriterF writerFactory = new RDFWriterFImpl();
+	//private static final RDFWriterF writerFactory = new RDFWriterFImpl();
 
 	/**
 	 * Get an instance of SecuredModel
@@ -1796,27 +1813,40 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	}
 
 	@Override
-	public SecuredNodeIterator listObjects()
+	public SecuredNodeIterator<RDFNode> listObjects()
 	{
 		checkRead();
-		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem().listObjects());
+		ExtendedIterator<RDFNode> nIter = holder.getBaseItem().listObjects();
+		if (!canRead(SecTriple.ANY))
+		{
+			nIter = nIter.filterKeep( new ObjectFilter());
+		}
+		return new SecuredNodeIterator<RDFNode>(holder.getSecuredItem(), nIter);
 	}
 
 	@Override
-	public SecuredNodeIterator listObjectsOfProperty( final Property p )
+	public SecuredNodeIterator<RDFNode> listObjectsOfProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listObjectsOfProperty(p));
+		ExtendedIterator<RDFNode> nIter = holder.getBaseItem().listObjectsOfProperty(p);
+		if (!canRead(SecTriple.ANY))
+		{
+			nIter = nIter.filterKeep( new ObjectFilter(p));
+		}
+		return new SecuredNodeIterator<RDFNode>(holder.getSecuredItem(), nIter);
 	}
 
 	@Override
-	public SecuredNodeIterator listObjectsOfProperty( final Resource s,
+	public SecuredNodeIterator<RDFNode> listObjectsOfProperty( final Resource s,
 			final Property p )
 	{
 		checkRead();
-		return new SecuredNodeIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listObjectsOfProperty(s, p));
+		ExtendedIterator<RDFNode> nIter = holder.getBaseItem().listObjectsOfProperty(s, p);
+		if (!canRead(SecTriple.ANY))
+		{
+			nIter = nIter.filterKeep( new ObjectFilter(p));
+		}
+		return new SecuredNodeIterator<RDFNode>(holder.getSecuredItem(), nIter);
 	}
 
 	@Override
@@ -1840,8 +1870,13 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResIterator listResourcesWithProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
+		
 	}
 
 	@Override
@@ -1849,8 +1884,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final boolean o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1858,8 +1897,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final char o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1867,8 +1910,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final double o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1876,8 +1923,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final float o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1885,8 +1936,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final long o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1894,8 +1949,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final Object o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createTypedLiteral(o)));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1903,8 +1962,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final RDFNode o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listResourcesWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listResourcesWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, o));
+		}
+		return new SecuredResIterator( holder.getSecuredItem(), rIter );
 	}
 
 	@Override
@@ -1954,15 +2017,24 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 	public SecuredResIterator listSubjects()
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem().listSubjects());
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listSubjects();
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter());
+		}
+		return new SecuredResIterator(holder.getSecuredItem(),rIter);
 	}
 
 	@Override
 	public SecuredResIterator listSubjectsWithProperty( final Property p )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listSubjectsWithProperty(p));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listSubjectsWithProperty(p);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p));
+		}
+		return new SecuredResIterator(holder.getSecuredItem(),rIter);
 	}
 
 	@Override
@@ -1970,8 +2042,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final RDFNode o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listSubjectsWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listSubjectsWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, o));
+		}
+		return new SecuredResIterator(holder.getSecuredItem(),rIter);
 	}
 
 	@Override
@@ -1979,8 +2055,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String o )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listSubjectsWithProperty(p, o));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listSubjectsWithProperty(p, o);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createPlainLiteral(o)));
+		}
+		return new SecuredResIterator(holder.getSecuredItem(),rIter);
 	}
 
 	@Override
@@ -1988,8 +2068,12 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 			final String o, final String l )
 	{
 		checkRead();
-		return new SecuredResIterator(holder.getSecuredItem(), holder.getBaseItem()
-				.listSubjectsWithProperty(p, o, l));
+		ExtendedIterator<Resource> rIter = holder.getBaseItem().listSubjectsWithProperty(p, o, l);
+		if (!canRead( SecTriple.ANY))
+		{
+			rIter=rIter.filterKeep( new ResourceFilter(p, ResourceFactory.createLangLiteral(o, l)));
+		}
+		return new SecuredResIterator(holder.getSecuredItem(),rIter);	
 	}
 
 	@Override
@@ -2677,5 +2761,92 @@ public class SecuredModelImpl extends SecuredItemImpl implements SecuredModel
 		}
 		return holder.getSecuredItem();
 
+	}
+	
+	
+	private abstract class BaseFilter extends Filter<RDFNode>
+	{
+		Resource s;
+		Property p;
+		RDFNode o;
+	
+		BaseFilter( Resource s,  Property p, RDFNode o  ) {
+			this.s = s;
+			this.p = p;
+			this.o = o;
+		}
+		
+		protected boolean accept() {
+			StmtIterator iter = listStatements(s, p, o);
+			try {
+				return iter.hasNext();
+			}
+			finally {
+				iter.close();
+			}
+		}
+		
+	}
+	private class ResourceFilter extends Filter<Resource> {
+		Property p;
+		RDFNode o;
+		
+		ResourceFilter() {
+			this(null, null);
+		}
+
+		ResourceFilter( Property p)
+		{
+			this(p,null);
+		}
+		
+		ResourceFilter( Property p, RDFNode o)
+		{
+			this.p = p;
+			this.o = o;
+		}
+		
+		@Override
+		public boolean accept(Resource s) {
+			StmtIterator iter = listStatements(s, p, o);
+			try {
+				return iter.hasNext();
+			}
+			finally {
+				iter.close();
+			}
+		}
+		
+	}
+	
+	private class ObjectFilter extends Filter<RDFNode> {
+		Resource s;
+		Property p;
+
+		ObjectFilter(  ) {
+			this(null,null);
+		}
+		
+		ObjectFilter( Property p )
+		{
+			this(null, p );
+		}
+		
+		ObjectFilter( Resource s, Property p)
+		{
+			this.s = s;
+			this.p = p;
+		}
+		
+		@Override
+		public boolean accept(RDFNode o) {
+			StmtIterator iter = listStatements(s, p, o);
+			try {
+				return iter.hasNext();
+			}
+			finally {
+				iter.close();
+			}
+		}
 	}
 }

@@ -8,29 +8,30 @@ import com.hp.hpl.jena.rdf.model.test.helpers.TestingModelFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
 
-import junit.framework.Test;
-
+import junit.framework.TestSuite;
 
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.xenei.jena.security.MockSecurityEvaluator;
 import org.xenei.jena.security.SecurityEvaluator;
 
 /**
  * Test package to test Model implementation.
  */
-@RunWith(ModelTestSuite.class)
-public class TestPackage extends AbstractTestPackage
+//@RunWith(ModelTestSuite.class)
+public class SecTestPackage extends AbstractTestPackage
 {
-
-	public TestPackage() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
+	static public TestSuite suite() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
+	{
+		return new SecTestPackage();
+	}
+	
+	public SecTestPackage() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
 	{
 		super("SecuredModel", new PlainModelFactory() );
 	}
 
-	private static class PlainModelFactory implements TestingModelFactory
+	/* package private */static class PlainModelFactory implements TestingModelFactory
 	{
 		private final SecurityEvaluator eval;
 		

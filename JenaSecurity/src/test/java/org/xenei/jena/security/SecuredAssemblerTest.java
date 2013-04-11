@@ -1,18 +1,9 @@
 package org.xenei.jena.security;
 
 import com.hp.hpl.jena.assembler.Assembler;
-import com.hp.hpl.jena.assembler.assemblers.AssemblerGroup;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.tdb.assembler.DatasetAssemblerTDB;
-import com.hp.hpl.jena.tdb.assembler.NodeTableAssembler;
-import com.hp.hpl.jena.tdb.assembler.TDBGraphAssembler;
-
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 

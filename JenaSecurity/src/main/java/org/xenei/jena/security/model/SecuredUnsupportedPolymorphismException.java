@@ -17,12 +17,8 @@
  */
 package org.xenei.jena.security.model;
 
-import com.hp.hpl.jena.enhanced.EnhGraph;
-import com.hp.hpl.jena.enhanced.EnhNode;
 import com.hp.hpl.jena.enhanced.UnsupportedPolymorphismException;
 
-import org.xenei.jena.security.graph.impl.SecuredGraphImpl;
-import org.xenei.jena.security.model.impl.SecuredModelImpl;
 import org.xenei.jena.security.model.impl.SecuredRDFNodeImpl;
 
 /**

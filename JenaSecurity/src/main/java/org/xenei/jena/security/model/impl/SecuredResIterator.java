@@ -33,9 +33,9 @@ public class SecuredResIterator implements ResIterator
 	}
 
 	private final ExtendedIterator<Resource> iter;
-
+	
 	public SecuredResIterator( final SecuredModel securedModel,
-			final ExtendedIterator<Resource> wrapped )
+			final ExtendedIterator<Resource> wrapped)
 	{
 
 		final PermResourceMap map1 = new PermResourceMap(securedModel);

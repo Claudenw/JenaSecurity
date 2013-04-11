@@ -20,14 +20,10 @@ package org.xenei.jena.security.model.impl;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Alt;
 import com.hp.hpl.jena.rdf.model.AltHasNoDefaultException;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceF;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
-
 import org.xenei.jena.security.SecurityEvaluator.Action;
 import org.xenei.jena.security.impl.ItemHolder;
 import org.xenei.jena.security.impl.SecuredItemInvoker;

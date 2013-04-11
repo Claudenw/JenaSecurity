@@ -135,7 +135,7 @@ public abstract class SecuredItemImpl implements SecuredItem
 	public static final ThreadLocal<LRUMap> CACHE = new ThreadLocal<LRUMap>();
 	// the number of times this thread has recursively called the constructor.
 	public static final ThreadLocal<Integer> COUNT = new ThreadLocal<Integer>();
-
+	
 	/**
 	 * Convert a Jena Node object into a SecNode object.
 	 * @param jenaNode The Jena node to convert.
@@ -287,6 +287,15 @@ public abstract class SecuredItemImpl implements SecuredItem
 		this.itemHolder = holder;
 	}
 
+	@Override
+	public String toString() {
+		if (canRead())
+		{
+			return itemHolder.getBaseItem().toString();
+		}
+		return super.toString();
+	}
+	
 	/**
 	 * get the cached value.
 	 * @param key The key to look for.
