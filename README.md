@@ -1,6 +1,17 @@
 JenaSecurity
 ============
 
+JenaSecurity is now part of the Apache Jena project.
+====================================================
+
+Please make any contributions at the Apache jena website: http://jena.apache.org
+
+package name: jena-security
+
+Resource Location: https://svn.apache.org/repos/asf/jena/Experimental/jena-security
+
+------
+
 Security (Permissions) wrapper around Jena RDF implementation.
 
 By implementing a SecurityEvaluator users may apply access restricitons to graphs and optionally
