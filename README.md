@@ -24,7 +24,7 @@ also apply to 2.7.4.
 
 Maven Info:
 <pre>
-Group Id: org.xenei.jena
-Artifact Id: Security
+Group Id: org.apache.jena
+Artifact Id: jena-security
 </pre>
 
