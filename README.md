@@ -4,11 +4,12 @@ JenaSecurity
 JenaSecurity is now part of the Apache Jena project.
 ====================================================
 
-Please make any contributions at the Apache jena website: http://jena.apache.org
+Please make any contributions at the Apache Jena website: http://jena.apache.org
 
-package name: jena-security
+package name: jena-security (Jena version < 3)
+package name: jena-permissions (Jena version >= 3)
 
-Resource Location: https://svn.apache.org/repos/asf/jena/Experimental/jena-security
+See Apache Jena website for documentation, source and binary packages.
 
 ------
 
